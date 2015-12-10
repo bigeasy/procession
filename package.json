@@ -1,0 +1,34 @@
+{
+    "name":             "procession",
+    "version":          "9.9.9",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "Description.",
+    "keywords":
+    [
+                        "queue", "events"
+    ],
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/procession",
+    "bugs":             "https://github.com/bigeasy/procession/issues",
+    "license":          "MIT",
+    "main":             "procession",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/procession.git"
+    },
+    "dependencies":
+    {
+                        "cadence":              "0.4.2",
+                        "operation":            "0.0.3"
+    },
+    "devDependencies":
+    {
+                        "proof":                "0.0.56",
+                        "abend":                "0.0.3"
+    },
+    "scripts":
+    {
+                        "test": "proof platform win32 && proof test */*/*.t.js || t/test"
+    }
+}
