@@ -1,34 +1,37 @@
 {
-    "name":             "procession",
-    "version":          "0.0.0",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "Asynchronous message queue.",
+    "name":                 "procession",
+    "version":              "0.0.0",
+    "description":
+
+      "Asynchronous message queue.",
+
     "keywords":
     [
-                        "queue", "events"
+                            "queue", "events"
     ],
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/procession",
-    "bugs":             "https://github.com/bigeasy/procession/issues",
-    "license":          "MIT",
-    "main":             "procession",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":         [],
+    "homepage":             "https://github.com/bigeasy/procession",
+    "bugs":                 "https://github.com/bigeasy/procession/issues",
+    "license":              "MIT",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/procession.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/procession.git"
     },
     "dependencies":
     {
-                        "cadence":              "1.x",
-                        "operation":            "1.x"
+                            "cadence":                      "1.0.x",
+                            "operation":                    "1.2.x"
     },
     "devDependencies":
     {
-                        "abend":                "1.x",
-                        "proof":                "1.x"
+                            "abend":                        "1.0.x",
+                            "proof":                        "1.2.x"
     },
+    "main":                 "procession",
     "scripts":
     {
-                        "test": "proof platform win32 && proof test */*/*.t.js || t/test"
+                            "test": "proof platform win32 && proof test */*/*.t.js || t/test"
     }
 }
