@@ -2,7 +2,7 @@
     "name":             "procession",
     "version":          "9.9.9",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "Description.",
+    "description":      "Asynchronous message queue.",
     "keywords":
     [
                         "queue", "events"
