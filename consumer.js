@@ -1,3 +1,5 @@
+var cadence = require('cadence')
+
 function Consumer (head) {
     this._head = head
 }
@@ -10,6 +12,20 @@ Consumer.prototype.shift = function (callback) {
         this._callback = callback
     }
 }
+
+Consumer.prototype.destroy = function () {
+    this.destroyed = true
+}
+
+Consumer.prototype.join = cadence(function (async, condition) {
+    var loop = async(function () {
+        this.shift(async())
+    }, function (value) {
+        if (condition(value)) {
+            return [ loop.break, value ]
+        }
+    })()
+})
 
 Consumer.prototype._nudge = function () {
     if (this._callback != null) {

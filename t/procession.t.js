@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -7,13 +7,18 @@ function prove (async, assert) {
     var consumer = procession.createConsumer()
 
     async(function () {
+        procession.join(function (value) { return value == 1 }, async())
+        procession.push(2)
         procession.push(1)
-        consumer.shift(async())
     }, function (value) {
-        assert(value, 1, 'shift available')
+        assert(value, 1, 'join wait')
+        consumer.shift(async())
+        consumer.shift(async())
+    }, function (first, second) {
+        assert([ first, second ], [ 2, 1 ], 'shift available')
         consumer.shift(async())
         procession.push(2)
     }, function (value) {
-        assert(value, 2, 'shift wait')
+        assert(value, 2, 'wait shift and tidy')
     })
 }
