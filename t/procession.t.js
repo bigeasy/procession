@@ -13,9 +13,13 @@ function prove (async, assert) {
     }, function (value) {
         assert(value, 1, 'join wait')
         consumer.shift(async())
-        consumer.shift(async())
-    }, function (first, second) {
-        assert([ first, second ], [ 2, 1 ], 'shift available')
+    }, function (first) {
+        async(function () {
+            consumer.shift(async())
+        }, function (second) {
+            assert([ first, second ], [ 2, 1 ], 'shift available')
+        })
+    }, function () {
         consumer.shift(async())
         procession.push(2)
     }, function (value) {
