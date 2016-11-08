@@ -1,4 +1,6 @@
+var Operation = require('operation')
 var cadence = require('cadence')
+var abend = require('abend')
 
 function Consumer (head) {
     this._head = head
@@ -33,6 +35,22 @@ Consumer.prototype._nudge = function () {
         this._head = this._head.next
         setImmediate(callback, null, this._head.value)
     }
+}
+
+Consumer.prototype._pump = cadence(function (async, next) {
+    if (typeof next == 'object' && typeof next.push == 'function') {
+        next = { object: next, method: 'push' }
+    }
+    next = new Operation(next)
+    var loop = async(function () {
+        this.shift(async())
+    }, function (message) {
+        next.apply([ message ])
+    })
+})
+
+Consumer.prototype.pump = function (next) {
+    this._pump(next, abend)
 }
 
 module.exports = Consumer

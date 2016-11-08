@@ -1,4 +1,4 @@
-require('proof')(3, require('cadence')(prove))
+require('proof')(5, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -24,5 +24,21 @@ function prove (async, assert) {
         procession.push(2)
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
+        var waits = [ async(), async() ]
+        var object = procession.createConsumer()
+        object.pump({
+            push: function (value) {
+                assert(value, 3, 'pump object pumped')
+                object.destroy()
+                waits.shift()()
+            }
+        })
+        var f = procession.createConsumer()
+        procession.push(3)
+        f.pump(function (value) {
+            assert(value, 3, 'function pumped')
+            object.destroy()
+            waits.shift()()
+        })
     })
 }
