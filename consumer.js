@@ -2,7 +2,8 @@ var Operation = require('operation')
 var cadence = require('cadence')
 var abend = require('abend')
 
-function Consumer (head) {
+function Consumer (procession, head) {
+    this._procession = procession
     this._head = head
 }
 
@@ -16,6 +17,7 @@ Consumer.prototype.shift = function (callback) {
 }
 
 Consumer.prototype.destroy = function () {
+    this._procession = false
     this.destroyed = true
 }
 
@@ -51,6 +53,10 @@ Consumer.prototype._pump = cadence(function (async, next) {
 
 Consumer.prototype.pump = function (next) {
     this._pump(next, abend)
+}
+
+Consumer.prototype.duplicate = function () {
+    return new Consumer(this._procession, this._head)
 }
 
 module.exports = Consumer

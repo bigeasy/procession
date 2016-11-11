@@ -1,4 +1,4 @@
-require('proof')(5, require('cadence')(prove))
+require('proof')(6, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -40,5 +40,12 @@ function prove (async, assert) {
             object.destroy()
             waits.shift()()
         })
+    }, function () {
+        var original = procession.createConsumer()
+        var duplicate = original.duplicate()
+        procession.push(4)
+        duplicate.shift(async())
+    }, function (value) {
+        assert(value, 4, 'duplicate')
     })
 }

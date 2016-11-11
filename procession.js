@@ -7,7 +7,7 @@ function Procession () {
 }
 
 Procession.prototype.createConsumer = function () {
-    var consumer =  new Consumer(this._head)
+    var consumer =  new Consumer(this, this._head)
     this._consumers.push(consumer)
     return consumer
 }
