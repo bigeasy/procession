@@ -3,17 +3,17 @@ var cadence = require('cadence')
 
 function Procession () {
     this._consumers = []
-    this._head = { next: null }
+    this.head = { next: null }
 }
 
 Procession.prototype.createConsumer = function () {
-    var consumer =  new Consumer(this, this._head)
+    var consumer =  new Consumer(this, this.head)
     this._consumers.push(consumer)
     return consumer
 }
 
 Procession.prototype.push = function (value) {
-    this._head = this._head.next = { value: value, next: null }
+    this.head = this.head.next = { value: value, next: null }
     for (var i = 0, I = this._consumers.length; i < I;) {
         if (this._consumers[i].destroyed) {
             this._consumers.splice(i, 1)

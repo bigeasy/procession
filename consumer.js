@@ -4,13 +4,13 @@ var abend = require('abend')
 
 function Consumer (procession, head) {
     this._procession = procession
-    this._head = head
+    this.head = head
 }
 
 Consumer.prototype.shift = function (callback) {
-    if (this._head.next) {
-        this._head = this._head.next
-        callback(null, this._head.value)
+    if (this.head.next) {
+        this.head = this.head.next
+        callback(null, this.head.value)
     } else {
         this._callback = callback
     }
@@ -34,8 +34,8 @@ Consumer.prototype.join = cadence(function (async, condition) {
 Consumer.prototype._nudge = function () {
     if (this._callback != null) {
         var callback = [ this._callback, this._callback = null ][0]
-        this._head = this._head.next
-        setImmediate(callback, null, this._head.value)
+        this.head = this.head.next
+        setImmediate(callback, null, this.head.value)
     }
 }
 
@@ -56,7 +56,7 @@ Consumer.prototype.pump = function (next) {
 }
 
 Consumer.prototype.duplicate = function () {
-    return new Consumer(this._procession, this._head)
+    return new Consumer(this._procession, this.head)
 }
 
 module.exports = Consumer
