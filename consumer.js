@@ -4,6 +4,8 @@ var abend = require('abend')
 
 function Consumer (procession, head) {
     this._procession = procession
+    this._next = null
+    this._previous = null
     this.head = head
 }
 
@@ -17,8 +19,9 @@ Consumer.prototype.shift = function (callback) {
 }
 
 Consumer.prototype.destroy = function () {
+    this._previous._next = this._next
+    this._next._previous = this._previous
     this._procession = false
-    this.destroyed = true
 }
 
 Consumer.prototype.join = cadence(function (async, condition) {
