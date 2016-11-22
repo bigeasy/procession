@@ -2,14 +2,14 @@ var Operation = require('operation')
 var cadence = require('cadence')
 var abend = require('abend')
 
-function Consumer (procession, head) {
+function Asynchronous (procession, head) {
     this._procession = procession
     this._next = null
     this._previous = null
     this.head = head
 }
 
-Consumer.prototype.shift = function (callback) {
+Asynchronous.prototype.shift = function (callback) {
     if (this.head.next) {
         this.head = this.head.next
         callback(null, this.head.value)
@@ -18,13 +18,13 @@ Consumer.prototype.shift = function (callback) {
     }
 }
 
-Consumer.prototype.destroy = function () {
+Asynchronous.prototype.destroy = function () {
     this._previous._next = this._next
     this._next._previous = this._previous
     this._procession = false
 }
 
-Consumer.prototype.join = cadence(function (async, condition) {
+Asynchronous.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.shift(async())
     }, function (value) {
@@ -34,7 +34,7 @@ Consumer.prototype.join = cadence(function (async, condition) {
     })()
 })
 
-Consumer.prototype._nudge = function () {
+Asynchronous.prototype._nudge = function () {
     if (this._callback != null) {
         var callback = [ this._callback, this._callback = null ][0]
         this.head = this.head.next
@@ -42,7 +42,7 @@ Consumer.prototype._nudge = function () {
     }
 }
 
-Consumer.prototype._pump = cadence(function (async, next) {
+Asynchronous.prototype._pump = cadence(function (async, next) {
     if (typeof next == 'object' && typeof next.push == 'function') {
         next = { object: next, method: 'push' }
     }
@@ -54,12 +54,12 @@ Consumer.prototype._pump = cadence(function (async, next) {
     })
 })
 
-Consumer.prototype.pump = function (next) {
+Asynchronous.prototype.pump = function (next) {
     this._pump(next, abend)
 }
 
-Consumer.prototype.duplicate = function () {
-    return new Consumer(this._procession, this.head)
+Asynchronous.prototype.duplicate = function () {
+    return new Asynchronous(this._procession, this.head)
 }
 
-module.exports = Consumer
+module.exports = Asynchronous

@@ -4,7 +4,7 @@ function prove (async, assert) {
     var Procession = require('..')
 
     var procession = new Procession()
-    var consumer = procession.createConsumer()
+    var consumer = procession.async()
 
     async(function () {
         procession.join(function (value) { return value == 1 }, async())
@@ -25,7 +25,7 @@ function prove (async, assert) {
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
         var waits = [ async(), async() ]
-        var object = procession.createConsumer()
+        var object = procession.async()
         object.pump({
             push: function (value) {
                 assert(value, 3, 'pump object pumped')
@@ -33,7 +33,7 @@ function prove (async, assert) {
                 waits.shift()()
             }
         })
-        var f = procession.createConsumer()
+        var f = procession.async()
         procession.push(3)
         f.pump(function (value) {
             assert(value, 3, 'function pumped')
@@ -41,7 +41,7 @@ function prove (async, assert) {
             waits.shift()()
         })
     }, function () {
-        var original = procession.createConsumer()
+        var original = procession.async()
         var duplicate = original.duplicate()
         procession.push(4)
         duplicate.shift(async())

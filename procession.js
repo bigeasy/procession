@@ -1,36 +1,36 @@
-var Consumer = require('./consumer')
+var Asynchronous = require('./asynchronous')
 var cadence = require('cadence')
 
 function Procession () {
-    this._consumers = {}
-    this._consumers._previous = this._consumers._next = this._consumers
+    this._iterators = {}
+    this._iterators._previous = this._iterators._next = this._iterators
     this.head = { next: null }
 }
 
-Procession.prototype.createConsumer = function () {
-    var consumer =  new Consumer(this, this.head)
-    consumer._next = this._consumers._next
-    consumer._previous = this._consumers
-    consumer._next._previous = consumer
-    consumer._previous._next = consumer
-    return consumer
+Procession.prototype.async = function () {
+    var iterator = new Asynchronous(this, this.head)
+    iterator._next = this._iterators._next
+    iterator._previous = this._iterators
+    iterator._next._previous = iterator
+    iterator._previous._next = iterator
+    return iterator
 }
 
 Procession.prototype.push = function (value) {
     this.head = this.head.next = { value: value, next: null }
-    var consumer = this._consumers
-    while (consumer._next !== this._consumers) {
-        consumer = consumer._next
-        consumer._nudge()
+    var iterator = this._iterators
+    while (iterator._next !== this._iterators) {
+        iterator = iterator._next
+        iterator._nudge()
     }
 }
 
 Procession.prototype.join = cadence(function (async, condition) {
-    var consumer = this.createConsumer()
+    var iterator = this.async()
     async(function () {
-        consumer.join(condition, async())
+        iterator.join(condition, async())
     }, function (value) {
-        consumer.destroy()
+        iterator.destroy()
         return [ value ]
     })
 })
