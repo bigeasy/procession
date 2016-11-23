@@ -8,12 +8,7 @@ function Procession () {
 }
 
 Procession.prototype.async = function () {
-    var iterator = new Asynchronous(this, this.head)
-    iterator._next = this._iterators._next
-    iterator._previous = this._iterators
-    iterator._next._previous = iterator
-    iterator._previous._next = iterator
-    return iterator
+    return new Asynchronous(this._iterators, this.head)
 }
 
 Procession.prototype.push = function (value) {

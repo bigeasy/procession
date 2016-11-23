@@ -42,7 +42,7 @@ function prove (async, assert) {
         })
     }, function () {
         var original = procession.async()
-        var duplicate = original.duplicate()
+        var duplicate = original.async()
         procession.push(4)
         duplicate.shift(async())
     }, function (value) {

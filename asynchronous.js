@@ -1,12 +1,14 @@
 var Operation = require('operation')
 var cadence = require('cadence')
 var abend = require('abend')
+var Synchronous = require('./synchronous')
 
-function Asynchronous (procession, head) {
-    this._procession = procession
-    this._next = null
-    this._previous = null
+function Asynchronous (iterators, head) {
     this.head = head
+    this._next = iterators._next
+    this._previous = iterators
+    this._next._previous = this
+    this._previous._next = this
 }
 
 Asynchronous.prototype.shift = function (callback) {
@@ -21,7 +23,6 @@ Asynchronous.prototype.shift = function (callback) {
 Asynchronous.prototype.destroy = function () {
     this._previous._next = this._next
     this._next._previous = this._previous
-    this._procession = false
 }
 
 Asynchronous.prototype.join = cadence(function (async, condition) {
@@ -58,8 +59,12 @@ Asynchronous.prototype.pump = function (next) {
     this._pump(next, abend)
 }
 
-Asynchronous.prototype.duplicate = function () {
-    return new Asynchronous(this._procession, this.head)
+Asynchronous.prototype.async = function () {
+    return new Asynchronous(this, this.head)
+}
+
+Asynchronous.prototype.sync = function () {
+    return new Synchronous(this._procession, this.head)
 }
 
 module.exports = Asynchronous
