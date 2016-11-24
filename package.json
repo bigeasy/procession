@@ -21,12 +21,12 @@
     },
     "dependencies":
     {
+                            "abend":                        "1.0.x",
                             "cadence":                      "1.0.x",
                             "operation":                    "1.2.x"
     },
     "devDependencies":
     {
-                            "abend":                        "1.0.x",
                             "proof":                        "1.2.x"
     },
     "main":                 "procession",
