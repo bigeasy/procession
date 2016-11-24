@@ -1,15 +1,15 @@
-require('proof')(6, require('cadence')(prove))
+require('proof')(11, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
 
-    var procession = new Procession()
-    var consumer = procession.async()
+    var queue = new Procession()
+    var consumer = queue.async()
 
     async(function () {
-        procession.join(function (value) { return value == 1 }, async())
-        procession.push(2)
-        procession.push(1)
+        queue.join(function (value) { return value == 1 }, async())
+        queue.push(2)
+        queue.push(1)
     }, function (value) {
         assert(value, 1, 'join wait')
         consumer.shift(async())
@@ -21,11 +21,11 @@ function prove (async, assert) {
         })
     }, function () {
         consumer.shift(async())
-        procession.push(2)
+        queue.push(2)
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
         var waits = [ async(), async() ]
-        var object = procession.async()
+        var object = queue.async()
         object.pump({
             push: function (value) {
                 assert(value, 3, 'pump object pumped')
@@ -33,19 +33,44 @@ function prove (async, assert) {
                 waits.shift()()
             }
         })
-        var f = procession.async()
-        procession.push(3)
+        var f = queue.async()
+        queue.push(3)
         f.pump(function (value) {
             assert(value, 3, 'function pumped')
             object.destroy()
             waits.shift()()
         })
     }, function () {
-        var original = procession.async()
-        var duplicate = original.async()
-        procession.push(4)
-        duplicate.shift(async())
-    }, function (value) {
-        assert(value, 4, 'duplicate')
+        var original = queue.async()
+        var copies = {
+            async: original.async(),
+            sync: original.sync()
+        }
+        async(function () {
+            queue.push(4)
+            copies.async.shift(async())
+            assert(copies.sync.shift(), 4, 'async sync copy shift')
+        }, function (value) {
+            assert(copies.sync.shift(), null, 'async sync copy shift empty')
+            assert(value, 4, 'async async copy shift')
+            copies.async.destroy()
+            copies.sync.destroy()
+        })
+    }, function () {
+        var original = queue.sync()
+        var copies = {
+            async: original.async(),
+            sync: original.sync()
+        }
+        async(function () {
+            queue.push(4)
+            copies.async.shift(async())
+            assert(copies.sync.shift(), 4, 'sync sync copy shift')
+        }, function (value) {
+            assert(copies.sync.shift(), null, 'sync sync copy shift empty')
+            assert(value, 4, 'sync async copy shift')
+            copies.async.destroy()
+            copies.sync.destroy()
+        })
     })
 }
