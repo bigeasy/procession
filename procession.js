@@ -51,6 +51,14 @@ Consumer.prototype.shift = function (callback) {
     }
 }
 
+Consumer.prototype.advance = function () {
+    if (this.head.next) {
+        this.head = this.head.next
+        return this.head.value
+    }
+    return null
+}
+
 Consumer.prototype.destroy = function () {
     this._previous._next = this._next
     this._next._previous = this._previous
