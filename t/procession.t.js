@@ -4,7 +4,7 @@ function prove (async, assert) {
     var Procession = require('..')
 
     var queue = new Procession()
-    var consumer = queue.async()
+    var consumer = queue.consumer()
 
     async(function () {
         queue.join(function (value) { return value == 1 }, async())
@@ -25,7 +25,7 @@ function prove (async, assert) {
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
         var waits = [ async(), async() ]
-        var object = queue.async()
+        var object = queue.consumer()
         object.pump({
             push: function (value) {
                 assert(value, 3, 'pump object pumped')
@@ -33,7 +33,7 @@ function prove (async, assert) {
                 waits.shift()()
             }
         })
-        var f = queue.async()
+        var f = queue.consumer()
         queue.push(3)
         f.pump(function (value) {
             assert(value, 3, 'function pumped')
@@ -41,36 +41,36 @@ function prove (async, assert) {
             waits.shift()()
         })
     }, function () {
-        var original = queue.async()
+        var original = queue.consumer()
         var copies = {
-            async: original.async(),
-            sync: original.sync()
+            consumer: original.consumer(),
+            memento: original.memento()
         }
         async(function () {
             queue.push(4)
-            copies.async.shift(async())
-            assert(copies.sync.shift(), 4, 'async sync copy shift')
+            copies.consumer.shift(async())
+            assert(copies.memento.shift(), 4, 'async sync copy shift')
         }, function (value) {
-            assert(copies.sync.shift(), null, 'async sync copy shift empty')
+            assert(copies.memento.shift(), null, 'async sync copy shift empty')
             assert(value, 4, 'async async copy shift')
-            copies.async.destroy()
-            copies.sync.destroy()
+            copies.consumer.destroy()
+            copies.memento.destroy()
         })
     }, function () {
-        var original = queue.sync()
+        var original = queue.consumer()
         var copies = {
-            async: original.async(),
-            sync: original.sync()
+            consumer: original.consumer(),
+            memento: original.memento()
         }
         async(function () {
             queue.push(4)
-            copies.async.shift(async())
-            assert(copies.sync.shift(), 4, 'sync sync copy shift')
+            copies.consumer.shift(async())
+            assert(copies.memento.shift(), 4, 'sync sync copy shift')
         }, function (value) {
-            assert(copies.sync.shift(), null, 'sync sync copy shift empty')
+            assert(copies.memento.shift(), null, 'sync sync copy shift empty')
             assert(value, 4, 'sync async copy shift')
-            copies.async.destroy()
-            copies.sync.destroy()
+            copies.consumer.destroy()
+            copies.memento.destroy()
         })
     })
 }

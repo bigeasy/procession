@@ -2,7 +2,7 @@ var Operation = require('operation')
 var cadence = require('cadence')
 var abend = require('abend')
 
-function Synchronous (iterators, head) {
+function Memento (iterators, head) {
     this.head = head
     this._next = iterators._next
     this._previous = iterators
@@ -10,7 +10,7 @@ function Synchronous (iterators, head) {
     this._previous._next = this
 }
 
-Synchronous.prototype.shift = function (callback) {
+Memento.prototype.shift = function (callback) {
     if (this.head.next) {
         this.head = this.head.next
         return this.head.value
@@ -18,23 +18,23 @@ Synchronous.prototype.shift = function (callback) {
     return null
 }
 
-Synchronous.prototype._nudge = function () {
+Memento.prototype._nudge = function () {
 }
 
-Synchronous.prototype.destroy = function () {
+Memento.prototype.destroy = function () {
     this._previous._next = this._next
     this._next._previous = this._previous
 }
 
-Synchronous.prototype.async = function () {
-    return new Asynchronous(this, this.head)
+Memento.prototype.consumer = function () {
+    return new Consumer(this, this.head)
 }
 
-Synchronous.prototype.sync = function () {
-    return new Synchronous(this, this.head)
+Memento.prototype.memento = function () {
+    return new Memento(this, this.head)
 }
 
-function Asynchronous (iterators, head) {
+function Consumer (iterators, head) {
     this.head = head
     this._next = iterators._next
     this._previous = iterators
@@ -42,7 +42,7 @@ function Asynchronous (iterators, head) {
     this._previous._next = this
 }
 
-Asynchronous.prototype.shift = function (callback) {
+Consumer.prototype.shift = function (callback) {
     if (this.head.next) {
         this.head = this.head.next
         callback(null, this.head.value)
@@ -51,12 +51,12 @@ Asynchronous.prototype.shift = function (callback) {
     }
 }
 
-Asynchronous.prototype.destroy = function () {
+Consumer.prototype.destroy = function () {
     this._previous._next = this._next
     this._next._previous = this._previous
 }
 
-Asynchronous.prototype.join = cadence(function (async, condition) {
+Consumer.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.shift(async())
     }, function (value) {
@@ -66,7 +66,7 @@ Asynchronous.prototype.join = cadence(function (async, condition) {
     })()
 })
 
-Asynchronous.prototype._nudge = function () {
+Consumer.prototype._nudge = function () {
     if (this._callback != null) {
         var callback = [ this._callback, this._callback = null ][0]
         this.head = this.head.next
@@ -74,7 +74,7 @@ Asynchronous.prototype._nudge = function () {
     }
 }
 
-Asynchronous.prototype._pump = cadence(function (async, next) {
+Consumer.prototype._pump = cadence(function (async, next) {
     if (typeof next == 'object' && typeof next.push == 'function') {
         next = { object: next, method: 'push' }
     }
@@ -86,16 +86,16 @@ Asynchronous.prototype._pump = cadence(function (async, next) {
     })
 })
 
-Asynchronous.prototype.pump = function (next) {
+Consumer.prototype.pump = function (next) {
     this._pump(next, abend)
 }
 
-Asynchronous.prototype.async = function () {
-    return new Asynchronous(this, this.head)
+Consumer.prototype.consumer = function () {
+    return new Consumer(this, this.head)
 }
 
-Asynchronous.prototype.sync = function () {
-    return new Synchronous(this, this.head)
+Consumer.prototype.memento = function () {
+    return new Memento(this, this.head)
 }
 
 
@@ -105,12 +105,12 @@ function Procession () {
     this.head = { next: null }
 }
 
-Procession.prototype.async = function () {
-    return new Asynchronous(this._iterators, this.head)
+Procession.prototype.consumer = function () {
+    return new Consumer(this._iterators, this.head)
 }
 
-Procession.prototype.sync = function () {
-    return new Synchronous(this._iterators, this.head)
+Procession.prototype.memento = function () {
+    return new Memento(this._iterators, this.head)
 }
 
 Procession.prototype.push = function (value) {
@@ -123,11 +123,11 @@ Procession.prototype.push = function (value) {
 }
 
 Procession.prototype.join = cadence(function (async, condition) {
-    var iterator = this.async()
+    var consumer = this.consumer()
     async(function () {
-        iterator.join(condition, async())
+        consumer.join(condition, async())
     }, function (value) {
-        iterator.destroy()
+        consumer.destroy()
         return [ value ]
     })
 })
