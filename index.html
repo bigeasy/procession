@@ -15,7 +15,56 @@
       <h1>Procession</h1>
       <!-- todo: code font is too small for body text font-->
     </div>
-    <div class="unit description markdown include" data-file="index.md"><h2 id="notes">Notes</h2>
+    <div class="unit description markdown include" data-file="index.md"><p>Procession is an evented work queue or stream. I use it to create efficent
+evented pipelines of events in my applications. It is a simple alternative to
+Node.js streams for events when back pressure is not needed.</p>
+<p>With Procession you can broadcast an event zero, one or more waiting listeners.
+Listeners listen for events by creating a consumer on the procession and
+listening for the consumer&apos;s <code>shift</code> function.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> procession = <span class="hljs-keyword">new</span> Procession
+
+<span class="hljs-keyword">var</span> consumer = procession.consumer()
+
+consumer.shift(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">error, value</span>) </span>{
+    <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error
+    <span class="hljs-built_in">console</span>.log(value)
+})
+
+procession.push(<span class="hljs-number">1</span>)
+</code></pre>
+<p>You can chain processions together using <code>pipe</code>.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> first = <span class="hljs-keyword">new</span> Procession
+<span class="hljs-keyword">var</span> second = <span class="hljs-keyword">new</span> Procession
+
+<span class="hljs-keyword">var</span> consumer = second.consumer()
+first.consumer().pipe(second)
+
+consumer.shift(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">error, value</span>) </span>{
+    <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error
+    <span class="hljs-built_in">console</span>.log(value)
+})
+
+procession.push(<span class="hljs-number">1</span>)
+</code></pre>
+<p>This is useful if want to build a series of transforms. Each transform an have
+an input and output procession.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> compressor = <span class="hljs-keyword">new</span> Compressor
+<span class="hljs-keyword">var</span> encryptor = <span class="hljs-keyword">new</span> Encryptor
+
+compressor.output.pipe(encryptor.input)
+
+compressor.push({ <span class="hljs-attr">secret</span>: <span class="hljs-number">5</span> })
+</code></pre>
+<p>When you push onto a <code>Procession</code> that has no consumers it is essentially a
+no-op, so it is not expensive to keep a procession around that has optional
+events that you can optionally listen to.</p>
+<p>You can have multiple consumers that listen</p>
+<p><strong>TODO</strong>: Implement back pressure by passing an optional callback to <code>push</code>.</p>
+<p>Unlike <a href="https://github.com/bigeasy/turnstile">Turnstile</a> events in Procession
+are enqueued and then forgotten. There is no mechanism by which to send a
+response to a response bound to a particular message through the procession. In
+this sense they are like Node.js streams.</p>
+<h2 id="notes">Notes</h2>
 <p>How do you quickly create filters?</p>
 <pre><code class="lang-javascript">procession.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) </span>{
     <span class="hljs-keyword">return</span> message.type != <span class="hljs-string">&apos;administrative&apos;</span>)
@@ -24,6 +73,17 @@
 <span class="hljs-comment">// This could replace `join`.</span>
 procession.filter(myFilter, <span class="hljs-number">1</span>).shift(<span class="hljs-keyword">async</span>())
 </code></pre>
+<p>Currently, I&apos;m using a singly-linked list so that advancing the final consumer
+or iterator will make the now unreferenced final entry eligible for garbage
+collection, but as I consider wanting to implement back pressure, there appears
+to be no good way to signal that an entry is no longer in use so that it&apos;s heft
+could be removed from the weight of the procession. Reference counting is
+difficult because it makes destroying a consumer difficult. Now destroying a
+consumer requires that the consumer run through the linked list and decrement
+the count. There is, however, no good reason to keep a doubly-linked list, even
+though a reference count would make it possible to know when to unlink.</p>
+<p>Some of things that I do with Turnstile could be done with this pipeline class.</p>
+<p>Not sure why I&apos;d ever forgo visibility.</p>
 </div>
   </div>
   <!-- todo: move into an edify plugin-->
