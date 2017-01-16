@@ -40,6 +40,8 @@ endef
 export SAFARI_REFRESH
 export CHROME_REFRESH
 
+PATH  := "$(PATH):$(PWD)/node_modules/.bin"
+SHELL := env PATH=$(PATH) /bin/sh
 
 docco := $(patsubst source/%.js,docco/%.html,$(wildcard source/*.js))
 sources := $(docco) css/style.css index.html
@@ -47,20 +49,24 @@ sources := $(docco) css/style.css index.html
 all: $(sources)
 
 node_modules/.bin/docco:
+	mkdir -p node_modules
 	npm install docco@0.7.0
 	cd node_modules && patch -p 1 < ../docco.js.patch
 
 node_modules/.bin/serve:
-	npm install serve
+	mkdir -p node_modules
+	npm install serve@1.4.0
 
 node_modules/.bin/lessc:
+	mkdir -p node_modules
 	npm install less
 
 node_modules/.bin/edify:
-	npm install less edify edify.markdown edify.highlight edify.include
+	mkdir -p node_modules
+	npm install less edify edify.pug edify.markdown edify.highlight edify.include
 
 watch: all
-	fswatch --exclude '.' --include '\.html$$' --include '\.less$$' --include '\.js$$' pages css source | while read line; \
+	fswatch --exclude '.' --include '\.pug$$' --include '\.less$$' --include '\.md$$' --include '\.js$$' pages css source *.md | while read line; \
 	do \
 		make --no-print-directory all; \
 		osascript -e "$$CHROME_REFRESH"; \
@@ -76,10 +82,11 @@ docco/%.html: source/%.js node_modules/.bin/docco
 
 index.html: index.md
 
-%.html: pages/%.html node_modules/.bin/edify
+%.html: pages/%.pug node_modules/.bin/edify
 	@echo generating $@
-	@(node node_modules/.bin/edify include --select '.include' --type text | \
-		node_modules/.bin/edify markdown --select '.markdown' | \
+	@(node node_modules/.bin/edify pug | \
+		node_modules/.bin/edify include --select '.include' --type text | \
+	    node node_modules/.bin/edify markdown --select '.markdown' | \
 	    node node_modules/.bin/edify highlight --select '.lang-javascript' --language 'javascript') < $< > $@
 
 clean:
