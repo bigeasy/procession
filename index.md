@@ -87,3 +87,15 @@ though a reference count would make it possible to know when to unlink.
 Some of things that I do with Turnstile could be done with this pipeline class.
 
 Not sure why I'd ever forgo visibility.
+
+Took a lot of notes on how to maintain ordering but lost them with an overwrite.
+
+ * Add integer that wraps for ordering, so max total length is 0xffffffff.
+ * When we shift, we check that the node is greater than least, do nothing.
+ * When we shift, if node is equal to least we check that this is the last
+ consumer that is referencing it, if not, do nothing, otherwise, mark it is
+ deleted, notify listeners that it is outgoing.
+ * Now we can have listeners that listen for incoming and outgoing nodes. With
+ these we can introduce counts, heft and a red-black tree for searching.
+ * When we shift, we mark the nodes as shifted. If the user is holding onto a
+ shifted node and attempts to promote it to a consumer, we will abend.
