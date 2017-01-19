@@ -48,7 +48,7 @@ Procession.prototype.consumer = function () {
 Procession.prototype.push = function (value) {
     this.head = this.head.next = new Node(this, this._identifier.next(), value)
     for (var i = 0, I = this._listeners.length; i < I; i++) {
-        this._listeners[i].pushed(this)
+        this._listeners[i].pushed(this, this.head)
     }
     this.pushed.notify(null, true)
     this._follower.shift()
