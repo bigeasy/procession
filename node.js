@@ -8,7 +8,7 @@ function Node (procession, id, value, next) {
 }
 
 Node.prototype.peek = function () {
-    return this.node.next && this.node.next.value
+    return this.next && this.next.value
 }
 
 Node.prototype.consumer = function () {
