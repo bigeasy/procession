@@ -18,3 +18,5 @@ Index.prototype.shifted = function (procession, node) {
 Index.prototype.removed = function () {
     this.tree.clear()
 }
+
+module.exports = Index
