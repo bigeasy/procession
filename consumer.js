@@ -90,7 +90,7 @@ Consumer.prototype.pump = function (next) {
     this._pump(next, abend)
 }
 
-Consumer.prototype.duplicate = function () {
+Consumer.prototype.consumer = function () {
     return new Consumer(this._procession, this.node)
 }
 

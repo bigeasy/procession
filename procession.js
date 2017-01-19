@@ -16,7 +16,7 @@ function Procession (options) {
     this._identifier = new Identifier
     this.pushed = new Vestibule
     this.shifted = new Vestibule
-    this.head = new Node(this, this._identifier.next(), null)
+    this.head = new Node(this, this._identifier.next(), null, null)
     this._property = options.property || 'size'
     this.addListener(new Counter())
     this._follower = this.consumer()
@@ -46,7 +46,7 @@ Procession.prototype.consumer = function () {
 }
 
 Procession.prototype.push = function (value) {
-    this.head = this.head.next = new Node(this, this._identifier.next(), value)
+    this.head = this.head.next = new Node(this, this._identifier.next(), value, null)
     for (var i = 0, I = this._listeners.length; i < I; i++) {
         this._listeners[i].pushed(this, this.head)
     }
@@ -65,6 +65,7 @@ Procession.prototype._shifted = function (node) {
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].shifted(this, node)
         }
+        // node.id = null No! Defer uses this. It is a boundry we must maintain.
         node.value = null
         this.shifted.notify(null, true)
     }
