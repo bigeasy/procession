@@ -4,7 +4,14 @@ function prove (async, assert) {
     var Procession = require('..')
 
     var queue = new Procession()
+    queue.push(1)
+    assert(queue.size, 0, 'zero size')
     var consumer = queue.consumer()
+    queue.push(1)
+    assert(queue.size, 1, 'size of 1')
+    assert(consumer.peek(), 1, 'peek')
+    consumer.shift()
+    assert(queue.size, 0, 'size of 0')
 
     async(function () {
         queue.join(function (value) { return value == 1 }, async())
@@ -12,15 +19,15 @@ function prove (async, assert) {
         queue.push(1)
     }, function (value) {
         assert(value, 1, 'join wait')
-        consumer.shift(async())
+        consumer.dequeue(async())
     }, function (first) {
         async(function () {
-            consumer.shift(async())
+            consumer.dequeue(async())
         }, function (second) {
             assert([ first, second ], [ 2, 1 ], 'shift available')
         })
     }, function () {
-        consumer.shift(async())
+        consumer.dequeue(async())
         queue.push(2)
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
@@ -28,19 +35,39 @@ function prove (async, assert) {
         var object = queue.consumer()
         object.pump({
             push: function (value) {
-                assert(value, 3, 'pump object pumped')
+                assert(value, 3, 'pump object pumped sync')
                 object.destroy()
                 waits.shift()()
             }
         })
         var f = queue.consumer()
-        queue.push(3)
         f.pump(function (value) {
-            assert(value, 3, 'function pumped')
-            object.destroy()
+            assert(value, 3, 'function pumped sync')
+            f.destroy()
             waits.shift()()
         })
+        queue.push(3)
     }, function () {
+        var waits = [ async(), async() ]
+        var object = queue.consumer()
+        object.pump({
+            enqueue: function (value, callback) {
+                assert(value, 3, 'pump object pumped async')
+                object.destroy()
+                waits.shift()()
+                callback()
+            }
+        })
+        var f = queue.consumer()
+        f.pump(function (value, callback) {
+            assert(value, 3, 'function pumped async')
+            f.destroy()
+            waits.shift()()
+            callback()
+        })
+        queue.push(3)
+    }, function () {
+        return [ async.break ]
         var original = queue.consumer()
         var copies = {
             consumer: original.consumer(),

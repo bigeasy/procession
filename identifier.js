@@ -1,8 +1,8 @@
 function Identifier () {
-    this.maximum = 0xfffff0
+    this.maximum = 0xfffffffe
 }
 
-Integer.prototype.next = function () {
+Identifier.prototype.next = function () {
     var integer = this.maximum
     if (integer == 0xffffffff) {
         this.maximum = 0
@@ -12,7 +12,7 @@ Integer.prototype.next = function () {
     return integer
 }
 
-Integer.prototype.compare = function (left, right) {
+Identifier.prototype.compare = function (left, right) {
     var leftMajor = left < this.maximum ? 1 : 0
     var rightMajor = right < this.maximum ? 1 : 0
     var compare = leftMajor - rightMajor

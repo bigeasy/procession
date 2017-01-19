@@ -1,134 +1,78 @@
 var Operation = require('operation')
 var cadence = require('cadence')
 var abend = require('abend')
+var Identifier = require('./identifier')
+var Consumer = require('./consumer')
+var Node = require('./node')
+var Vestibule = require('vestibule')
+var Deferred = require('./deferred')
+var Counter = require('./counter')
 
-function Memento (iterators, head) {
-    this.head = head
-    this._next = iterators._next
-    this._previous = iterators
-    this._next._previous = this
-    this._previous._next = this
+function Procession (options) {
+    options || (options = {})
+    this._listeners = []
+    this._undecorated = []
+    this._consumers = []
+    this._identifier = new Identifier
+    this.pushed = new Vestibule
+    this.shifted = new Vestibule
+    this.head = new Node(this, this._identifier.next(), null)
+    this._property = options.property || 'size'
+    this.addListener(new Counter())
+    this._follower = this.consumer()
+    this.EndOfStream = Procession.EndOfStream
 }
 
-Memento.prototype.shift = function (callback) {
-    if (this.head.next) {
-        this.head = this.head.next
-        return this.head.value
-    }
-    return null
+Procession.EndOfStream = { derp: 1 }
+
+// TODO Add a decorator that will ensure that the listener is only activated for
+// values greater than the least value, the current value of the head. Once the
+// older values are shifted, the decorator is removed.
+Procession.prototype.addListener = function (listener) {
+    listener.added(this)
+    this._undecorated.push(listener)
+    this._listeners.push(new Deferred(this, listener))
 }
 
-Memento.prototype._nudge = function () {
-}
-
-Memento.prototype.destroy = function () {
-    this._previous._next = this._next
-    this._next._previous = this._previous
-}
-
-Memento.prototype.consumer = function () {
-    return new Consumer(this, this.head)
-}
-
-Memento.prototype.memento = function () {
-    return new Memento(this, this.head)
-}
-
-function Consumer (iterators, head) {
-    this.head = head
-    this._next = iterators._next
-    this._previous = iterators
-    this._next._previous = this
-    this._previous._next = this
-}
-
-Consumer.prototype.shift = function (callback) {
-    if (this.head.next) {
-        this.head = this.head.next
-        callback(null, this.head.value)
-    } else {
-        this._callback = callback
-    }
-}
-
-Consumer.prototype.advance = function () {
-    if (this.head.next) {
-        this.head = this.head.next
-        return this.head.value
-    }
-    return null
-}
-
-Consumer.prototype.destroy = function () {
-    this._previous._next = this._next
-    this._next._previous = this._previous
-}
-
-Consumer.prototype.join = cadence(function (async, condition) {
-    var loop = async(function () {
-        this.shift(async())
-    }, function (value) {
-        if (condition(value)) {
-            return [ loop.break, value ]
-        }
-    })()
-})
-
-Consumer.prototype._nudge = function () {
-    if (this._callback != null) {
-        var callback = [ this._callback, this._callback = null ][0]
-        this.head = this.head.next
-        setImmediate(callback, null, this.head.value)
-    }
-}
-
-Consumer.prototype._pump = cadence(function (async, next) {
-    if (typeof next == 'object' && typeof next.push == 'function') {
-        next = { object: next, method: 'push' }
-    }
-    next = new Operation(next)
-    var loop = async(function () {
-        this.shift(async())
-    }, function (message) {
-        next.apply([ message ])
-    })
-})
-
-Consumer.prototype.pump = function (next) {
-    this._pump(next, abend)
-}
-
-Consumer.prototype.consumer = function () {
-    return new Consumer(this, this.head)
-}
-
-Consumer.prototype.memento = function () {
-    return new Memento(this, this.head)
-}
-
-
-function Procession () {
-    this._iterators = {}
-    this._iterators._previous = this._iterators._next = this._iterators
-    this.head = { next: null }
+Procession.prototype.removeListener = function (listener) {
+    var index = this._undecorated.indexOf(this)
+    this._undecorated.splice(index, 1)
+    this._listeners.splice(index, 1)
+    listener.removed(procession)
 }
 
 Procession.prototype.consumer = function () {
-    return new Consumer(this._iterators, this.head)
-}
-
-Procession.prototype.memento = function () {
-    return new Memento(this._iterators, this.head)
+    return new Consumer(this, this.head)
 }
 
 Procession.prototype.push = function (value) {
-    this.head = this.head.next = { value: value, next: null }
-    var iterator = this._iterators
-    while (iterator._next !== this._iterators) {
-        iterator = iterator._next
-        iterator._nudge()
+    this.head = this.head.next = new Node(this, this._identifier.next(), value)
+    for (var i = 0, I = this._listeners.length; i < I; i++) {
+        this._listeners[i].pushed(this)
+    }
+    this.pushed.notify(null, true)
+    this._follower.shift()
+}
+
+Procession.prototype._shifted = function (node) {
+    var lesser = 0
+    for (var i = 0, I = this._consumers.length; i < I; i++) {
+        if (this._identifier.compare(this._consumers[i].node.id, node.id) < 0) {
+            lesser++
+        }
+    }
+    if (lesser == 0) {
+        for (var i = 0, I = this._listeners.length; i < I; i++) {
+            this._listeners[i].shifted(this, node)
+        }
+        node.value = null
+        this.shifted.notify(null, true)
     }
 }
+
+Procession.prototype.enqueue = cadence(function (async, value) {
+    this.push(value)
+})
 
 Procession.prototype.join = cadence(function (async, condition) {
     var consumer = this.consumer()

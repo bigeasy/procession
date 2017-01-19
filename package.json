@@ -22,8 +22,10 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
+                            "bintrees":                     "1.0.1",
                             "cadence":                      "1.0.x",
-                            "operation":                    "1.2.x"
+                            "operation":                    "1.2.x",
+                            "vestibule":                    "1.5.x"
     },
     "devDependencies":
     {
