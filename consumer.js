@@ -9,23 +9,19 @@ var NullProcession = { _shifted: function () {} }
 function Consumer (procession, head) {
     this.node = head
     this._procession = procession
-    this._pushed = procession.pushed
     this._procession._consumers.push(this)
     this.endOfStream = false
 }
 
 Consumer.prototype.dequeue = cadence(function (async) {
-    async(function () {
-        var loop = async(function () {
-            var value = this.shift()
-            if (value != null || this.endOfStream) {
-                return [ loop.break, value ]
-            }
-            this._wait = this._pushed.enter(async())
-        })()
-    }, function (value) {
+    var loop = async(function () {
         this._wait = null
-    })
+        var value = this.shift()
+        if (value != null || this.endOfStream) {
+            return [ loop.break, value ]
+        }
+        this._wait = this._procession.pushed.enter(async())
+    })()
 })
 
 Consumer.prototype.shift = function () {
@@ -40,10 +36,11 @@ Consumer.prototype.shift = function () {
 
 Consumer.prototype.destroy = function () {
     this.endOfStream = true
-    this._procession = NullProcession
     if (this._wait != null) {
-        this._procession.shifted.leave(this._wait)()
+        console.log(this._procession.pushed._waiting[0], this._wait.derp = 1)
+        this._procession.pushed.leave(this._wait)()
     }
+    this._procession = NullProcession
 }
 
 Consumer.prototype.join = cadence(function (async, condition) {
