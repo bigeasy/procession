@@ -37,7 +37,6 @@ Consumer.prototype.shift = function () {
 Consumer.prototype.destroy = function () {
     this.endOfStream = true
     if (this._wait != null) {
-        console.log(this._procession.pushed._waiting[0], this._wait.derp = 1)
         this._procession.pushed.leave(this._wait)()
     }
     this._procession = NullProcession
