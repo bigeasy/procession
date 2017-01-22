@@ -85,4 +85,8 @@ Procession.prototype.join = cadence(function (async, condition) {
     })
 })
 
+Procession.prototype.pump = function (next) {
+    return this.consumer().pump(next)
+}
+
 module.exports = Procession

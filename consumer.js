@@ -67,7 +67,7 @@ Consumer.prototype._pump = cadence(function (async, next) {
         asynchronous = next.length == 2
         break
     }
-    next = new Operation(next)
+    var operation = new Operation(next)
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
@@ -78,12 +78,14 @@ Consumer.prototype._pump = cadence(function (async, next) {
         if (asynchronous) {
             vargs.push(async())
         }
-        next.apply(vargs)
+        operation.apply(vargs)
     })()
+    return next
 })
 
 Consumer.prototype.pump = function (next) {
     this._pump(next, abend)
+    return next
 }
 
 Consumer.prototype.consumer = function () {
