@@ -73,6 +73,7 @@ Procession.prototype._shifted = function (node) {
 
 Procession.prototype.enqueue = cadence(function (async, value) {
     this.push(value)
+    return []
 })
 
 Procession.prototype.join = cadence(function (async, condition) {
