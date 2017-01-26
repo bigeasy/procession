@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>identifier.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="consumer.html">
+                  consumer.js
+                </a>
+
+
+                <a class="source" href="counter.html">
+                  counter.js
+                </a>
+
+
+                <a class="source" href="deferred.html">
+                  deferred.js
+                </a>
+
+
+                <a class="source" href="heft.html">
+                  heft.js
+                </a>
+
+
+                <a class="source" href="identifier.html">
+                  identifier.js
+                </a>
+
+
+                <a class="source" href="index.html">
+                  index.js
+                </a>
+
+
+                <a class="source" href="node.html">
+                  node.js
+                </a>
+
+
+                <a class="source" href="procession.html">
+                  procession.js
+                </a>
+
+
+                <a class="source" href="throttle.html">
+                  throttle.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>identifier.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Identifier</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.maximum = <span class="hljs-number">0xfffffffe</span>
+}
+
+Identifier.prototype.next = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> integer = <span class="hljs-keyword">this</span>.maximum
+    <span class="hljs-keyword">if</span> (integer == <span class="hljs-number">0xffffffff</span>) {
+        <span class="hljs-keyword">this</span>.maximum = <span class="hljs-number">0</span>
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">this</span>.maximum++
+    }
+    <span class="hljs-keyword">return</span> integer
+}
+
+Identifier.prototype.compare = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">left, right</span>) </span>{
+    <span class="hljs-keyword">var</span> leftMajor = left &lt; <span class="hljs-keyword">this</span>.maximum ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
+    <span class="hljs-keyword">var</span> rightMajor = right &lt; <span class="hljs-keyword">this</span>.maximum ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
+    <span class="hljs-keyword">var</span> compare = leftMajor - rightMajor
+    <span class="hljs-keyword">if</span> (compare == <span class="hljs-number">0</span>) {
+        compare = left - righ
+    }
+    <span class="hljs-keyword">return</span> compare
+}
+
+<span class="hljs-built_in">module</span>.exports = Identifier
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
