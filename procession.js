@@ -23,7 +23,7 @@ function Procession (options) {
     this.EndOfStream = Procession.EndOfStream
 }
 
-Procession.EndOfStream = { derp: 1 }
+Procession.EndOfStream = {}
 
 // TODO Add a decorator that will ensure that the listener is only activated for
 // values greater than the least value, the current value of the head. Once the
