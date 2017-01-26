@@ -43,7 +43,7 @@ export CHROME_REFRESH
 PATH  := "$(PATH):$(PWD)/node_modules/.bin"
 SHELL := env PATH=$(PATH) /bin/sh
 
-docco := $(patsubst source/%.js,docco/%.html,$(wildcard source/*.js))
+docco := $(patsubst ../%.js,docco/%.html,$(wildcard ../*.js))
 sources := $(docco) css/style.css index.html
 
 all: $(sources)
@@ -75,9 +75,9 @@ watch: all
 css/%.css: css/%.less node_modules/.bin/lessc
 	node_modules/.bin/lessc $< > $@ || rm -f $@
 
-docco/%.html: source/%.js node_modules/.bin/docco
+docco/%.html: ../%.js node_modules/.bin/docco
 	mkdir -p docco
-	node_modules/.bin/docco -o docco -c docco.css source/*.js
+	node_modules/.bin/docco -o docco -c docco.css ../*.js
 	sed -i '' -e 's/[ \t]*$$//' docco/*.html
 
 index.html: index.md

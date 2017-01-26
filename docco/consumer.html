@@ -25,8 +25,43 @@
                 </a>
 
 
+                <a class="source" href="counter.html">
+                  counter.js
+                </a>
+
+
+                <a class="source" href="deferred.html">
+                  deferred.js
+                </a>
+
+
+                <a class="source" href="heft.html">
+                  heft.js
+                </a>
+
+
+                <a class="source" href="identifier.html">
+                  identifier.js
+                </a>
+
+
+                <a class="source" href="index.html">
+                  index.js
+                </a>
+
+
+                <a class="source" href="node.html">
+                  node.js
+                </a>
+
+
                 <a class="source" href="procession.html">
                   procession.js
+                </a>
+
+
+                <a class="source" href="throttle.html">
+                  throttle.js
                 </a>
 
             </div>
@@ -53,41 +88,102 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+<span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
+<span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
+<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+<span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Consumer</span> (<span class="hljs-params">head</span>) </span>{
-    <span class="hljs-keyword">this</span>._head = head
+<span class="hljs-keyword">var</span> NullProcession = { <span class="hljs-attr">_shifted</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{} }
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Consumer</span> (<span class="hljs-params">procession, head</span>) </span>{
+    <span class="hljs-keyword">this</span>.node = head
+    <span class="hljs-keyword">this</span>._procession = procession
+    <span class="hljs-keyword">this</span>._procession._consumers.push(<span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">false</span>
 }
 
-Consumer.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">callback</span>) </span>{
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._head.next) {
-        <span class="hljs-keyword">this</span>._head = <span class="hljs-keyword">this</span>._head.nex
-        callback(<span class="hljs-literal">null</span>, <span class="hljs-keyword">this</span>._head.value)
-    } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">this</span>._callback = callback
+Consumer.prototype.dequeue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-literal">null</span>
+        <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.shift()
+        <span class="hljs-keyword">if</span> (value != <span class="hljs-literal">null</span> || <span class="hljs-keyword">this</span>.endOfStream) {
+            <span class="hljs-keyword">return</span> [ loop.break, value ]
+        }
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-keyword">this</span>._procession.pushed.enter(<span class="hljs-keyword">async</span>())
+    })()
+})
+
+Consumer.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.endOfStream &amp;&amp; <span class="hljs-keyword">this</span>.node.next) {
+        <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.nex
+        <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.node.value
+        <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node)
+        <span class="hljs-keyword">return</span> value
     }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
 }
 
 Consumer.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>.destroyed = <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._wait != <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">this</span>._procession.pushed.leave(<span class="hljs-keyword">this</span>._wait)()
+    }
+    <span class="hljs-keyword">this</span>._procession = NullProcession
 }
 
 Consumer.prototype.join = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, condition</span>) </span>{
     <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-        <span class="hljs-keyword">this</span>.shift(<span class="hljs-keyword">async</span>())
+        <span class="hljs-keyword">this</span>.dequeue(<span class="hljs-keyword">async</span>())
     }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-        <span class="hljs-keyword">if</span> (condition(value)) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream || condition(value)) {
             <span class="hljs-keyword">return</span> [ loop.break, value ]
         }
     })()
 })
 
-Consumer.prototype._nudge = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._callback != <span class="hljs-literal">null</span>) {
-        <span class="hljs-keyword">var</span> callback = [ <span class="hljs-keyword">this</span>._callback, <span class="hljs-keyword">this</span>._callback = <span class="hljs-literal">null</span> ][<span class="hljs-number">0</span>]
-        <span class="hljs-keyword">this</span>._head = <span class="hljs-keyword">this</span>._head.nex
-        setImmediate(callback, <span class="hljs-literal">null</span>, <span class="hljs-keyword">this</span>._head.value)
+Consumer.prototype._pump = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, next</span>) </span>{
+    <span class="hljs-keyword">var</span> asynchronous = <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">switch</span> (<span class="hljs-keyword">typeof</span> next) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'object'</span>:
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> next.enqueue == <span class="hljs-string">'function'</span>) {
+            asynchronous = <span class="hljs-literal">true</span>
+            next = { <span class="hljs-attr">object</span>: next, <span class="hljs-attr">method</span>: <span class="hljs-string">'enqueue'</span> }
+        } <span class="hljs-keyword">else</span> {
+            next = { <span class="hljs-attr">object</span>: next, <span class="hljs-attr">method</span>: <span class="hljs-string">'push'</span> }
+        }
+        <span class="hljs-keyword">break</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'function'</span>:
+        asynchronous = next.length == <span class="hljs-number">2</span>
+        <span class="hljs-keyword">break</span>
     }
+    <span class="hljs-keyword">var</span> operation = <span class="hljs-keyword">new</span> Operation(next)
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">this</span>.dequeue(<span class="hljs-keyword">async</span>())
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream) {
+            <span class="hljs-keyword">return</span> [ loop.break ]
+        }
+        <span class="hljs-keyword">var</span> vargs = [ value ]
+        <span class="hljs-keyword">if</span> (asynchronous) {
+            vargs.push(<span class="hljs-keyword">async</span>())
+        }
+        operation.apply(vargs)
+    })()
+    <span class="hljs-keyword">return</span> nex
+})
+
+Consumer.prototype.pump = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">next</span>) </span>{
+    <span class="hljs-keyword">this</span>._pump(next, abend)
+    <span class="hljs-keyword">return</span> nex
+}
+
+Consumer.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Consumer(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>.node)
+}
+
+Consumer.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.node.next &amp;&amp; <span class="hljs-keyword">this</span>.node.next.value
 }
 
 <span class="hljs-built_in">module</span>.exports = Consumer
