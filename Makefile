@@ -48,7 +48,6 @@ docco := $(patsubst ../%.js,docco/%.html,$(javascript))
 outputs := $(docco) css/style.css index.html
 
 all: $(outputs)
-	echo $(outputs)
 
 node_modules/.bin/docco:
 	mkdir -p node_modules
