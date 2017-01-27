@@ -90,10 +90,45 @@
 
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Consumer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./consumer'</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, id, value, next</span>) </span>{
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>You’re welcome to iterate the linked list implemented by this node class and
+create new consumers from it. Helpful if you’re treating the queue a log or
+atomic log and holding  on an earlier position in the queue so you can replay
+the log from a certain point. You must use a consumer to hold onto the log,
+but if you where to create a new consumer from that consumer, it would begin
+at the next node of the consumer’s node, not at the point held by the
+consumer. Probably need a diagram.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, type, id, value, next</span>) </span>{
+    <span class="hljs-keyword">this</span>.module = <span class="hljs-string">'procession'</span>
     <span class="hljs-keyword">this</span>._procession = procession
+    <span class="hljs-keyword">this</span>.type = type
     <span class="hljs-keyword">this</span>.id = id
-    <span class="hljs-keyword">this</span>.value = value
+    <span class="hljs-keyword">this</span>.body = body
     <span class="hljs-keyword">this</span>.next = nex
 }
 
@@ -102,6 +137,8 @@ Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">fun
 }
 
 Node.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    assert(node.type == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
+    assert(node.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
     <span class="hljs-keyword">new</span> Consumer(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-keyword">this</span>.head))
 }
 
