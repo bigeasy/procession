@@ -43,10 +43,12 @@ export CHROME_REFRESH
 PATH  := "$(PATH):$(PWD)/node_modules/.bin"
 SHELL := env PATH=$(PATH) /bin/sh
 
-docco := $(patsubst ../%.js,docco/%.html,$(wildcard ../*.js))
-sources := $(docco) css/style.css index.html
+javascript := $(wildcard ../*.js)
+docco := $(patsubst ../%.js,docco/%.html,$(javascript))
+outputs := $(docco) css/style.css index.html
 
-all: $(sources)
+all: $(outputs)
+	echo $(outputs)
 
 node_modules/.bin/docco:
 	mkdir -p node_modules
@@ -66,7 +68,7 @@ node_modules/.bin/edify:
 	npm install less edify edify.pug edify.markdown edify.highlight edify.include
 
 watch: all
-	fswatch --exclude '.' --include '\.pug$$' --include '\.less$$' --include '\.md$$' --include '\.js$$' pages css source *.md | while read line; \
+	fswatch --exclude '.' --include '\.pug$$' --include '\.less$$' --include '\.md$$' --include '\.js$$' pages css $(javascript) *.md | while read line; \
 	do \
 		make --no-print-directory all; \
 		osascript -e "$$CHROME_REFRESH"; \
@@ -90,7 +92,7 @@ index.html: index.md
 	    node node_modules/.bin/edify highlight --select '.lang-javascript' --language 'javascript') < $< > $@
 
 clean:
-	rm -f $(sources)
+	rm -f $(outputs)
 
 serve: node_modules/.bin/serve
 	node_modules/.bin/serve -p 4000
