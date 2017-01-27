@@ -69,7 +69,7 @@ Procession.prototype.removeListener = function (listener) {
     var index = this._undecorated.indexOf(this)
     this._undecorated.splice(index, 1)
     this._listeners.splice(index, 1)
-    listener.removed(procession)
+    listener.removed(this)
 }
 
 // Create a new consumer to consumer enqueued entries. Begins with entries added
