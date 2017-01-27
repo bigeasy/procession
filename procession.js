@@ -1,29 +1,41 @@
-var Operation = require('operation')
+var assert = require('assert')
+
 var cadence = require('cadence')
 var abend = require('abend')
+
+var Operation = require('operation')
+
+var Vestibule = require('vestibule')
+
 var Identifier = require('./identifier')
 var Consumer = require('./consumer')
 var Node = require('./node')
-var Vestibule = require('vestibule')
 var Deferred = require('./deferred')
 var Counter = require('./counter')
 
+// Public Procession constructor.
 function Procession (options) {
     options || (options = {})
+
     this._listeners = []
     this._undecorated = []
     this._consumers = []
+
     this._identifier = new Identifier
+    this.head = new Node(this, this._identifier.next(), null, null)
+
     this.pushed = new Vestibule
     this.shifted = new Vestibule
-    this.head = new Node(this, this._identifier.next(), null, null)
-    this._property = options.property || 'size'
+
     this.addListener(new Counter())
+
     this._follower = this.consumer()
-    this.EndOfStream = Procession.EndOfStream
+
+    assert(this.EndOfStream === Procession.EndOfStream, 'incorrect end of stream')
 }
 
-Procession.EndOfStream = {}
+// Unique marker for EndOfStream.
+Procession.prototype.EndOfStream = Procession.EndOfStream = {}
 
 // TODO Add a decorator that will ensure that the listener is only activated for
 // values greater than the least value, the current value of the head. Once the
