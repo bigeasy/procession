@@ -13,6 +13,10 @@ var Node = require('./node')
 var Deferred = require('./deferred')
 var Counter = require('./counter')
 
+var Destructor = require('nascent.destructor')
+
+var interrupt = require('interrupt').createInterrupter('procession')
+
 // Public Procession constructor.
 function Procession (options) {
     options || (options = {})
@@ -22,7 +26,15 @@ function Procession (options) {
     this._consumers = []
 
     this._identifier = new Identifier
-    this.head = new Node(this, this._identifier.next(), null, null)
+
+    this.head = {
+        module: 'procession',
+        _procession: this,
+        endOfStream: false,
+        id: this._identifier.next(),
+        body: null,
+        next: null
+    }
 
     this.pushed = new Vestibule
     this.shifted = new Vestibule
@@ -30,22 +42,28 @@ function Procession (options) {
     this.addListener(new Counter())
 
     this._follower = this.consumer()
-
-    assert(this.EndOfStream === Procession.EndOfStream, 'incorrect end of stream')
 }
 
-// Unique marker for EndOfStream.
-Procession.prototype.EndOfStream = Procession.EndOfStream = {}
+// Add a listener that can track values as they are enqueued and dequeued. The
+// listener's push and shift methods  will only be invoked for values enqueued
+// after it is added to to the procession.
+// <hr>
 
-// TODO Add a decorator that will ensure that the listener is only activated for
-// values greater than the least value, the current value of the head. Once the
-// older values are shifted, the decorator is removed.
+//
+
+// We decorate the listener with a deferred decorator. We keep a parallel arrays
+// of undecorated listeners do we can find its array index if we're asked to
+// remove it before it undecorates itself.
 Procession.prototype.addListener = function (listener) {
     listener.added(this)
     this._undecorated.push(listener)
     this._listeners.push(new Deferred(this, listener))
 }
 
+// Remove a listener.
+// <hr>
+
+//
 Procession.prototype.removeListener = function (listener) {
     var index = this._undecorated.indexOf(this)
     this._undecorated.splice(index, 1)
@@ -53,20 +71,73 @@ Procession.prototype.removeListener = function (listener) {
     listener.removed(procession)
 }
 
+// Create a new consumer to consumer enqueued entries. Begins with entries added
+// after the creation of the cosumer.
+// <hr>
+
+//
 Procession.prototype.consumer = function () {
     return new Consumer(this, this.head)
 }
 
+// Interface development. Currently, you push en entry, an error or a `null` to
+// indicate end of stream. Simpifies enqueuing. Simplifies pipes because they
+// can get a switch statement and can tell the difference between an error and
+// `null`.
+
+// Push a value
+//
+// The values that are shifted are not the values that are pushed. See below.
+
+// The shifted value is going to be encased in an object that can be used to
+// create a swtich statement. non
+
+//
 Procession.prototype.push = function (value) {
-    this.head = this.head.next = new Node(this, this._identifier.next(), value, null)
-    for (var i = 0, I = this._listeners.length; i < I; i++) {
-        this._listeners[i].pushed(this, this.head)
+    // You can only push an end of stream `null` after end of stream.
+    var id = null
+    if (this.endOfStream) {
+        if (value == null) {
+            return
+        }
+        throw interrupt({ name: 'closed' })
     }
+    if (value instanceof Error) {
+        // If this is an error, we can go ahead add the end of stream `null` to
+        // ensure that this closes correctly. Simplifies interface on error, the
+        // user doens't have to remember to send null themselves. They're not
+        // able to send values after error.
+        this._consumers.forEach(function (consumer) {
+            consumer._purge()
+        }, this)
+        this.head = this.head.next = new Node(this, 'error', id, value, null)
+        value = null
+    }
+    if (value == null) {
+        // If null, we are at th end of stream.
+        this.head = this.head.next = new Node(this, 'end', id, null, null)
+        this.endOfStream = true
+    } else {
+        // Otherwise, add the entry and notify listeners.
+        id = this._identifier.next()
+        this.head = this.head.next = new Node(this, 'entry', id, value, null)
+        for (var i = 0, I = this._listeners.length; i < I; i++) {
+            this._listeners[i].pushed(this, this.head)
+        }
+    }
+    // Notify any waiting consumers, or anyone else waiting on a push.
     this.pushed.notify(null, true)
+    // Shift our dummy consumer to trigger cleanup if no one else is listening.
     this._follower.shift()
 }
 
+// Called by Consumers as they advance.
+
+//
 Procession.prototype._shifted = function (node) {
+    if (node.type != 'entry') {
+        return
+    }
     var lesser = 0
     for (var i = 0, I = this._consumers.length; i < I; i++) {
         if (this._identifier.compare(this._consumers[i].node.id, node.id) < 0) {
@@ -77,7 +148,8 @@ Procession.prototype._shifted = function (node) {
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].shifted(this, node)
         }
-        // node.id = null No! Defer uses this. It is a boundry we must maintain.
+        // We null `body`, but do not get the bright idea to null `id`. It is
+        // our deferred listener boundary.
         node.value = null
         this.shifted.notify(null, true)
     }

@@ -19,7 +19,6 @@ function prove (async, assert) {
         queue.push(1)
     }, function (value) {
         assert(value, 1, 'join wait')
-        console.log('here', queue.size)
         consumer.dequeue(async())
     }, function (first) {
         async(function () {

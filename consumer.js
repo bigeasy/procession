@@ -2,9 +2,7 @@ var abend = require('abend')
 var Operation = require('operation')
 var assert = require('assert')
 var cadence = require('cadence')
-var Vestibule = require('vestibule')
-
-var NullProcession = { _shifted: function () {} }
+var Node = require('./node')
 
 function Consumer (procession, head) {
     this.node = head
@@ -24,63 +22,91 @@ Consumer.prototype.dequeue = cadence(function (async) {
     })()
 })
 
+Consumer.prototype._purge = function () {
+    while (this.node.next) {
+        this._procession._shifted(this.node = this.node.next)
+    }
+}
+
 Consumer.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
         this.node = this.node.next
-        var value = this.node.value
+        this.endOfStream = this.node.type == 'endOfStream'
+        var body = this.node.body
         this._procession._shifted(this.node)
-        return value
+        return body
     }
     return null
 }
 
-Consumer.prototype.destroy = function () {
+Consumer.prototype.destroy = function (value) {
+    this._purge()
+    this._pumper = new Pumper(function () {})
     this.endOfStream = true
+    this.node = new Node(this._procession, 'endOfStream', null, null, null)
     if (this._wait != null) {
         this._procession.pushed.leave(this._wait)()
     }
-    this._procession = NullProcession
+    this._procession._consumers.splice(this._procession._consumers.indexOf(this), 1)
 }
 
 Consumer.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
-        if (this.endOfStream || condition(value)) {
+        if (value instanceof Error) {
+            throw error
+        }
+        if (value == null) {
+            throw interrupt({ name: 'endOfStream' })
+        }
+        if (condition(value)) {
             return [ loop.break, value ]
         }
     })()
 })
 
-Consumer.prototype._pump = cadence(function (async, next) {
+function Pumper (operation) {
     var asynchronous = false
-    switch (typeof next) {
+    switch (typeof operation) {
     case 'object':
-        if (typeof next.enqueue == 'function') {
+        if (typeof operation.enqueue == 'function') {
             asynchronous = true
-            next = { object: next, method: 'enqueue' }
+            operation = { object: operation, method: 'enqueue' }
         } else {
-            next = { object: next, method: 'push' }
+            operation = { object: operation, method: 'push' }
         }
         break
     case 'function':
-        asynchronous = next.length == 2
+        asynchronous = operation.length == 2
         break
     }
-    var operation = new Operation(next)
-    var loop = async(function () {
-        this.dequeue(async())
-    }, function (value) {
-        if (this.endOfStream) {
-            return [ loop.break ]
-        }
-        var vargs = [ value ]
-        if (asynchronous) {
+    this._asynchronous = asynchronous
+    this._operation = new Operation(operation)
+}
+
+Pumper.prototype.enqueue = cadence(function (async, body) {
+    async(function () {
+        var vargs = [ body ]
+        if (this._asynchronous) {
             vargs.push(async())
         }
-        operation.apply(vargs)
-    })()
-    return next
+        this._operation.apply(vargs)
+    }, function () {
+        return [ body ]
+    })
+})
+
+Consumer.prototype._pump = cadence(function (async, next) {
+    this._pumper = new Pumper(next)
+    var loop = async(function (body) {
+        if (body == null) {
+            return [ loop.break ]
+        }
+        this.dequeue(async())
+    }, function (body) {
+        this._pumper.enqueue(body, async())
+    })({})
 })
 
 Consumer.prototype.pump = function (next) {
@@ -93,7 +119,7 @@ Consumer.prototype.consumer = function () {
 }
 
 Consumer.prototype.peek = function () {
-    return this.node.next && this.node.next.value
+    return this.node.next && this.node.next.body
 }
 
 module.exports = Consumer
