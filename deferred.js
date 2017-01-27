@@ -4,9 +4,6 @@ function Deferred (procession, decorated) {
     this._after = procession.head.id
 }
 
-Deferred.prototype.added = function () {
-}
-
 Deferred.prototype.pushed = function (procession, node) {
     this._decorated.pushed(procession, node)
 }
