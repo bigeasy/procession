@@ -1,12 +1,27 @@
+// The node for the underlying linked list. You, dear user, are welcome to
+// iterate the linked list implemented by this node class and create new
+// shifters from it.
+//
+// This is useful when you're treating the queue as a log and holding on a
+// shifter at an earlier position in the queue so you can replay the log from a
+// certain checkpoint. Thus, when you want to replay the log, you can start from
+// your checkpoint shifter, grab its node and iterate forward to just before the
+// node to begin replaying and create a new shifter.
+// <hr>
+
+// Requirements.
+// <hr>
+
+//
+var assert = require('assert')
 var Consumer = require('./consumer')
 
-// You're welcome to iterate the linked list implemented by this node class and
-// create new consumers from it. Helpful if you're treating the queue a log or
-// atomic log and holding  on an earlier position in the queue so you can replay
-// the log from a certain point. You must use a consumer to hold onto the log,
-// but if you where to create a new consumer from that consumer, it would begin
-// at the next node of the consumer's node, not at the point held by the
-// consumer. Probably need a diagram.
+// Construct a node for the given Procession.
+//
+// The `module` property is a convention I follow for creating objects that
+// envelop other objects. We're using the word `body` instead of `value` for the
+// node value becasue I consider this an envelope.
+// <hr>
 
 //
 function Node (procession, type, id, body, next) {
@@ -14,18 +29,27 @@ function Node (procession, type, id, body, next) {
     this._procession = procession
     this.type = type
     this.id = id
-    this.body = body
     this.next = next
+    this.body = body
 }
 
+// Peek at the value of the next node if there is a next node.
+// <hr>
+
+//
 Node.prototype.peek = function () {
-    return this.next && this.next.value
+    return this.next && this.next.body
 }
 
+// Create a new shifter whose next shifted value is the value of the next node.
+// <hr>
+
+//
 Node.prototype.consumer = function () {
-    assert(node.type == 'entry', 'not an entry node')
-    assert(node.body != null, 'node expired')
-    new Consumer(this._procession, new Node(this._procession, null, null, this.head))
+    assert(this.type == 'entry', 'not an entry node')
+    assert(this.body != null, 'node expired')
+    return new this._procession._Consumer(this._procession, this)
 }
 
+// Export as constructor function.
 module.exports = Node

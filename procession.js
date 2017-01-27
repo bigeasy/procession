@@ -27,14 +27,7 @@ function Procession (options) {
 
     this._identifier = new Identifier
 
-    this.head = {
-        module: 'procession',
-        _procession: this,
-        endOfStream: false,
-        id: this._identifier.next(),
-        body: null,
-        next: null
-    }
+    this.head = new Node(this, 'reference', null, null, null)
 
     this.pushed = new Vestibule
     this.shifted = new Vestibule
@@ -43,6 +36,14 @@ function Procession (options) {
 
     this._follower = this.consumer()
 }
+
+// Node and Consumer modules reference each other so we provide this Consumer
+// constructor to the Node class since it won't be able to git it using
+// `require`.
+// <hr>
+
+//
+Procession.prototype._Consumer = Consumer
 
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued
