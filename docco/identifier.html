@@ -85,26 +85,110 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>An sequential identifier that will wrap around when it reaches the maximum
+32-bit value that can be ordered relative to other identifiers within any
+window of the 32-bit value.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Contruct the identifier just before the wrapping so that we’re always
+exercising it.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
 
             </div>
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Identifier</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>.maximum = <span class="hljs-number">0xfffffffe</span>
+    <span class="hljs-keyword">this</span>.boundary = <span class="hljs-number">0xfffffffe</span>
 }
 
-Identifier.prototype.next = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">var</span> integer = <span class="hljs-keyword">this</span>.maximum
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Get the next integer value in the series.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Identifier.prototype.next = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> integer = <span class="hljs-keyword">this</span>.boundary
     <span class="hljs-keyword">if</span> (integer == <span class="hljs-number">0xffffffff</span>) {
-        <span class="hljs-keyword">this</span>.maximum = <span class="hljs-number">0</span>
+        <span class="hljs-keyword">this</span>.boundary = <span class="hljs-number">0</span>
     } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">this</span>.maximum++
+        <span class="hljs-keyword">this</span>.boundary++
     }
     <span class="hljs-keyword">return</span> integer
 }
 
-Identifier.prototype.compare = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">left, right</span>) </span>{
-    <span class="hljs-keyword">var</span> leftMajor = left &lt; <span class="hljs-keyword">this</span>.maximum ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
-    <span class="hljs-keyword">var</span> rightMajor = right &lt; <span class="hljs-keyword">this</span>.maximum ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Compare any two integers in the series. This assumes that values are being
+discarded before they are reissued.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Identifier.prototype.compare = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">left, right</span>) </span>{
+    <span class="hljs-keyword">var</span> leftMajor = left &lt; <span class="hljs-keyword">this</span>.boundary ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
+    <span class="hljs-keyword">var</span> rightMajor = right &lt; <span class="hljs-keyword">this</span>.boundary ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
     <span class="hljs-keyword">var</span> compare = leftMajor - rightMajor
     <span class="hljs-keyword">if</span> (compare == <span class="hljs-number">0</span>) {
         compare = left - righ
@@ -112,7 +196,22 @@ Identifier.prototype.compare = <span class="hljs-function"><span class="hljs-key
     <span class="hljs-keyword">return</span> compare
 }
 
-<span class="hljs-built_in">module</span>.exports = Identifier
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-8">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Export as object constructor.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Identifier
 
 </pre></div></div>
 

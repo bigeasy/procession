@@ -88,32 +88,20 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
+
 <span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
 <span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+
+<span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
+
+<span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
+
 <span class="hljs-keyword">var</span> Identifier = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./identifier'</span>)
 <span class="hljs-keyword">var</span> Consumer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./consumer'</span>)
 <span class="hljs-keyword">var</span> Node = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./node'</span>)
-<span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
 <span class="hljs-keyword">var</span> Deferred = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./deferred'</span>)
 <span class="hljs-keyword">var</span> Counter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./counter'</span>)
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Procession</span> (<span class="hljs-params">options</span>) </span>{
-    options || (options = {})
-    <span class="hljs-keyword">this</span>._listeners = []
-    <span class="hljs-keyword">this</span>._undecorated = []
-    <span class="hljs-keyword">this</span>._consumers = []
-    <span class="hljs-keyword">this</span>._identifier = <span class="hljs-keyword">new</span> Identifier
-    <span class="hljs-keyword">this</span>.pushed = <span class="hljs-keyword">new</span> Vestibule
-    <span class="hljs-keyword">this</span>.shifted = <span class="hljs-keyword">new</span> Vestibule
-    <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>._identifier.next(), <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">this</span>._property = options.property || <span class="hljs-string">'size'</span>
-    <span class="hljs-keyword">this</span>.addListener(<span class="hljs-keyword">new</span> Counter())
-    <span class="hljs-keyword">this</span>._follower = <span class="hljs-keyword">this</span>.consumer()
-    <span class="hljs-keyword">this</span>.EndOfStream = Procession.EndOfStream
-}
-
-Procession.EndOfStream = {}
 
 </pre></div></div>
 
@@ -125,6 +113,58 @@ Procession.EndOfStream = {}
 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Public Procession constructor.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Procession</span> (<span class="hljs-params">options</span>) </span>{
+    options || (options = {})
+
+    <span class="hljs-keyword">this</span>._listeners = []
+    <span class="hljs-keyword">this</span>._undecorated = []
+    <span class="hljs-keyword">this</span>._consumers = []
+
+    <span class="hljs-keyword">this</span>._identifier = <span class="hljs-keyword">new</span> Identifier
+    <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>._identifier.next(), <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
+
+    <span class="hljs-keyword">this</span>.pushed = <span class="hljs-keyword">new</span> Vestibule
+    <span class="hljs-keyword">this</span>.shifted = <span class="hljs-keyword">new</span> Vestibule
+
+    <span class="hljs-keyword">this</span>.addListener(<span class="hljs-keyword">new</span> Counter())
+
+    <span class="hljs-keyword">this</span>._follower = <span class="hljs-keyword">this</span>.consumer()
+
+    assert(<span class="hljs-keyword">this</span>.EndOfStream === Procession.EndOfStream, <span class="hljs-string">'incorrect end of stream'</span>)
+}
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Unique marker for EndOfStream.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Procession.prototype.EndOfStream = Procession.EndOfStream = {}
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>TODO Add a decorator that will ensure that the listener is only activated for
 values greater than the least value, the current value of the head. Once the
@@ -174,11 +214,11 @@ Procession.prototype._shifted = <span class="hljs-function"><span class="hljs-ke
         </li>
 
 
-        <li id="section-3">
+        <li id="section-5">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>node.id = null No! Defer uses this. It is a boundry we must maintain.</p>
 
