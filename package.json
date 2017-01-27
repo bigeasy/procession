@@ -24,6 +24,7 @@
                             "abend":                        "1.0.x",
                             "bintrees":                     "1.0.1",
                             "cadence":                      "1.0.x",
+                            "interrupt":                    "2.2.x",
                             "operation":                    "1.2.x",
                             "nascent.destructor":           "0.0.3",
                             "vestibule":                    "1.6.0-alpha.0"
