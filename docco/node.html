@@ -20,11 +20,6 @@
             <div id="jump_page">
 
 
-                <a class="source" href="consumer.html">
-                  consumer.js
-                </a>
-
-
                 <a class="source" href="counter.html">
                   counter.js
                 </a>
@@ -57,6 +52,11 @@
 
                 <a class="source" href="procession.html">
                   procession.js
+                </a>
+
+
+                <a class="source" href="shifter.html">
+                  shifter.js
                 </a>
 
 
@@ -124,7 +124,7 @@ node to begin replaying and create a new shifter.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
-<span class="hljs-keyword">var</span> Consumer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./consumer'</span>)
+<span class="hljs-keyword">var</span> Shifter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./shifter'</span>)
 
 </pre></div></div>
 
@@ -226,10 +226,10 @@ node value becasue I consider this an envelope.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>Node.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+            <div class="content"><div class='highlight'><pre>Node.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     assert(<span class="hljs-keyword">this</span>.type == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
     assert(<span class="hljs-keyword">this</span>.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Consumer(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Shifter(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
 }
 
 </pre></div></div>
