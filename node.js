@@ -14,7 +14,7 @@
 
 //
 var assert = require('assert')
-var Consumer = require('./consumer')
+var Shifter = require('./shifter')
 
 // Construct a node for the given Procession.
 //
@@ -45,10 +45,10 @@ Node.prototype.peek = function () {
 // <hr>
 
 //
-Node.prototype.consumer = function () {
+Node.prototype.shifter = function () {
     assert(this.type == 'entry', 'not an entry node')
     assert(this.body != null, 'node expired')
-    return new this._procession._Consumer(this._procession, this)
+    return new this._procession._Shifter(this._procession, this)
 }
 
 // Export as constructor function.

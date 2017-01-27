@@ -6,11 +6,11 @@ function prove (async, assert) {
     var queue = new Procession()
     queue.push(1)
     assert(queue.size, 0, 'zero size')
-    var consumer = queue.consumer()
+    var shifter = queue.shifter()
     queue.push(1)
     assert(queue.size, 1, 'size of 1')
-    assert(consumer.peek(), 1, 'peek')
-    consumer.shift()
+    assert(shifter.peek(), 1, 'peek')
+    shifter.shift()
     assert(queue.size, 0, 'size of 0')
 
     async(function () {
@@ -19,20 +19,20 @@ function prove (async, assert) {
         queue.push(1)
     }, function (value) {
         assert(value, 1, 'join wait')
-        consumer.dequeue(async())
+        shifter.dequeue(async())
     }, function (first) {
         async(function () {
-            consumer.dequeue(async())
+            shifter.dequeue(async())
         }, function (second) {
             assert([ first, second ], [ 2, 1 ], 'shift available')
         })
     }, function () {
-        consumer.dequeue(async())
+        shifter.dequeue(async())
         queue.push(2)
     }, function (value) {
         assert(value, 2, 'wait shift and tidy')
         var waits = [ async(), async() ]
-        var object = queue.consumer()
+        var object = queue.shifter()
         object.pump({
             push: function (value) {
                 assert(value, 3, 'pump object pumped sync')
@@ -40,7 +40,7 @@ function prove (async, assert) {
                 waits.shift()()
             }
         })
-        var f = queue.consumer()
+        var f = queue.shifter()
         f.pump(function (value) {
             assert(value, 3, 'function pumped sync')
             f.destroy()
@@ -49,7 +49,7 @@ function prove (async, assert) {
         queue.push(3)
     }, function () {
         var waits = [ async(), async() ]
-        var object = queue.consumer()
+        var object = queue.shifter()
         object.pump({
             enqueue: function (value, callback) {
                 assert(value, 3, 'pump object pumped async')
@@ -58,7 +58,7 @@ function prove (async, assert) {
                 callback()
             }
         })
-        var f = queue.consumer()
+        var f = queue.shifter()
         f.pump(function (value, callback) {
             assert(value, 3, 'function pumped async')
             f.destroy()
@@ -68,35 +68,35 @@ function prove (async, assert) {
         queue.push(3)
     }, function () {
         return [ async.break ]
-        var original = queue.consumer()
+        var original = queue.shifter()
         var copies = {
-            consumer: original.consumer(),
+            shifter: original.shifter(),
             memento: original.memento()
         }
         async(function () {
             queue.push(4)
-            copies.consumer.shift(async())
+            copies.shifter.shift(async())
             assert(copies.memento.shift(), 4, 'async sync copy shift')
         }, function (value) {
             assert(copies.memento.shift(), null, 'async sync copy shift empty')
             assert(value, 4, 'async async copy shift')
-            copies.consumer.destroy()
+            copies.shifter.destroy()
             copies.memento.destroy()
         })
     }, function () {
-        var original = queue.consumer()
+        var original = queue.shifter()
         var copies = {
-            consumer: original.consumer(),
+            shifter: original.shifter(),
             memento: original.memento()
         }
         async(function () {
             queue.push(4)
-            copies.consumer.shift(async())
+            copies.shifter.shift(async())
             assert(copies.memento.shift(), 4, 'sync sync copy shift')
         }, function (value) {
             assert(copies.memento.shift(), null, 'sync sync copy shift empty')
             assert(value, 4, 'sync async copy shift')
-            copies.consumer.destroy()
+            copies.shifter.destroy()
             copies.memento.destroy()
         })
     })

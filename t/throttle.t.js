@@ -5,8 +5,8 @@ function prove (async, assert) {
     var Throttle = require('../throttle')
     var first = new Procession
     var second = new Procession
-    var drain = second.consumer()
-    first.consumer().pump(new Throttle(second, 6))
+    var shifter = second.shifter()
+    first.shifter().pump(new Throttle(second, 6))
     async(function () {
         var count = 0, loop = async(function () {
             if (count == 12) {

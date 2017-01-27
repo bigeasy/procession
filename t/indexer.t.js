@@ -9,12 +9,12 @@ function prove (assert) {
         return left.body - right.body
     })
     queue.addListener(indexer)
-    var follower = queue.consumer()
+    var shifter = queue.shifter()
     queue.push(1)
     queue.push(2)
     var node = indexer.tree.find({ body: 1 })
     assert(node.body, 1, 'found')
-    assert(follower.shift(), 1, 'shifted')
+    assert(shifter.shift(), 1, 'shifted')
 
     queue.removeListener(indexer)
 }

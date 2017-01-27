@@ -3,7 +3,7 @@ require('proof/redux')(1, prove)
 function prove (assert) {
     var Procession = require('..')
     var queue = new Procession()
-    var shifter = queue.consumer()
+    var shifter = queue.shifter()
     queue.push(1)
     queue.push(2)
     queue.push(3)
@@ -11,6 +11,6 @@ function prove (assert) {
     while (node.peek() != 2) {
         node = node.next
     }
-    var clone = node.consumer()
+    var clone = node.shifter()
     assert(clone.shift(), 2, 'duplicated')
 }

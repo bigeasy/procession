@@ -8,7 +8,7 @@ var Operation = require('operation')
 var Vestibule = require('vestibule')
 
 var Identifier = require('./identifier')
-var Consumer = require('./consumer')
+var Shifter = require('./shifter')
 var Node = require('./node')
 var Deferred = require('./deferred')
 var Counter = require('./counter')
@@ -34,16 +34,16 @@ function Procession (options) {
 
     this.addListener(new Counter())
 
-    this._follower = this.consumer()
+    this._follower = this.shifter()
 }
 
-// Node and Consumer modules reference each other so we provide this Consumer
+// Node and Shifter modules reference each other so we provide this Shifter
 // constructor to the Node class since it won't be able to git it using
 // `require`.
 // <hr>
 
 //
-Procession.prototype._Consumer = Consumer
+Procession.prototype._Shifter = Shifter
 
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued
@@ -72,13 +72,13 @@ Procession.prototype.removeListener = function (listener) {
     listener.removed(this)
 }
 
-// Create a new consumer to consumer enqueued entries. Begins with entries added
+// Create a new shifter to consume enqueued entries. Begins with entries added
 // after the creation of the cosumer.
 // <hr>
 
 //
-Procession.prototype.consumer = function () {
-    return new Consumer(this, this.head)
+Procession.prototype.shifter = function () {
+    return new Shifter(this, this.head)
 }
 
 // Interface development. Currently, you push en entry, an error or a `null` to
@@ -108,8 +108,8 @@ Procession.prototype.push = function (value) {
         // ensure that this closes correctly. Simplifies interface on error, the
         // user doens't have to remember to send null themselves. They're not
         // able to send values after error.
-        this._consumers.forEach(function (consumer) {
-            consumer._purge()
+        this._consumers.forEach(function (shifter) {
+            shifter._purge()
         }, this)
         this.head = this.head.next = new Node(this, 'error', id, value, null)
         value = null
@@ -128,7 +128,7 @@ Procession.prototype.push = function (value) {
     }
     // Notify any waiting consumers, or anyone else waiting on a push.
     this.pushed.notify(null, true)
-    // Shift our dummy consumer to trigger cleanup if no one else is listening.
+    // Shift our dummy shifter to trigger cleanup if no one else is listening.
     this._follower.shift()
 }
 
@@ -162,17 +162,17 @@ Procession.prototype.enqueue = cadence(function (async, value) {
 })
 
 Procession.prototype.join = cadence(function (async, condition) {
-    var consumer = this.consumer()
+    var shifter = this.shifter()
     async(function () {
-        consumer.join(condition, async())
+        shifter.join(condition, async())
     }, function (value) {
-        consumer.destroy()
+        shifter.destroy()
         return [ value ]
     })
 })
 
 Procession.prototype.pump = function (next) {
-    return this.consumer().pump(next)
+    return this.shifter().pump(next)
 }
 
 module.exports = Procession

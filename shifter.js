@@ -4,14 +4,14 @@ var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
 
-function Consumer (procession, head) {
+function Shifter (procession, head) {
     this.node = head
     this._procession = procession
     this._procession._consumers.push(this)
     this.endOfStream = false
 }
 
-Consumer.prototype.dequeue = cadence(function (async) {
+Shifter.prototype.dequeue = cadence(function (async) {
     var loop = async(function () {
         this._wait = null
         var value = this.shift()
@@ -22,13 +22,13 @@ Consumer.prototype.dequeue = cadence(function (async) {
     })()
 })
 
-Consumer.prototype._purge = function () {
+Shifter.prototype._purge = function () {
     while (this.node.next) {
         this._procession._shifted(this.node = this.node.next)
     }
 }
 
-Consumer.prototype.shift = function () {
+Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
         this.node = this.node.next
         this.endOfStream = this.node.type == 'endOfStream'
@@ -39,7 +39,7 @@ Consumer.prototype.shift = function () {
     return null
 }
 
-Consumer.prototype.destroy = function (value) {
+Shifter.prototype.destroy = function (value) {
     this._purge()
     this._pumper = new Pumper(function () {})
     this.endOfStream = true
@@ -50,7 +50,7 @@ Consumer.prototype.destroy = function (value) {
     this._procession._consumers.splice(this._procession._consumers.indexOf(this), 1)
 }
 
-Consumer.prototype.join = cadence(function (async, condition) {
+Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
@@ -97,7 +97,7 @@ Pumper.prototype.enqueue = cadence(function (async, body) {
     })
 })
 
-Consumer.prototype._pump = cadence(function (async, next) {
+Shifter.prototype._pump = cadence(function (async, next) {
     this._pumper = new Pumper(next)
     var loop = async(function (body) {
         if (body == null) {
@@ -109,17 +109,17 @@ Consumer.prototype._pump = cadence(function (async, next) {
     })({})
 })
 
-Consumer.prototype.pump = function (next) {
+Shifter.prototype.pump = function (next) {
     this._pump(next, abend)
     return next
 }
 
-Consumer.prototype.consumer = function () {
-    return new Consumer(this._procession, this.node)
+Shifter.prototype.consumer = function () {
+    return new Shifter(this._procession, this.node)
 }
 
-Consumer.prototype.peek = function () {
+Shifter.prototype.peek = function () {
     return this.node.next && this.node.next.body
 }
 
-module.exports = Consumer
+module.exports = Shifter
