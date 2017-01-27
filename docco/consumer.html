@@ -92,6 +92,7 @@
 <span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
 <span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
 <span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+<span class="hljs-keyword">var</span> Node = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./node'</span>)
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Consumer</span> (<span class="hljs-params">procession, head</span>) </span>{
     <span class="hljs-keyword">this</span>.node = head
@@ -111,8 +112,8 @@ Consumer.prototype.dequeue = cadence(<span class="hljs-function"><span class="hl
     })()
 })
 
-Consumer.prototype._purge = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">id</span>) </span>{
-    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">this</span>.node.next.id != id) {
+Consumer.prototype._purge = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">this</span>.node.next) {
         <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.next)
     }
 }
@@ -120,7 +121,7 @@ Consumer.prototype._purge = <span class="hljs-function"><span class="hljs-keywor
 Consumer.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.endOfStream &amp;&amp; <span class="hljs-keyword">this</span>.node.next) {
         <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.nex
-        <span class="hljs-keyword">this</span>.endOfStream = node.type == <span class="hljs-string">'endOfStream'</span>
+        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-keyword">this</span>.node.type == <span class="hljs-string">'endOfStream'</span>
         <span class="hljs-keyword">var</span> body = <span class="hljs-keyword">this</span>.node.body
         <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node)
         <span class="hljs-keyword">return</span> body
@@ -128,14 +129,15 @@ Consumer.prototype.shift = <span class="hljs-function"><span class="hljs-keyword
     <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
 }
 
-Consumer.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+Consumer.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
     <span class="hljs-keyword">this</span>._purge()
-    <span class="hljs-keyword">var</span> terminator = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-string">'endOfStream'</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-string">'dummy'</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, terminator)
+    <span class="hljs-keyword">this</span>._pumper = <span class="hljs-keyword">new</span> Pumper(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{})
+    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-string">'endOfStream'</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._wait != <span class="hljs-literal">null</span>) {
         <span class="hljs-keyword">this</span>._procession.pushed.leave(<span class="hljs-keyword">this</span>._wait)()
     }
+    <span class="hljs-keyword">this</span>._procession._consumers.splice(<span class="hljs-keyword">this</span>._procession._consumers.indexOf(<span class="hljs-keyword">this</span>), <span class="hljs-number">1</span>)
 }
 
 Consumer.prototype.join = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, condition</span>) </span>{
@@ -154,37 +156,47 @@ Consumer.prototype.join = cadence(<span class="hljs-function"><span class="hljs-
     })()
 })
 
-Consumer.prototype._pump = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, next</span>) </span>{
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Pumper</span> (<span class="hljs-params">operation</span>) </span>{
     <span class="hljs-keyword">var</span> asynchronous = <span class="hljs-literal">false</span>
-    <span class="hljs-keyword">switch</span> (<span class="hljs-keyword">typeof</span> next) {
+    <span class="hljs-keyword">switch</span> (<span class="hljs-keyword">typeof</span> operation) {
     <span class="hljs-keyword">case</span> <span class="hljs-string">'object'</span>:
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> next.enqueue == <span class="hljs-string">'function'</span>) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> operation.enqueue == <span class="hljs-string">'function'</span>) {
             asynchronous = <span class="hljs-literal">true</span>
-            next = { <span class="hljs-attr">object</span>: next, <span class="hljs-attr">method</span>: <span class="hljs-string">'enqueue'</span> }
+            operation = { <span class="hljs-attr">object</span>: operation, <span class="hljs-attr">method</span>: <span class="hljs-string">'enqueue'</span> }
         } <span class="hljs-keyword">else</span> {
-            next = { <span class="hljs-attr">object</span>: next, <span class="hljs-attr">method</span>: <span class="hljs-string">'push'</span> }
+            operation = { <span class="hljs-attr">object</span>: operation, <span class="hljs-attr">method</span>: <span class="hljs-string">'push'</span> }
         }
         <span class="hljs-keyword">break</span>
     <span class="hljs-keyword">case</span> <span class="hljs-string">'function'</span>:
-        asynchronous = next.length == <span class="hljs-number">2</span>
+        asynchronous = operation.length == <span class="hljs-number">2</span>
         <span class="hljs-keyword">break</span>
     }
-    <span class="hljs-keyword">var</span> operation = <span class="hljs-keyword">new</span> Operation(next)
-    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>._asynchronous = asynchronous
+    <span class="hljs-keyword">this</span>._operation = <span class="hljs-keyword">new</span> Operation(operation)
+}
+
+Pumper.prototype.enqueue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, body</span>) </span>{
+    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">var</span> vargs = [ body ]
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._asynchronous) {
+            vargs.push(<span class="hljs-keyword">async</span>())
+        }
+        <span class="hljs-keyword">this</span>._operation.apply(vargs)
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">return</span> [ body ]
+    })
+})
+
+Consumer.prototype._pump = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, next</span>) </span>{
+    <span class="hljs-keyword">this</span>._pumper = <span class="hljs-keyword">new</span> Pumper(next)
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">body</span>) </span>{
+        <span class="hljs-keyword">if</span> (body == <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">return</span> [ loop.break ]
+        }
         <span class="hljs-keyword">this</span>.dequeue(<span class="hljs-keyword">async</span>())
     }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">body</span>) </span>{
-        <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">var</span> vargs = [ value ]
-            <span class="hljs-keyword">if</span> (asynchronous) {
-                vargs.push(<span class="hljs-keyword">async</span>())
-            }
-            operation.apply(vargs)
-        }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">if</span> (body == <span class="hljs-literal">null</span>) {
-                <span class="hljs-keyword">return</span> [ loop.break ]
-            }
-        })
-    })()
+        <span class="hljs-keyword">this</span>._pumper.enqueue(body, <span class="hljs-keyword">async</span>())
+    })({})
 })
 
 Consumer.prototype.pump = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">next</span>) </span>{
@@ -197,7 +209,7 @@ Consumer.prototype.consumer = <span class="hljs-function"><span class="hljs-keyw
 }
 
 Consumer.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.node.next &amp;&amp; <span class="hljs-keyword">this</span>.node.next.value
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.node.next &amp;&amp; <span class="hljs-keyword">this</span>.node.next.body
 }
 
 <span class="hljs-built_in">module</span>.exports = Consumer

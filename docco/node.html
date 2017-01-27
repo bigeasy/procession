@@ -85,12 +85,17 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>The node for the underlying linked list. You, dear user, are welcome to
+iterate the linked list implemented by this node class and create new
+shifters from it.</p>
+<p>This is useful when you’re treating the queue as a log and holding on a
+shifter at an earlier position in the queue so you can replay the log from a
+certain checkpoint. Thus, when you want to replay the log, you can start from
+your checkpoint shifter, grab its node and iterate forward to just before the
+node to begin replaying and create a new shifter.</p>
+<hr>
 
             </div>
-
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Consumer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./consumer'</span>)
-
-</pre></div></div>
 
         </li>
 
@@ -101,13 +106,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>You’re welcome to iterate the linked list implemented by this node class and
-create new consumers from it. Helpful if you’re treating the queue a log or
-atomic log and holding  on an earlier position in the queue so you can replay
-the log from a certain point. You must use a consumer to hold onto the log,
-but if you where to create a new consumer from that consumer, it would begin
-at the next node of the consumer’s node, not at the point held by the
-consumer. Probably need a diagram.</p>
+              <p>Requirements.</p>
+<hr>
 
             </div>
 
@@ -123,26 +123,131 @@ consumer. Probably need a diagram.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, type, id, value, next</span>) </span>{
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
+<span class="hljs-keyword">var</span> Consumer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./consumer'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Construct a node for the given Procession.</p>
+<p>The <code>module</code> property is a convention I follow for creating objects tha
+envelop other objects. We’re using the word <code>body</code> instead of <code>value</code> for the
+node value becasue I consider this an envelope.</p>
+<hr>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, type, id, body, next</span>) </span>{
     <span class="hljs-keyword">this</span>.module = <span class="hljs-string">'procession'</span>
     <span class="hljs-keyword">this</span>._procession = procession
     <span class="hljs-keyword">this</span>.type = type
     <span class="hljs-keyword">this</span>.id = id
-    <span class="hljs-keyword">this</span>.body = body
     <span class="hljs-keyword">this</span>.next = nex
+    <span class="hljs-keyword">this</span>.body = body
 }
 
-Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.value
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Peek at the value of the next node if there is a next node.</p>
+<hr>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body
 }
 
-Node.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    assert(node.type == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
-    assert(node.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
-    <span class="hljs-keyword">new</span> Consumer(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-keyword">this</span>.head))
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-8">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Create a new shifter whose next shifted value is the value of the next node.</p>
+<hr>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Node.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    assert(<span class="hljs-keyword">this</span>.type == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
+    assert(<span class="hljs-keyword">this</span>.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Consumer(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
 }
 
-<span class="hljs-built_in">module</span>.exports = Node
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Export as constructor function.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Node
 
 </pre></div></div>
 
