@@ -138,7 +138,7 @@ Procession.prototype.push = function (value) {
     }
     if (value == null) {
         // If null, we are at th end of stream.
-        this.head = this.head.next = new Node(this, 'end', id, null, null)
+        this.head = this.head.next = new Node(this, 'endOfStream', id, null, null)
         this.endOfStream = true
     } else {
         // Otherwise, add the entry and notify listeners.
