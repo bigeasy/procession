@@ -57,6 +57,16 @@ Procession.raiseEndOfStream = function (envelope) {
     }
 }
 
+Procession.switchable = function (envelope, property, end, error) {
+    if (envelope == null) {
+        return end
+    } else if (envelope instanceof Error) {
+        return error
+    } else {
+        return envelope[property]
+    }
+}
+
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued
 // after it is added to to the procession.
