@@ -20,47 +20,47 @@
             <div id="jump_page">
 
 
-                <a class="source" href="counter.html">
+                <a class="source" href="counter.js.html">
                   counter.js
                 </a>
 
 
-                <a class="source" href="deferred.html">
+                <a class="source" href="deferred.js.html">
                   deferred.js
                 </a>
 
 
-                <a class="source" href="heft.html">
+                <a class="source" href="heft.js.html">
                   heft.js
                 </a>
 
 
-                <a class="source" href="identifier.html">
+                <a class="source" href="identifier.js.html">
                   identifier.js
                 </a>
 
 
-                <a class="source" href="indexer.html">
+                <a class="source" href="indexer.js.html">
                   indexer.js
                 </a>
 
 
-                <a class="source" href="node.html">
+                <a class="source" href="node.js.html">
                   node.js
                 </a>
 
 
-                <a class="source" href="procession.html">
+                <a class="source" href="procession.js.html">
                   procession.js
                 </a>
 
 
-                <a class="source" href="shifter.html">
+                <a class="source" href="shifter.js.html">
                   shifter.js
                 </a>
 
 
-                <a class="source" href="throttle.html">
+                <a class="source" href="throttle.js.html">
                   throttle.js
                 </a>
 
@@ -106,6 +106,20 @@ Shifter.prototype.dequeue = cadence(<span class="hljs-function"><span class="hlj
         <span class="hljs-keyword">this</span>._wait = <span class="hljs-literal">null</span>
         <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.shift()
         <span class="hljs-keyword">if</span> (value != <span class="hljs-literal">null</span> || <span class="hljs-keyword">this</span>.endOfStream) {
+            <span class="hljs-keyword">return</span> [ loop.break, value ]
+        }
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-keyword">this</span>._procession.pushed.enter(<span class="hljs-keyword">async</span>())
+    })()
+})
+
+Shifter.prototype.get = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-literal">null</span>
+        <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.shift()
+        <span class="hljs-keyword">if</span> (value != <span class="hljs-literal">null</span> || <span class="hljs-keyword">this</span>.endOfStream) {
+            <span class="hljs-keyword">if</span> (value <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+                <span class="hljs-keyword">throw</span> value
+            }
             <span class="hljs-keyword">return</span> [ loop.break, value ]
         }
         <span class="hljs-keyword">this</span>._wait = <span class="hljs-keyword">this</span>._procession.pushed.enter(<span class="hljs-keyword">async</span>())
