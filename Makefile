@@ -99,7 +99,8 @@ index.html: index.md
 clean:
 	rm -f $(outputs)
 
+# Use `--no-less` or else Serve will compile our less minified.
 serve: node_modules/.bin/serve
-	node_modules/.bin/serve -p 4000
+	node_modules/.bin/serve --no-less --port 4000
 
 .INTERMEDIATE: $(sources)
