@@ -72,7 +72,7 @@ Shifter.prototype.join = cadence(function (async, condition) {
             throw error
         }
         if (value == null) {
-            throw interrupt({ name: 'endOfStream' })
+            throw interrupt('endOfStream')
         }
         if (condition(value)) {
             return [ loop.break, value ]

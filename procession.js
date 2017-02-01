@@ -101,7 +101,7 @@ Procession.prototype.push = function (value) {
         if (value == null) {
             return
         }
-        throw interrupt({ name: 'closed' })
+        throw interrupt('closed')
     }
     if (value instanceof Error) {
         // If this is an error, we can go ahead add the end of stream `null` to
