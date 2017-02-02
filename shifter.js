@@ -4,6 +4,8 @@ var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
 
+var Envelope = require('./envelope')
+
 var interrupt = require('interrupt').createInterrupter('conduit')
 
 function Shifter (procession, head) {
@@ -17,7 +19,7 @@ Shifter.prototype.dequeue = cadence(function (async) {
     var loop = async(function () {
         this._wait = null
         var value = this.shift()
-        if (value != null || this.endOfStream) {
+        if (value != null) {
             return [ loop.break, value ]
         }
         this._wait = this._procession.pushed.enter(async())
@@ -29,17 +31,19 @@ Shifter.prototype.get = cadence(function (async, endOfStreamAsError) {
         this._wait = null
         var value = this.shift()
         if (value == null) {
-            if (this.endOfStream) {
-                if (endOfStreamAsError) {
-                    throw interrupt('endOfStream')
-                }
-                return [ loop.break, value ]
-            }
             this._wait = this._procession.pushed.enter(async())
-        } else if (value instanceof Error) {
-            throw value
         } else {
-            return [ loop.break, value ]
+            switch (envelope.method) {
+            case 'endOfStream':
+                throw interrupt('endOfStream')
+                break
+            case 'error':
+                throw envelope.body
+                break
+            case 'entry':
+                return [ loop.break, value ]
+                break
+            }
         }
     })()
 })
@@ -53,7 +57,7 @@ Shifter.prototype._purge = function () {
 Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
         this.node = this.node.next
-        this.endOfStream = this.node.type == 'endOfStream'
+        this.endOfStream = this.node.body.endOfStream
         var body = this.node.body
         this._procession._shifted(this.node)
         return body
@@ -65,7 +69,7 @@ Shifter.prototype.destroy = function (value) {
     this._purge()
     this._pumper = new Pumper(function () {})
     this.endOfStream = true
-    this.node = new Node(this._procession, 'endOfStream', null, null, null)
+    this.node = new Node(this._procession, null, new Envelope('endOfStream', null), null)
     if (this._wait != null) {
         this._procession.pushed.leave(this._wait)()
     }
@@ -123,14 +127,14 @@ Pumper.prototype.enqueue = cadence(function (async, body) {
 
 Shifter.prototype._pump = cadence(function (async, next) {
     this._pumper = new Pumper(next)
-    var loop = async(function (body) {
-        if (body == null) {
+    var loop = async(function (envelope) {
+        if (envelope.terminal) {
             return [ loop.break ]
         }
         this.dequeue(async())
     }, function (body) {
         this._pumper.enqueue(body, async())
-    })({})
+    })({ terminal: false })
 })
 
 Shifter.prototype.pump = function (next) {

@@ -9,6 +9,7 @@
 function Envelope (method, body) {
     this.module = 'conduit'
     this.method = method
+    this.endOfStream = method != 'entry'
     this.body = body
 }
 
