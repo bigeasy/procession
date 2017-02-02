@@ -140,7 +140,7 @@ Procession.prototype.push = function (value) {
         if (value == null) {
             envelope = new Envelope('endOfStream', null, interrupt('endOfStream'))
         } else if (value instanceof Error) {
-            envelope = new Envelope('error', value, error)
+            envelope = new Envelope('error', value, value)
         }  else {
             envelope = new Envelope('entry', value, null)
         }
