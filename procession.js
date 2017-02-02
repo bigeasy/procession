@@ -75,7 +75,7 @@ Procession.raiseError = function (envelope) {
 }
 
 Procession.raiseEndOfStream = function (envelope) {
-    if (envelope.method == 'endOfStream') {
+    if (envelope == null || envelope.method == 'endOfStream') {
         throw interrupt('endOfStream')
     }
 }
