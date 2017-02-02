@@ -3,7 +3,16 @@
 // wrapped in an `Envelope` so you can use the `method` property in a `switch`
 // statement.
 
-// Constuct an envelope with the given `method` and `body`.
+// Sometimes you want to treat end of stream as an error -- like when it
+// comes early. Envelopes now include an `error` property that is the
+// actual error for an envelope containing an error, or else a typed
+// error for a Conduit end of stream.
+
+// Important to use a consistent error class for end of stream and not
+// have our dear user fuss with trying to keep end of stream error
+// messages consistent.
+
+// Construct an envelope with the given `method` and `body`.
 
 //
 function Envelope (method, body, error) {
