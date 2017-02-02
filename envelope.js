@@ -6,11 +6,12 @@
 // Constuct an envelope with the given `method` and `body`.
 
 //
-function Envelope (method, body) {
+function Envelope (method, body, error) {
     this.module = 'conduit'
     this.method = method
     this.endOfStream = method != 'entry'
     this.body = body
+    this.error = error
 }
 
 // Export as constructor.

@@ -138,11 +138,11 @@ Procession.prototype.push = function (value) {
     var envelope = value
     if (!(value instanceof Envelope)) {
         if (value == null) {
-            envelope = new Envelope('endOfStream', null)
+            envelope = new Envelope('endOfStream', null, interrupt('endOfStream'))
         } else if (value instanceof Error) {
-            envelope = new Envelope('error', value)
+            envelope = new Envelope('error', value, error)
         }  else {
-            envelope = new Envelope('entry', value)
+            envelope = new Envelope('entry', value, null)
         }
     }
     switch (envelope.method) {

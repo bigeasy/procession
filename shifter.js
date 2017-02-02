@@ -69,7 +69,7 @@ Shifter.prototype.destroy = function (value) {
     this._purge()
     this._pumper = new Pumper(function () {})
     this.endOfStream = true
-    this.node = new Node(this._procession, null, new Envelope('endOfStream', null), null)
+    this.node = new Node(this._procession, null, new Envelope('endOfStream', null, interrupt('endOfStream')), null)
     if (this._wait != null) {
         this._procession.pushed.leave(this._wait)()
     }
