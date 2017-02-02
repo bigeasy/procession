@@ -75,15 +75,17 @@ Shifter.prototype.destroy = function (value) {
 Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
-    }, function (value) {
-        if (value instanceof Error) {
-            throw error
-        }
-        if (value == null) {
+    }, function (envelope) {
+        switch (envelope.method) {
+        case 'endOfStream':
             throw interrupt('endOfStream')
-        }
-        if (condition(value)) {
-            return [ loop.break, value ]
+        case 'error':
+            throw envelope.body
+        case 'entry':
+            if (condition(envelope.body)) {
+                return [ loop.break, envelope ]
+            }
+            break
         }
     })()
 })
@@ -141,7 +143,7 @@ Shifter.prototype.consumer = function () {
 }
 
 Shifter.prototype.peek = function () {
-    return this.node.next && this.node.next.body
+    return this.node.next && this.node.next.body.body
 }
 
 module.exports = Shifter

@@ -1,33 +1,56 @@
-var assert = require('assert')
+// One thing to note in the documentation is that this Queue and all my envelope
+// based classes are unapologetically partial to `switch` statements. There
+// are probably some articles out there about how they are considered harmful
+// and how opaque and esoteric function dispatch lookup tables are superior.
+// What is the nature of that reasoning? Because `goto` was harmful, other
+// keywords are looking pretty shady now too?
 
-var cadence = require('cadence')
+// Control-flow utilities.
 var abend = require('abend')
+var cadence = require('cadence')
 
+// User specified callback wrapper.
 var Operation = require('operation')
 
+// Evented semaphore.
 var Vestibule = require('vestibule')
 
+// Serial value that wraps at `0xffffffff`.
 var Identifier = require('./identifier')
+
+// Used to provide a switchable wrapper around queue entry values.
+var Envelope = require('./envelope')
+
+// Iterator used to consume values in the evented queue.
 var Shifter = require('./shifter')
+
+// Queue entry node.
 var Node = require('./node')
+
+// Delays the invocation of a listener's `shifted` method until a node created
+// after the listener was added is shifted.
 var Deferred = require('./deferred')
+
+// A listener that keeps count of the values in the queue.
 var Counter = require('./counter')
 
+// Orderly destruction of complicated objects.
 var Destructor = require('nascent.destructor')
 
+// Exceptions with context.
 var interrupt = require('interrupt').createInterrupter('procession')
 
-// Public Procession constructor.
-function Procession (options) {
-    options || (options = {})
+// Construct a queue.
 
+//
+function Procession () {
     this._listeners = []
     this._undecorated = []
     this._consumers = []
 
     this._identifier = new Identifier
 
-    this.head = new Node(this, 'reference', null, null, null)
+    this.head = new Node(this, null, null, null)
 
     this.pushed = new Vestibule
     this.shifted = new Vestibule
@@ -120,12 +143,24 @@ Procession.prototype.push = function (value) {
     // You can only push an end of stream `null` after end of stream.
     var id = null
     if (this.endOfStream) {
-        if (value == null) {
-            return
-        }
-        throw interrupt('closed')
+        return null
     }
-    if (value instanceof Error) {
+    var envelope = value
+    if (!(value instanceof Envelope)) {
+        if (value == null) {
+            envelope = new Envelope('endOfStream', null)
+        } else if (value instanceof Error) {
+            envelope = new Envelope('error', value)
+        }  else {
+            envelope = new Envelope('entry', value)
+        }
+    }
+    switch (envelope.method) {
+    case 'endOfStream':
+        this.head = this.head.next = new Node(this, id, envelope, null)
+        this.endOfStream = true
+        break
+    case 'error':
         // If this is an error, we can go ahead add the end of stream `null` to
         // ensure that this closes correctly. Simplifies interface on error, the
         // user doens't have to remember to send null themselves. They're not
@@ -133,20 +168,17 @@ Procession.prototype.push = function (value) {
         this._consumers.forEach(function (shifter) {
             shifter._purge()
         }, this)
-        this.head = this.head.next = new Node(this, 'error', id, value, null)
-        value = null
-    }
-    if (value == null) {
-        // If null, we are at th end of stream.
-        this.head = this.head.next = new Node(this, 'endOfStream', id, null, null)
-        this.endOfStream = true
-    } else {
+        var envelope = new Envelope('error', value)
+        this.head = this.head.next = new Node(this, id, envelope, null)
+        break
+    case 'entry':
         // Otherwise, add the entry and notify listeners.
         id = this._identifier.next()
-        this.head = this.head.next = new Node(this, 'entry', id, value, null)
+        this.head = this.head.next = new Node(this, id, envelope, null)
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].pushed(this, this.head)
         }
+        break
     }
     // Notify any waiting consumers, or anyone else waiting on a push.
     this.pushed.notify(null, true)
@@ -158,7 +190,7 @@ Procession.prototype.push = function (value) {
 
 //
 Procession.prototype._shifted = function (node) {
-    if (node.type != 'entry') {
+    if (node.body.method != 'entry') {
         return
     }
     var lesser = 0
