@@ -69,24 +69,14 @@ function Procession () {
 Procession.prototype._Shifter = Shifter
 
 Procession.raiseError = function (envelope) {
-    if (envelope instanceof Error) {
-        throw envelope
+    if (envelope.method == 'error') {
+        throw envelope.body
     }
 }
 
 Procession.raiseEndOfStream = function (envelope) {
-    if (envelope == null) {
+    if (envelope.method == 'endOfStream') {
         throw interrupt('endOfStream')
-    }
-}
-
-Procession.switchable = function (envelope, property, end, error) {
-    if (envelope == null) {
-        return end
-    } else if (envelope instanceof Error) {
-        return error
-    } else {
-        return envelope[property]
     }
 }
 
