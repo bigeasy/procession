@@ -128,13 +128,13 @@ Pumper.prototype.enqueue = cadence(function (async, body) {
 Shifter.prototype._pump = cadence(function (async, next) {
     this._pumper = new Pumper(next)
     var loop = async(function (envelope) {
-        if (envelope.terminal) {
+        if (envelope.endOfStream) {
             return [ loop.break ]
         }
         this.dequeue(async())
-    }, function (body) {
-        this._pumper.enqueue(body, async())
-    })({ terminal: false })
+    }, function (envelope) {
+        this._pumper.enqueue(envelope, async())
+    })({ endOfStream: false })
 })
 
 Shifter.prototype.pump = function (next) {
