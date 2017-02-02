@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>heft.js</title>
+  <title>envelope.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -78,7 +78,7 @@
 
           <li id="title">
               <div class="annotation">
-                  <h1>heft.js</h1>
+                  <h1>envelope.js</h1>
               </div>
           </li>
 
@@ -90,27 +90,60 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>Once enqueued into a procession, all values are wrapped in this <code>Envelope</code>
+class except for existing envelopes. When you dequeue a value it will be
+wrapped in an <code>Envelope</code> so you can use the <code>method</code> property in a <code>switch</code>
+statement.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Heft</span> (<span class="hljs-params">calculator, property</span>) </span>{
-    <span class="hljs-keyword">this</span>._calculator = calculator
-    <span class="hljs-keyword">this</span>._property = property
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Constuct an envelope with the given <code>method</code> and <code>body</code>.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Envelope</span> (<span class="hljs-params">method, body</span>) </span>{
+    <span class="hljs-keyword">this</span>.module = <span class="hljs-string">'conduit'</span>
+    <span class="hljs-keyword">this</span>.method = method
+    <span class="hljs-keyword">this</span>.body = body
 }
 
-Heft.prototype.added = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>._procession[<span class="hljs-keyword">this</span>._property] = <span class="hljs-number">0</span>
-}
+</pre></div></div>
 
-Heft.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
-    <span class="hljs-keyword">this</span>._procession[<span class="hljs-keyword">this</span>._property] += <span class="hljs-keyword">this</span>._calculator.call(<span class="hljs-literal">null</span>, node)
-}
+        </li>
 
-Heft.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
-    <span class="hljs-keyword">this</span>._procession[<span class="hljs-keyword">this</span>._property] += <span class="hljs-keyword">this</span>._calculator.call(<span class="hljs-literal">null</span>, node)
-}
 
-<span class="hljs-built_in">module</span>.exports = Hef
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Export as constructor.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Envelope
 
 </pre></div></div>
 

@@ -30,6 +30,11 @@
                 </a>
 
 
+                <a class="source" href="envelope.js.html">
+                  envelope.js
+                </a>
+
+
                 <a class="source" href="heft.js.html">
                   heft.js
                 </a>
@@ -85,29 +90,14 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>One thing to note in the documentation is that this Queue and all my envelope
+based classes are unapologetically partial to <code>switch</code> statements. There
+are probably some articles out there about how they are considered harmful
+and how opaque and esoteric function dispatch lookup tables are superior.
+What is the nature of that reasoning? Because <code>goto</code> was harmful, other
+keywords are looking pretty shady now too?</p>
 
             </div>
-
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
-
-<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
-<span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
-
-<span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
-
-<span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
-
-<span class="hljs-keyword">var</span> Identifier = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./identifier'</span>)
-<span class="hljs-keyword">var</span> Shifter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./shifter'</span>)
-<span class="hljs-keyword">var</span> Node = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./node'</span>)
-<span class="hljs-keyword">var</span> Deferred = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./deferred'</span>)
-<span class="hljs-keyword">var</span> Counter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./counter'</span>)
-
-<span class="hljs-keyword">var</span> Destructor = <span class="hljs-built_in">require</span>(<span class="hljs-string">'nascent.destructor'</span>)
-
-<span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'procession'</span>)
-
-</pre></div></div>
 
         </li>
 
@@ -118,20 +108,219 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Public Procession constructor.</p>
+              <p>Control-flow utilities.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Procession</span> (<span class="hljs-params">options</span>) </span>{
-    options || (options = {})
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
 
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>User specified callback wrapper.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Evented semaphore.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Serial value that wraps at <code>0xffffffff</code>.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Identifier = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./identifier'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Used to provide a switchable wrapper around queue entry values.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Envelope = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./envelope'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Iterator used to consume values in the evented queue.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Shifter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./shifter'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-8">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Queue entry node.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Node = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./node'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Delays the invocation of a listener’s <code>shifted</code> method until a node created
+after the listener was added is shifted.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Deferred = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./deferred'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>A listener that keeps count of the values in the queue.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Counter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./counter'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-11">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Orderly destruction of complicated objects.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Destructor = <span class="hljs-built_in">require</span>(<span class="hljs-string">'nascent.destructor'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-12">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Exceptions with context.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'procession'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-13">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Construct a queue.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-14">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Procession</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">this</span>._listeners = []
     <span class="hljs-keyword">this</span>._undecorated = []
     <span class="hljs-keyword">this</span>._consumers = []
 
     <span class="hljs-keyword">this</span>._identifier = <span class="hljs-keyword">new</span> Identifier
 
-    <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-string">'reference'</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
+    <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
 
     <span class="hljs-keyword">this</span>.pushed = <span class="hljs-keyword">new</span> Vestibule
     <span class="hljs-keyword">this</span>.shifted = <span class="hljs-keyword">new</span> Vestibule
@@ -146,11 +335,11 @@
         </li>
 
 
-        <li id="section-3">
+        <li id="section-15">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Node and Shifter modules reference each other so we provide this Shifter
 constructor to the Node class since it won’t be able to git it using
@@ -162,27 +351,49 @@ constructor to the Node class since it won’t be able to git it using
         </li>
 
 
-        <li id="section-4">
+        <li id="section-16">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
 
             </div>
 
             <div class="content"><div class='highlight'><pre>Procession.prototype._Shifter = Shifter
 
+Procession.raiseError = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope</span>) </span>{
+    <span class="hljs-keyword">if</span> (envelope <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+        <span class="hljs-keyword">throw</span> envelope
+    }
+}
+
+Procession.raiseEndOfStream = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope</span>) </span>{
+    <span class="hljs-keyword">if</span> (envelope == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'endOfStream'</span>)
+    }
+}
+
+Procession.switchable = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope, property, end, error</span>) </span>{
+    <span class="hljs-keyword">if</span> (envelope == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">return</span> end
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (envelope <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+        <span class="hljs-keyword">return</span> error
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> envelope[property]
+    }
+}
+
 </pre></div></div>
 
         </li>
 
 
-        <li id="section-5">
+        <li id="section-17">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>Add a listener that can track values as they are enqueued and dequeued. The
 listener’s push and shift methods  will only be invoked for values enqueued
@@ -194,11 +405,11 @@ after it is added to to the procession.</p>
         </li>
 
 
-        <li id="section-6">
+        <li id="section-18">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
 
             </div>
@@ -206,11 +417,11 @@ after it is added to to the procession.</p>
         </li>
 
 
-        <li id="section-7">
+        <li id="section-19">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>We decorate the listener with a deferred decorator. We keep a parallel arrays
 of undecorated listeners do we can find its array index if we’re asked to
@@ -229,11 +440,11 @@ remove it before it undecorates itself.</p>
         </li>
 
 
-        <li id="section-8">
+        <li id="section-20">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>Remove a listener.</p>
 <hr>
@@ -243,11 +454,11 @@ remove it before it undecorates itself.</p>
         </li>
 
 
-        <li id="section-9">
+        <li id="section-21">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
 
             </div>
@@ -264,226 +475,15 @@ remove it before it undecorates itself.</p>
         </li>
 
 
-        <li id="section-10">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
-              </div>
-              <p>Create a new shifter to consume enqueued entries. Begins with entries added
-after the creation of the cosumer.</p>
-<hr>
-
-            </div>
-
-        </li>
-
-
-        <li id="section-11">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
-              </div>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>Procession.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Shifter(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
-}
-
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-12">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
-              </div>
-              <p>Interface development. Currently, you push en entry, an error or a <code>null</code> to
-indicate end of stream. Simpifies enqueuing. Simplifies pipes because they
-can get a switch statement and can tell the difference between an error and
-<code>null</code>.</p>
-
-            </div>
-
-        </li>
-
-
-        <li id="section-13">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
-              </div>
-              <p>Push a value</p>
-<p>The values that are shifted are not the values that are pushed. See below.</p>
-
-            </div>
-
-        </li>
-
-
-        <li id="section-14">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
-              </div>
-              <p>The shifted value is going to be encased in an object that can be used to
-create a swtich statement. non</p>
-
-            </div>
-
-        </li>
-
-
-        <li id="section-15">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
-              </div>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>Procession.prototype.push = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-16">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
-              </div>
-              <p>You can only push an end of stream <code>null</code> after end of stream.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> id = <span class="hljs-literal">null</span>
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream) {
-        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">return</span>
-        }
-        <span class="hljs-keyword">throw</span> interrupt({ <span class="hljs-attr">name</span>: <span class="hljs-string">'closed'</span> })
-    }
-    <span class="hljs-keyword">if</span> (value <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-17">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <p>If this is an error, we can go ahead add the end of stream <code>null</code> to
-ensure that this closes correctly. Simplifies interface on error, the
-user doens’t have to remember to send null themselves. They’re no
-able to send values after error.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>._consumers.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">shifter</span>) </span>{
-            shifter._purge()
-        }, <span class="hljs-keyword">this</span>)
-        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-string">'error'</span>, id, value, <span class="hljs-literal">null</span>)
-        value = <span class="hljs-literal">null</span>
-    }
-    <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-18">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
-              </div>
-              <p>If null, we are at th end of stream.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-string">'end'</span>, id, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
-        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
-    } <span class="hljs-keyword">else</span> {
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-19">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
-              </div>
-              <p>Otherwise, add the entry and notify listeners.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        id = <span class="hljs-keyword">this</span>._identifier.next()
-        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-string">'entry'</span>, id, value, <span class="hljs-literal">null</span>)
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, I = <span class="hljs-keyword">this</span>._listeners.length; i &lt; I; i++) {
-            <span class="hljs-keyword">this</span>._listeners[i].pushed(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
-        }
-    }
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-20">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
-              </div>
-              <p>Notify any waiting consumers, or anyone else waiting on a push.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.pushed.notify(<span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>)
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-21">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
-              </div>
-              <p>Shift our dummy shifter to trigger cleanup if no one else is listening.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>._follower.shift()
-}
-
-</pre></div></div>
-
-        </li>
-
-
         <li id="section-22">
             <div class="annotation">
 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
-              <p>Called by Consumers as they advance.</p>
+              <p>Create a new shifter to consume enqueued entries. Begins with entries added
+after the creation of the cosumer.</p>
+<hr>
 
             </div>
 
@@ -499,8 +499,214 @@ able to send values after error.</p>
 
             </div>
 
+            <div class="content"><div class='highlight'><pre>Procession.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Shifter(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
+}
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-24">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Interface development. Currently, you push en entry, an error or a <code>null</code> to
+indicate end of stream. Simpifies enqueuing. Simplifies pipes because they
+can get a switch statement and can tell the difference between an error and
+<code>null</code>.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-25">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Push a value</p>
+<p>The values that are shifted are not the values that are pushed. See below.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-26">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>The shifted value is going to be encased in an object that can be used to
+create a swtich statement. non</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-27">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Procession.prototype.push = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-28">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>You can only push an end of stream <code>null</code> after end of stream.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> id = <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream) {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+    }
+    <span class="hljs-keyword">var</span> envelope = value
+    <span class="hljs-keyword">if</span> (!(value <span class="hljs-keyword">instanceof</span> Envelope)) {
+        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'endOfStream'</span>, <span class="hljs-literal">null</span>)
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'error'</span>, value)
+        }  <span class="hljs-keyword">else</span> {
+            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'entry'</span>, value)
+        }
+    }
+    <span class="hljs-keyword">switch</span> (envelope.method) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'endOfStream'</span>:
+        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
+        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">break</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'error'</span>:
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-29">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>If this is an error, we can go ahead add the end of stream <code>null</code> to
+ensure that this closes correctly. Simplifies interface on error, the
+user doens’t have to remember to send null themselves. They’re no
+able to send values after error.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>._consumers.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">shifter</span>) </span>{
+            shifter._purge()
+        }, <span class="hljs-keyword">this</span>)
+        <span class="hljs-keyword">var</span> envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'error'</span>, value)
+        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
+        <span class="hljs-keyword">break</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'entry'</span>:
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-30">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Otherwise, add the entry and notify listeners.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        id = <span class="hljs-keyword">this</span>._identifier.next()
+        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, I = <span class="hljs-keyword">this</span>._listeners.length; i &lt; I; i++) {
+            <span class="hljs-keyword">this</span>._listeners[i].pushed(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
+        }
+        <span class="hljs-keyword">break</span>
+    }
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-31">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Notify any waiting consumers, or anyone else waiting on a push.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.pushed.notify(<span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>)
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-32">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Shift our dummy shifter to trigger cleanup if no one else is listening.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>._follower.shift()
+}
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-33">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Called by Consumers as they advance.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-34">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+
+            </div>
+
             <div class="content"><div class='highlight'><pre>Procession.prototype._shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
-    <span class="hljs-keyword">if</span> (node.type != <span class="hljs-string">'entry'</span>) {
+    <span class="hljs-keyword">if</span> (node.body.method != <span class="hljs-string">'entry'</span>) {
         <span class="hljs-keyword">return</span>
     }
     <span class="hljs-keyword">var</span> lesser = <span class="hljs-number">0</span>
@@ -518,11 +724,11 @@ able to send values after error.</p>
         </li>
 
 
-        <li id="section-24">
+        <li id="section-35">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>We null <code>body</code>, but do not get the bright idea to null <code>id</code>. It is
 our deferred listener boundary.</p>

@@ -30,6 +30,11 @@
                 </a>
 
 
+                <a class="source" href="envelope.js.html">
+                  envelope.js
+                </a>
+
+
                 <a class="source" href="heft.js.html">
                   heft.js
                 </a>
@@ -157,10 +162,9 @@ node value becasue I consider this an envelope.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, type, id, body, next</span>) </span>{
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> (<span class="hljs-params">procession, id, body, next</span>) </span>{
     <span class="hljs-keyword">this</span>.module = <span class="hljs-string">'procession'</span>
     <span class="hljs-keyword">this</span>._procession = procession
-    <span class="hljs-keyword">this</span>.type = type
     <span class="hljs-keyword">this</span>.id = id
     <span class="hljs-keyword">this</span>.next = nex
     <span class="hljs-keyword">this</span>.body = body
@@ -195,7 +199,7 @@ node value becasue I consider this an envelope.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body.body
 }
 
 </pre></div></div>
@@ -227,8 +231,8 @@ node value becasue I consider this an envelope.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>Node.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    assert(<span class="hljs-keyword">this</span>.type == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
     assert(<span class="hljs-keyword">this</span>.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
+    assert(<span class="hljs-keyword">this</span>.body.method == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Shifter(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
 }
 
