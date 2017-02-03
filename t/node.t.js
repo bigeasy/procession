@@ -12,5 +12,5 @@ function prove (assert) {
         node = node.next
     }
     var clone = node.shifter()
-    assert(clone.shift().body, 2, 'duplicated')
+    assert(clone.shift(), 2, 'duplicated')
 }

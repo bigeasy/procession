@@ -4,8 +4,6 @@ var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
 
-var Envelope = require('./envelope')
-
 var interrupt = require('interrupt').createInterrupter('conduit')
 
 function Shifter (procession, head) {
@@ -67,9 +65,11 @@ Shifter.prototype.shift = function () {
 
 Shifter.prototype.destroy = function (value) {
     this._purge()
+    // We do this so that we do not pump the end of stream, we assume that
+    // destroy means to quit without continuning to take any actions.
     this._pumper = new Pumper(function () {})
     this.endOfStream = true
-    this.node = new Node(this._procession, null, new Envelope('endOfStream', null, interrupt('endOfStream')), null)
+    this.node = new Node(this._procession, null, null, null)
     if (this._wait != null) {
         this._procession.pushed.cancel(this._wait)()
     }
@@ -79,17 +79,12 @@ Shifter.prototype.destroy = function (value) {
 Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
-    }, function (envelope) {
-        switch (envelope.method) {
-        case 'endOfStream':
+    }, function (value) {
+        if (value == null) {
             throw interrupt('endOfStream')
-        case 'error':
-            throw envelope.body
-        case 'entry':
-            if (condition(envelope.body)) {
-                return [ loop.break, envelope ]
-            }
-            break
+        }
+        if (condition(value)) {
+            return [ loop.break, value ]
         }
     })()
 })
@@ -113,6 +108,7 @@ function Pumper (operation) {
     this._operation = new Operation(operation)
 }
 
+// TODO Just wrap `push` in a funtion that calls the callback.
 Pumper.prototype.enqueue = cadence(function (async, body) {
     async(function () {
         var vargs = [ body ]
@@ -127,14 +123,14 @@ Pumper.prototype.enqueue = cadence(function (async, body) {
 
 Shifter.prototype._pump = cadence(function (async, next) {
     this._pumper = new Pumper(next)
-    var loop = async(function (envelope) {
-        if (envelope.endOfStream) {
+    var loop = async(function (value) {
+        if (value == null) {
             return [ loop.break ]
         }
         this.dequeue(async())
-    }, function (envelope) {
-        this._pumper.enqueue(envelope, async())
-    })({ endOfStream: false })
+    }, function (value) {
+        this._pumper.enqueue(value, async())
+    })({})
 })
 
 Shifter.prototype.pump = function (next) {
@@ -147,7 +143,7 @@ Shifter.prototype.consumer = function () {
 }
 
 Shifter.prototype.peek = function () {
-    return this.node.next && this.node.next.body.body
+    return this.node.next && this.node.next.body
 }
 
 module.exports = Shifter

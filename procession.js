@@ -5,6 +5,9 @@
 // What is the nature of that reasoning? Because `goto` was harmful, other
 // keywords are looking pretty shady now too?
 
+// Common utilities.
+var assert = require('assert')
+
 // Control-flow utilities.
 var abend = require('abend')
 var cadence = require('cadence')
@@ -17,9 +20,6 @@ var Signal = require('signal')
 
 // Serial value that wraps at `0xffffffff`.
 var Identifier = require('./identifier')
-
-// Used to provide a switchable wrapper around queue entry values.
-var Envelope = require('./envelope')
 
 // Iterator used to consume values in the evented queue.
 var Shifter = require('./shifter')
@@ -116,59 +116,23 @@ Procession.prototype.shifter = function () {
     return new Shifter(this, this.head)
 }
 
-// Interface development. Currently, you push en entry, an error or a `null` to
-// indicate end of stream. Simpifies enqueuing. Simplifies pipes because they
-// can get a switch statement and can tell the difference between an error and
-// `null`.
-
-// Push a value
-//
-// The values that are shifted are not the values that are pushed. See below.
-
-// The shifted value is going to be encased in an object that can be used to
-// create a swtich statement. non
+// Push an entry or push an error or else push `null` to indicate end of stream.
 
 //
 Procession.prototype.push = function (value) {
     // You can only push an end of stream `null` after end of stream.
-    var id = null
     if (this.endOfStream) {
-        return null
+        return
     }
-    var envelope = value
-    if (!(value instanceof Envelope)) {
-        if (value == null) {
-            envelope = new Envelope('endOfStream', null, interrupt('endOfStream'))
-        } else if (value instanceof Error) {
-            envelope = new Envelope('error', value, value)
-        }  else {
-            envelope = new Envelope('entry', value, null)
-        }
-    }
-    switch (envelope.method) {
-    case 'endOfStream':
-        this.head = this.head.next = new Node(this, id, envelope, null)
+    if (value == null) {
+        this.head = this.head.next = new Node(this, null, value, null)
         this.endOfStream = true
-        break
-    case 'error':
-        // If this is an error, we can go ahead add the end of stream `null` to
-        // ensure that this closes correctly. Simplifies interface on error, the
-        // user doens't have to remember to send null themselves. They're not
-        // able to send values after error.
-        this._consumers.forEach(function (shifter) {
-            shifter._purge()
-        }, this)
-        var envelope = new Envelope('error', value)
-        this.head = this.head.next = new Node(this, id, envelope, null)
-        break
-    case 'entry':
+    } else {
         // Otherwise, add the entry and notify listeners.
-        id = this._identifier.next()
-        this.head = this.head.next = new Node(this, id, envelope, null)
+        this.head = this.head.next = new Node(this, this._identifier.next(), value, null)
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].pushed(this, this.head)
         }
-        break
     }
     // Notify any waiting consumers, or anyone else waiting on a push.
     this.pushed.notify(null, true)
@@ -180,7 +144,7 @@ Procession.prototype.push = function (value) {
 
 //
 Procession.prototype._shifted = function (node) {
-    if (node.body.method != 'entry') {
+    if (node.body == null) {
         return
     }
     var lesser = 0

@@ -17,32 +17,32 @@ function prove (async, assert) {
         queue.join(function (value) { return value == 1 }, async())
         queue.push(2)
         queue.push(1)
-    }, function (envelope) {
-        assert(envelope.body, 1, 'join wait')
+    }, function (value) {
+        assert(value, 1, 'join wait')
         shifter.dequeue(async())
     }, function (first) {
         async(function () {
             shifter.dequeue(async())
         }, function (second) {
-            assert([ first.body, second.body ], [ 2, 1 ], 'shift available')
+            assert([ first, second ], [ 2, 1 ], 'shift available')
         })
     }, function () {
         shifter.dequeue(async())
         queue.push(2)
-    }, function (envelope) {
-        assert(envelope.body, 2, 'wait shift and tidy')
+    }, function (value) {
+        assert(value, 2, 'wait shift and tidy')
         var waits = [ async(), async() ]
         var object = queue.shifter()
         object.pump({
-            push: function (envelope) {
-                assert(envelope.body, 3, 'pump object pumped sync')
+            push: function (value) {
+                assert(value, 3, 'pump object pumped sync')
                 object.destroy()
                 waits.shift()()
             }
         })
         var f = queue.shifter()
-        f.pump(function (envelope) {
-            assert(envelope.body, 3, 'function pumped sync')
+        f.pump(function (value) {
+            assert(value, 3, 'function pumped sync')
             f.destroy()
             waits.shift()()
         })
@@ -51,16 +51,16 @@ function prove (async, assert) {
         var waits = [ async(), async() ]
         var object = queue.shifter()
         object.pump({
-            enqueue: function (envelope, callback) {
-                assert(envelope.body, 3, 'pump object pumped async')
+            enqueue: function (value, callback) {
+                assert(value, 3, 'pump object pumped async')
                 object.destroy()
                 waits.shift()()
                 callback()
             }
         })
         var f = queue.shifter()
-        f.pump(function (envelope, callback) {
-            assert(envelope.body, 3, 'function pumped async')
+        f.pump(function (value, callback) {
+            assert(value, 3, 'function pumped async')
             f.destroy()
             waits.shift()()
             callback()

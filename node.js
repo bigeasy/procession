@@ -37,7 +37,7 @@ function Node (procession, id, body, next) {
 
 //
 Node.prototype.peek = function () {
-    return this.next && this.next.body.body
+    return this.next && this.next.body
 }
 
 // Create a new shifter whose next shifted value is the value of the next node.
@@ -46,7 +46,6 @@ Node.prototype.peek = function () {
 //
 Node.prototype.shifter = function () {
     assert(this.body != null, 'node expired')
-    assert(this.body.method == 'entry', 'not an entry node')
     return new this._procession._Shifter(this._procession, this)
 }
 

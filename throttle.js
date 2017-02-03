@@ -9,7 +9,7 @@ function Throttle (procession, limit, property) {
 Throttle.prototype.enqueue = cadence(function (async, value) {
     var loop = async(function () {
         if (this._procession[this._property] >= this._limit) {
-            this._procession.shifted.enter(async())
+            this._procession.shifted.wait(async())
         } else {
             async(function () {
                 this._procession.enqueue(value, async())
