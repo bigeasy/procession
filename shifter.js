@@ -22,7 +22,7 @@ Shifter.prototype.dequeue = cadence(function (async) {
         if (value != null) {
             return [ loop.break, value ]
         }
-        this._wait = this._procession.pushed.enter(async())
+        this._wait = this._procession.pushed.wait(async())
     })()
 })
 
@@ -71,7 +71,7 @@ Shifter.prototype.destroy = function (value) {
     this.endOfStream = true
     this.node = new Node(this._procession, null, new Envelope('endOfStream', null, interrupt('endOfStream')), null)
     if (this._wait != null) {
-        this._procession.pushed.leave(this._wait)()
+        this._procession.pushed.cancel(this._wait)()
     }
     this._procession._consumers.splice(this._procession._consumers.indexOf(this), 1)
 }

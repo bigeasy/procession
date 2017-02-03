@@ -13,7 +13,7 @@ var cadence = require('cadence')
 var Operation = require('operation')
 
 // Evented semaphore.
-var Vestibule = require('vestibule')
+var Signal = require('signal')
 
 // Serial value that wraps at `0xffffffff`.
 var Identifier = require('./identifier')
@@ -52,8 +52,8 @@ function Procession () {
 
     this.head = new Node(this, null, null, null)
 
-    this.pushed = new Vestibule
-    this.shifted = new Vestibule
+    this.pushed = new Signal
+    this.shifted = new Signal
 
     this.addListener(new Counter())
 
