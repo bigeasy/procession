@@ -30,11 +30,6 @@
                 </a>
 
 
-                <a class="source" href="envelope.js.html">
-                  envelope.js
-                </a>
-
-
                 <a class="source" href="heft.js.html">
                   heft.js
                 </a>
@@ -199,7 +194,7 @@ node value becasue I consider this an envelope.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body.body
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body
 }
 
 </pre></div></div>
@@ -232,7 +227,6 @@ node value becasue I consider this an envelope.</p>
 
             <div class="content"><div class='highlight'><pre>Node.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     assert(<span class="hljs-keyword">this</span>.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
-    assert(<span class="hljs-keyword">this</span>.body.method == <span class="hljs-string">'entry'</span>, <span class="hljs-string">'not an entry node'</span>)
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Shifter(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
 }
 

@@ -30,11 +30,6 @@
                 </a>
 
 
-                <a class="source" href="envelope.js.html">
-                  envelope.js
-                </a>
-
-
                 <a class="source" href="heft.js.html">
                   heft.js
                 </a>
@@ -108,12 +103,11 @@ keywords are looking pretty shady now too?</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Control-flow utilities.</p>
+              <p>Common utilities.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
-<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
 
 </pre></div></div>
 
@@ -126,11 +120,12 @@ keywords are looking pretty shady now too?</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>User specified callback wrapper.</p>
+              <p>Control-flow utilities.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
 
 </pre></div></div>
 
@@ -143,11 +138,11 @@ keywords are looking pretty shady now too?</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Evented semaphore.</p>
+              <p>User specified callback wrapper.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Vestibule = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vestibule'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
 
 </pre></div></div>
 
@@ -160,11 +155,11 @@ keywords are looking pretty shady now too?</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Serial value that wraps at <code>0xffffffff</code>.</p>
+              <p>Evented semaphore.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Identifier = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./identifier'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Signal = <span class="hljs-built_in">require</span>(<span class="hljs-string">'signal'</span>)
 
 </pre></div></div>
 
@@ -177,11 +172,11 @@ keywords are looking pretty shady now too?</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Used to provide a switchable wrapper around queue entry values.</p>
+              <p>Serial value that wraps at <code>0xffffffff</code>.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Envelope = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./envelope'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Identifier = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./identifier'</span>)
 
 </pre></div></div>
 
@@ -322,8 +317,8 @@ after the listener was added is shifted.</p>
 
     <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
 
-    <span class="hljs-keyword">this</span>.pushed = <span class="hljs-keyword">new</span> Vestibule
-    <span class="hljs-keyword">this</span>.shifted = <span class="hljs-keyword">new</span> Vestibule
+    <span class="hljs-keyword">this</span>.pushed = <span class="hljs-keyword">new</span> Signal
+    <span class="hljs-keyword">this</span>.shifted = <span class="hljs-keyword">new</span> Signal
 
     <span class="hljs-keyword">this</span>.addListener(<span class="hljs-keyword">new</span> Counter())
 
@@ -363,24 +358,14 @@ constructor to the Node class since it won’t be able to git it using
             <div class="content"><div class='highlight'><pre>Procession.prototype._Shifter = Shifter
 
 Procession.raiseError = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope</span>) </span>{
-    <span class="hljs-keyword">if</span> (envelope <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
-        <span class="hljs-keyword">throw</span> envelope
+    <span class="hljs-keyword">if</span> (envelope.method == <span class="hljs-string">'error'</span>) {
+        <span class="hljs-keyword">throw</span> envelope.body
     }
 }
 
 Procession.raiseEndOfStream = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope</span>) </span>{
-    <span class="hljs-keyword">if</span> (envelope == <span class="hljs-literal">null</span>) {
+    <span class="hljs-keyword">if</span> (envelope == <span class="hljs-literal">null</span> || envelope.method == <span class="hljs-string">'endOfStream'</span>) {
         <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'endOfStream'</span>)
-    }
-}
-
-Procession.switchable = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">envelope, property, end, error</span>) </span>{
-    <span class="hljs-keyword">if</span> (envelope == <span class="hljs-literal">null</span>) {
-        <span class="hljs-keyword">return</span> end
-    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (envelope <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
-        <span class="hljs-keyword">return</span> error
-    } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">return</span> envelope[property]
     }
 }
 
@@ -514,10 +499,7 @@ after the creation of the cosumer.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
-              <p>Interface development. Currently, you push en entry, an error or a <code>null</code> to
-indicate end of stream. Simpifies enqueuing. Simplifies pipes because they
-can get a switch statement and can tell the difference between an error and
-<code>null</code>.</p>
+              <p>Push an entry or push an error or else push <code>null</code> to indicate end of stream.</p>
 
             </div>
 
@@ -530,10 +512,11 @@ can get a switch statement and can tell the difference between an error and
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <p>Push a value</p>
-<p>The values that are shifted are not the values that are pushed. See below.</p>
 
             </div>
+
+            <div class="content"><div class='highlight'><pre>Procession.prototype.push = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+</pre></div></div>
 
         </li>
 
@@ -544,10 +527,18 @@ can get a switch statement and can tell the difference between an error and
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
-              <p>The shifted value is going to be encased in an object that can be used to
-create a swtich statement. non</p>
+              <p>You can only push an end of stream <code>null</code> after end of stream.</p>
 
             </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream) {
+        <span class="hljs-keyword">return</span>
+    }
+    <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-literal">null</span>, value, <span class="hljs-literal">null</span>)
+        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+    } <span class="hljs-keyword">else</span> {
+</pre></div></div>
 
         </li>
 
@@ -558,10 +549,15 @@ create a swtich statement. non</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
+              <p>Otherwise, add the entry and notify listeners.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>Procession.prototype.push = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>._identifier.next(), value, <span class="hljs-literal">null</span>)
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, I = <span class="hljs-keyword">this</span>._listeners.length; i &lt; I; i++) {
+            <span class="hljs-keyword">this</span>._listeners[i].pushed(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
+        }
+    }
 </pre></div></div>
 
         </li>
@@ -573,88 +569,6 @@ create a swtich statement. non</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
-              <p>You can only push an end of stream <code>null</code> after end of stream.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> id = <span class="hljs-literal">null</span>
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.endOfStream) {
-        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
-    }
-    <span class="hljs-keyword">var</span> envelope = value
-    <span class="hljs-keyword">if</span> (!(value <span class="hljs-keyword">instanceof</span> Envelope)) {
-        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
-            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'endOfStream'</span>, <span class="hljs-literal">null</span>)
-        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
-            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'error'</span>, value)
-        }  <span class="hljs-keyword">else</span> {
-            envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'entry'</span>, value)
-        }
-    }
-    <span class="hljs-keyword">switch</span> (envelope.method) {
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'endOfStream'</span>:
-        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
-        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
-        <span class="hljs-keyword">break</span>
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'error'</span>:
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-29">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
-              </div>
-              <p>If this is an error, we can go ahead add the end of stream <code>null</code> to
-ensure that this closes correctly. Simplifies interface on error, the
-user doens’t have to remember to send null themselves. They’re no
-able to send values after error.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>._consumers.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">shifter</span>) </span>{
-            shifter._purge()
-        }, <span class="hljs-keyword">this</span>)
-        <span class="hljs-keyword">var</span> envelope = <span class="hljs-keyword">new</span> Envelope(<span class="hljs-string">'error'</span>, value)
-        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
-        <span class="hljs-keyword">break</span>
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'entry'</span>:
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-30">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
-              </div>
-              <p>Otherwise, add the entry and notify listeners.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        id = <span class="hljs-keyword">this</span>._identifier.next()
-        <span class="hljs-keyword">this</span>.head = <span class="hljs-keyword">this</span>.head.next = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>, id, envelope, <span class="hljs-literal">null</span>)
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, I = <span class="hljs-keyword">this</span>._listeners.length; i &lt; I; i++) {
-            <span class="hljs-keyword">this</span>._listeners[i].pushed(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.head)
-        }
-        <span class="hljs-keyword">break</span>
-    }
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-31">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
-              </div>
               <p>Notify any waiting consumers, or anyone else waiting on a push.</p>
 
             </div>
@@ -665,11 +579,11 @@ able to send values after error.</p>
         </li>
 
 
-        <li id="section-32">
+        <li id="section-29">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>Shift our dummy shifter to trigger cleanup if no one else is listening.</p>
 
@@ -683,11 +597,11 @@ able to send values after error.</p>
         </li>
 
 
-        <li id="section-33">
+        <li id="section-30">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <p>Called by Consumers as they advance.</p>
 
@@ -696,17 +610,17 @@ able to send values after error.</p>
         </li>
 
 
-        <li id="section-34">
+        <li id="section-31">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
 
             </div>
 
             <div class="content"><div class='highlight'><pre>Procession.prototype._shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
-    <span class="hljs-keyword">if</span> (node.body.method != <span class="hljs-string">'entry'</span>) {
+    <span class="hljs-keyword">if</span> (node.body == <span class="hljs-literal">null</span>) {
         <span class="hljs-keyword">return</span>
     }
     <span class="hljs-keyword">var</span> lesser = <span class="hljs-number">0</span>
@@ -724,11 +638,11 @@ able to send values after error.</p>
         </li>
 
 
-        <li id="section-35">
+        <li id="section-32">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p>We null <code>body</code>, but do not get the bright idea to null <code>id</code>. It is
 our deferred listener boundary.</p>
