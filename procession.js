@@ -68,18 +68,6 @@ function Procession () {
 //
 Procession.prototype._Shifter = Shifter
 
-Procession.raiseError = function (envelope) {
-    if (envelope.method == 'error') {
-        throw envelope.body
-    }
-}
-
-Procession.raiseEndOfStream = function (envelope) {
-    if (envelope == null || envelope.method == 'endOfStream') {
-        throw interrupt('endOfStream')
-    }
-}
-
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued
 // after it is added to to the procession.
