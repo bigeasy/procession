@@ -24,28 +24,6 @@ Shifter.prototype.dequeue = cadence(function (async) {
     })()
 })
 
-Shifter.prototype.get = cadence(function (async, endOfStreamAsError) {
-    var loop = async(function () {
-        this._wait = null
-        var value = this.shift()
-        if (value == null) {
-            this._wait = this._procession.pushed.enter(async())
-        } else {
-            switch (envelope.method) {
-            case 'endOfStream':
-                throw interrupt('endOfStream')
-                break
-            case 'error':
-                throw envelope.body
-                break
-            case 'entry':
-                return [ loop.break, value ]
-                break
-            }
-        }
-    })()
-})
-
 Shifter.prototype._purge = function () {
     while (this.node.next) {
         this._procession._shifted(this.node = this.node.next)
