@@ -17,7 +17,7 @@ Shifter.prototype.dequeue = cadence(function (async) {
     var loop = async(function () {
         this._wait = null
         var value = this.shift()
-        if (value != null) {
+        if (value != null || this.endOfStream) {
             return [ loop.break, value ]
         }
         this._wait = this._procession.pushed.wait(async())
@@ -33,7 +33,7 @@ Shifter.prototype._purge = function () {
 Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
         this.node = this.node.next
-        this.endOfStream = this.node.body.endOfStream
+        this.endOfStream = this.node.body == null
         var body = this.node.body
         this._procession._shifted(this.node)
         return body
