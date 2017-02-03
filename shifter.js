@@ -67,7 +67,7 @@ Shifter.prototype.destroy = function (value) {
     this._purge()
     // We do this so that we do not pump the end of stream, we assume that
     // destroy means to quit without continuning to take any actions.
-    this._pumper = new Pumper(function () {})
+    this._consumer = function (vargs, callback) { callback() }
     this.endOfStream = true
     this.node = new Node(this._procession, null, null, null)
     if (this._wait != null) {
@@ -89,7 +89,22 @@ Shifter.prototype.join = cadence(function (async, condition) {
     })()
 })
 
-function Pumper (operation) {
+Shifter.prototype._pump = cadence(function (async, body) {
+    var loop = async(function (value) {
+        this.dequeue(async())
+    }, function (value) {
+        async(function () {
+            if (this._wait) throw new Error
+            this._consumer.call(null, [ value, async() ])
+        }, function () {
+            if (value == null) {
+                return [ loop.break ]
+            }
+        })
+    })({})
+})
+
+Shifter.prototype.pump = function (operation) {
     var asynchronous = false
     switch (typeof operation) {
     case 'object':
@@ -104,38 +119,17 @@ function Pumper (operation) {
         asynchronous = operation.length == 2
         break
     }
-    this._asynchronous = asynchronous
-    this._operation = new Operation(operation)
-}
-
-// TODO Just wrap `push` in a funtion that calls the callback.
-Pumper.prototype.enqueue = cadence(function (async, body) {
-    async(function () {
-        var vargs = [ body ]
-        if (this._asynchronous) {
-            vargs.push(async())
+    operation = new Operation(operation)
+    if (asynchronous) {
+        this._consumer = operation.apply.bind(operation)
+    } else {
+        this._consumer = function (vargs) {
+            operation.apply(vargs[0])
+            vargs[1]()
         }
-        this._operation.apply(vargs)
-    }, function () {
-        return [ body ]
-    })
-})
-
-Shifter.prototype._pump = cadence(function (async, next) {
-    this._pumper = new Pumper(next)
-    var loop = async(function (value) {
-        if (value == null) {
-            return [ loop.break ]
-        }
-        this.dequeue(async())
-    }, function (value) {
-        this._pumper.enqueue(value, async())
-    })({})
-})
-
-Shifter.prototype.pump = function (next) {
-    this._pump(next, abend)
-    return next
+    }
+    this._pump(abend)
+    return operation
 }
 
 Shifter.prototype.consumer = function () {
