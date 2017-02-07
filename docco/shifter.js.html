@@ -122,7 +122,7 @@ Shifter.prototype._purge = <span class="hljs-function"><span class="hljs-keyword
 
 Shifter.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.endOfStream &amp;&amp; <span class="hljs-keyword">this</span>.node.next) {
-        <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.nex
+        <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.next
         <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-keyword">this</span>.node.body == <span class="hljs-literal">null</span>
         <span class="hljs-keyword">var</span> body = <span class="hljs-keyword">this</span>.node.body
         <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node)
@@ -132,8 +132,7 @@ Shifter.prototype.shift = <span class="hljs-function"><span class="hljs-keyword"
 }
 
 Shifter.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-    <span class="hljs-keyword">this</span>._purge()
-</pre></div></div>
+    <span class="hljs-keyword">this</span>._purge()</pre></div></div>
 
         </li>
 
@@ -144,7 +143,7 @@ Shifter.prototype.destroy = <span class="hljs-function"><span class="hljs-keywor
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>We do this so that we do not pump the end of stream, we assume tha
+              <p>We do this so that we do not pump the end of stream, we assume that
 destroy means to quit without continuning to take any actions.</p>
 
             </div>
@@ -222,9 +221,7 @@ Shifter.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.node.next &amp;&amp; <span class="hljs-keyword">this</span>.node.next.body
 }
 
-<span class="hljs-built_in">module</span>.exports = Shifter
-
-</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = Shifter</pre></div></div>
 
         </li>
 

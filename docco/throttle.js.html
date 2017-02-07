@@ -92,7 +92,7 @@
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Throttle</span> (<span class="hljs-params">procession, limit, property</span>) </span>{
     <span class="hljs-keyword">this</span>._procession = procession
-    <span class="hljs-keyword">this</span>._limit = limi
+    <span class="hljs-keyword">this</span>._limit = limit
     <span class="hljs-keyword">this</span>._property = property || <span class="hljs-string">'size'</span>
 }
 
@@ -110,9 +110,7 @@ Throttle.prototype.enqueue = cadence(<span class="hljs-function"><span class="hl
     })()
 })
 
-<span class="hljs-built_in">module</span>.exports = Throttle
-
-</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = Throttle</pre></div></div>
 
         </li>
 

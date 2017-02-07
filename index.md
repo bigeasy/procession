@@ -2,6 +2,8 @@ Procession is an evented work queue or stream. I use it to create efficent
 evented pipelines of events in my applications. It is a simple alternative to
 Node.js streams for events when back pressure is not needed.
 
+Also, have a look at the [Docco](./docco/).
+
 With Procession you can broadcast an event zero, one or more waiting listeners.
 Listeners listen for events by creating a consumer on the procession and
 listening for the consumer's `shift` function.

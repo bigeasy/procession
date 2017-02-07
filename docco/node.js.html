@@ -124,9 +124,7 @@ node to begin replaying and create a new shifter.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
-<span class="hljs-keyword">var</span> Shifter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./shifter'</span>)
-
-</pre></div></div>
+<span class="hljs-keyword">var</span> Shifter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./shifter'</span>)</pre></div></div>
 
         </li>
 
@@ -138,7 +136,7 @@ node to begin replaying and create a new shifter.</p>
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>Construct a node for the given Procession.</p>
-<p>The <code>module</code> property is a convention I follow for creating objects tha
+<p>The <code>module</code> property is a convention I follow for creating objects that
 envelop other objects. We’re using the word <code>body</code> instead of <code>value</code> for the
 node value becasue I consider this an envelope.</p>
 <hr>
@@ -161,11 +159,9 @@ node value becasue I consider this an envelope.</p>
     <span class="hljs-keyword">this</span>.module = <span class="hljs-string">'procession'</span>
     <span class="hljs-keyword">this</span>._procession = procession
     <span class="hljs-keyword">this</span>.id = id
-    <span class="hljs-keyword">this</span>.next = nex
+    <span class="hljs-keyword">this</span>.next = next
     <span class="hljs-keyword">this</span>.body = body
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -195,9 +191,7 @@ node value becasue I consider this an envelope.</p>
 
             <div class="content"><div class='highlight'><pre>Node.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.next &amp;&amp; <span class="hljs-keyword">this</span>.next.body
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -228,9 +222,7 @@ node value becasue I consider this an envelope.</p>
             <div class="content"><div class='highlight'><pre>Node.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     assert(<span class="hljs-keyword">this</span>.body != <span class="hljs-literal">null</span>, <span class="hljs-string">'node expired'</span>)
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">this</span>._procession._Shifter(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -245,9 +237,7 @@ node value becasue I consider this an envelope.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Node
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Node</pre></div></div>
 
         </li>
 
