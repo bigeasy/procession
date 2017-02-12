@@ -35,7 +35,7 @@ var Deferred = require('./deferred')
 var Counter = require('./counter')
 
 // Orderly destruction of complicated objects.
-var Destructor = require('nascent.destructor')
+var Destructor = require('destructible')
 
 // Exceptions with context.
 var interrupt = require('interrupt').createInterrupter('procession')

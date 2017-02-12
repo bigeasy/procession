@@ -24,9 +24,9 @@
                             "abend":                        "1.0.x",
                             "bintrees":                     "1.0.1",
                             "cadence":                      "1.0.x",
-                            "interrupt":                    "4.0.x",
+                            "interrupt":                    "5.0.x",
                             "operation":                    "1.2.x",
-                            "nascent.destructor":           "0.0.3",
+                            "destructible":           "0.0.0",
                             "signal":                    "1.8.x"
     },
     "devDependencies":
