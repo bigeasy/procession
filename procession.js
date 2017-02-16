@@ -34,8 +34,9 @@ var Deferred = require('./deferred')
 // A listener that keeps count of the values in the queue.
 var Counter = require('./counter')
 
+// TODO Now there is a circular dependency!
 // Orderly destruction of complicated objects.
-var Destructor = require('destructible')
+// var Destructor = require('destructible')
 
 // Exceptions with context.
 var interrupt = require('interrupt').createInterrupter('procession')
