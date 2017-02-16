@@ -89,8 +89,10 @@ Shifter.prototype.pump = function (operation) {
         if (typeof operation.enqueue == 'function') {
             asynchronous = true
             operation = { object: operation, method: 'enqueue' }
-        } else {
+        } else if (typeof operation.push == 'function')  {
             operation = { object: operation, method: 'push' }
+        } else {
+            asynchronous = true
         }
         break
     case 'function':
