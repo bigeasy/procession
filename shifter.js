@@ -104,7 +104,7 @@ Shifter.prototype.pump = function (operation) {
         this._consumer = operation.apply.bind(operation)
     } else {
         this._consumer = function (vargs) {
-            operation.apply(vargs[0])
+            operation.apply([ vargs[0] ])
             vargs[1]()
         }
     }
