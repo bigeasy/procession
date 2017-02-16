@@ -2,7 +2,7 @@
 var cadence = require('cadence')
 
 // Evented message queue.
-var Procession = require('.')
+var Procession = require('./procession')
 
 // Create a splitter that will split the given queue.
 
