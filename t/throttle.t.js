@@ -2,11 +2,11 @@ require('proof/redux')(1, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
-    var Throttle = require('../throttle')
     var first = new Procession
     var second = new Procession
     var shifter = second.shifter()
-    first.shifter().pump(new Throttle(second, 6))
+    second.limit = 6
+    first.shifter().pump(second)
     async(function () {
         var count = 0, loop = async(function () {
             if (count == 12) {

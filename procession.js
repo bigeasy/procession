@@ -7,10 +7,12 @@
 
 // Common utilities.
 var assert = require('assert')
+var nop = require('nop')
 
 // Control-flow utilities.
 var abend = require('abend')
 var cadence = require('cadence')
+var coalesce = require('extant')
 
 // User specified callback wrapper.
 var Operation = require('operation')
@@ -55,6 +57,12 @@ function Procession () {
 
     this.pushed = new Signal
     this.shifted = new Signal
+
+    this.heft = null
+    this.count = 0
+    this.limit = 32
+
+    this._backlog = []
 
     this.addListener(new Counter())
 
@@ -153,10 +161,30 @@ Procession.prototype._shifted = function (node) {
     }
 }
 
-Procession.prototype.enqueue = cadence(function (async, value) {
-    this.push(value)
-    return []
-})
+Procession.prototype._enqueue = function () {
+    if (coalesce(this.heft, this.size) < this.limit) {
+        var backlog = this._backlog.shift()
+        this.push(backlog.value)
+        this.callback.call(null)
+    } else if (this._backlog.length != 0) {
+        his.shifted.wait(this._enqueue.bind(this))
+    }
+}
+
+Procession.prototype.enqueue = function (value, callback) {
+    if (coalesce(this.heft, this.size) >= this.limit) {
+        this._backlog.push({
+            callback: coalesce(callback, nop),
+            value: value
+        })
+        if (this._backlog.length == 1) {
+            this.shifted.wait(this._enqueue.bind(this))
+        }
+    } else {
+        this.push(value)
+        callback()
+    }
+}
 
 Procession.prototype.join = cadence(function (async, condition) {
     var shifter = this.shifter()
