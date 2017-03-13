@@ -13,4 +13,7 @@ Counter.prototype.shifted = function (procession) {
     procession.size--
 }
 
+Counter.prototype.removed = function () {
+}
+
 module.exports = Counter

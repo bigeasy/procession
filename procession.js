@@ -1,9 +1,9 @@
 // One thing to note in the documentation is that this Queue and all my envelope
-// based classes are unapologetically partial to `switch` statements. There
-// are probably some articles out there about how they are considered harmful
-// and how opaque and esoteric function dispatch lookup tables are superior.
-// What is the nature of that reasoning? Because `goto` was harmful, other
-// keywords are looking pretty shady now too?
+// based classes are unapologetically partial to `switch` statements. There are
+// probably some articles out there about how they are considered harmful and
+// how opaque and esoteric function dispatch lookup tables are superior. What is
+// the nature of that reasoning? Because `goto` was harmful, other keywords are
+// looking pretty shady now too?
 
 // Common utilities.
 var assert = require('assert')
@@ -63,6 +63,8 @@ function Procession () {
     this.limit = 32
 
     this._backlog = []
+    this.backlog = 0
+    this._backlogged = false
 
     this.addListener(new Counter())
 
@@ -162,22 +164,28 @@ Procession.prototype._shifted = function (node) {
 }
 
 Procession.prototype._enqueue = function () {
-    if (coalesce(this.heft, this.size) < this.limit) {
+    this._backlogged = false
+    while (this.backlog != 0 && coalesce(this.heft, this.size) < this.limit) {
+        this.backlog--
         var backlog = this._backlog.shift()
         this.push(backlog.value)
-        this.callback.call(null)
-    } else if (this._backlog.length != 0) {
-        his.shifted.wait(this._enqueue.bind(this))
+        backlog.callback.call(null)
+    }
+    if (this.backlog != 0 && ! this._backlogged) {
+        this._backlogged = true
+        this.shifted.wait(this._enqueue.bind(this))
     }
 }
 
 Procession.prototype.enqueue = function (value, callback) {
     if (coalesce(this.heft, this.size) >= this.limit) {
+        this.backlog++
         this._backlog.push({
             callback: coalesce(callback, nop),
             value: value
         })
-        if (this._backlog.length == 1) {
+        if (this.backlog == 1 && ! this._backlogged) {
+            this._backlogged = true
             this.shifted.wait(this._enqueue.bind(this))
         }
     } else {
