@@ -4,7 +4,7 @@ var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
 
-var interrupt = require('interrupt').createInterrupter('conduit')
+var interrupt = require('interrupt').createInterrupter('procession')
 
 function Shifter (procession, head) {
     this.node = head
@@ -59,11 +59,10 @@ Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
-        if (value == null) {
-            throw interrupt('endOfStream')
-        }
         if (condition(value)) {
             return [ loop.break, value ]
+        } else if (value == null) {
+            throw interrupt('endOfStream')
         }
     })()
 })
