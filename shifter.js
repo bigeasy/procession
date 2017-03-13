@@ -9,7 +9,7 @@ var interrupt = require('interrupt').createInterrupter('conduit')
 function Shifter (procession, head) {
     this.node = head
     this._procession = procession
-    this._procession._consumers.push(this)
+    this._procession._shifters.push(this)
     this.endOfStream = false
 }
 
@@ -51,7 +51,7 @@ Shifter.prototype.destroy = function (value) {
     if (this._wait != null) {
         this._procession.pushed.cancel(this._wait)()
     }
-    this._procession._consumers.splice(this._procession._consumers.indexOf(this), 1)
+    this._procession._shifters.splice(this._procession._shifters.indexOf(this), 1)
 }
 
 Shifter.prototype.join = cadence(function (async, condition) {
@@ -112,7 +112,7 @@ Shifter.prototype.pump = function (operation) {
     return operation
 }
 
-Shifter.prototype.consumer = function () {
+Shifter.prototype.shifter = function () {
     return new Shifter(this._procession, this.node)
 }
 

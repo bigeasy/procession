@@ -49,7 +49,7 @@ var interrupt = require('interrupt').createInterrupter('procession')
 function Procession () {
     this._listeners = []
     this._undecorated = []
-    this._consumers = []
+    this._shifters = []
 
     this._identifier = new Identifier
 
@@ -133,7 +133,7 @@ Procession.prototype.push = function (value) {
             this._listeners[i].pushed(this, this.head)
         }
     }
-    // Notify any waiting consumers, or anyone else waiting on a push.
+    // Notify any waiting shifters, or anyone else waiting on a push.
     this.pushed.notify(null, true)
     // Shift our dummy shifter to trigger cleanup if no one else is listening.
     this._follower.shift()
@@ -147,8 +147,8 @@ Procession.prototype._shifted = function (node) {
         return
     }
     var lesser = 0
-    for (var i = 0, I = this._consumers.length; i < I; i++) {
-        if (this._identifier.compare(this._consumers[i].node.id, node.id) < 0) {
+    for (var i = 0, I = this._shifters.length; i < I; i++) {
+        if (this._identifier.compare(this._shifters[i].node.id, node.id) < 0) {
             lesser++
         }
     }
