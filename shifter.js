@@ -1,5 +1,5 @@
 var abend = require('abend')
-var Operation = require('operation/redux')
+var Operation = require('operation/variadic')
 var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
@@ -94,44 +94,25 @@ function operator (vargs, maybeProcession) {
     return { operation: operation, asynchronous: asynchronous }
 }
 
+// Further use of Operation variadic.
+
+//
 Shifter.prototype.pump = function (vargs) {
     var asynchronous = false
     var vargs = Array.prototype.slice.call(arguments)
+    var options = {}
     while (vargs.length != 0) {
-        var asynchronous = false, operation = null
-        var object = vargs.shift()
-        switch (typeof object) {
-        case 'object':
-            if (Array.isArray(object)) {
-                operation = { object: method[1], method: method[0] }
-            } else if (typeof object.enqueue == 'function') {
-                asynchronous = true
-                operation = { object: object, method: 'enqueue' }
-            } else if (typeof object.push == 'function')  {
-                operation = { object: object, method: 'push' }
-            } else if (('object' in object) && ('method' in object)) {
-                operation = object
-            } else {
-                var method = vargs.shift()
-                switch (typeof method) {
-                case 'function':
-                case 'string':
-                    operation = { object: object, method: method }
-                    break
-                default:
-                    throw new Error
-                }
+        if (typeof vargs[0] == 'object' && !(Array.isArray(vargs[0]) && vargs[0].length == 2)) {
+            if (typeof vargs[0].enqueue == 'function') {
+                vargs[0] = [ vargs[0], 'enqueue' ]
+                options.arity = 2
+            } else if (typeof vargs[0].push == 'function') {
+                vargs[0] = [ vargs[0], 'push' ]
+                options.arity = 1
             }
-            break
-        case 'function':
-            operation = { object: null, method: object }
-            asynchronous = object.length == 2
-            break
-        default:
-            throw new Error
         }
-        operation = Operation(operation)
-        var consumer = asynchronous
+        var operation = Operation(vargs, options)
+        var consumer = operation.length == 2
                      ? operation
                      : function (value, callback) {
                            operation(value)
