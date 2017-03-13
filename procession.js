@@ -53,7 +53,7 @@ function Procession () {
 
     this._identifier = new Identifier
 
-    this.head = new Node(this, null, null, null)
+    this.head = new Node(this, this._identifier.next(), null, null)
 
     this.pushed = new Signal
     this.shifted = new Signal
