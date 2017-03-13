@@ -11,6 +11,7 @@ function Shifter (procession, head) {
     this._procession = procession
     this._procession._shifters.push(this)
     this.endOfStream = false
+    this._consumers = []
 }
 
 Shifter.prototype.dequeue = cadence(function (async) {
@@ -45,7 +46,7 @@ Shifter.prototype.destroy = function (value) {
     this._purge()
     // We do this so that we do not pump the end of stream, we assume that
     // destroy means to quit without continuning to take any actions.
-    this._consumer = function (value, callback) { callback() }
+    this._consumers = []
     this.endOfStream = true
     this.node = new Node(this._procession, null, null, null)
     if (this._wait != null) {
@@ -67,13 +68,20 @@ Shifter.prototype.join = cadence(function (async, condition) {
     })()
 })
 
+// The destroy method will cause the pumping to stop. When dequeue is hit again
+// it will return `null` because it will be end of stream. `_consumers` will be
+// an empty array so that null will not be forwarded.
+
+//
 Shifter.prototype._pump = cadence(function (async, body) {
     var loop = async(function (value) {
         this.dequeue(async())
     }, function (value) {
         async(function () {
             assert(!this._wait)
-            this._consumer.call(null, value, async())
+            async.forEach(function (consumer) {
+                consumer(value, async())
+            })(this._consumers)
         }, function () {
             if (value == null) {
                 return [ loop.break ]
@@ -82,34 +90,56 @@ Shifter.prototype._pump = cadence(function (async, body) {
     })({})
 })
 
-Shifter.prototype.pump = function (operation) {
+function operator (vargs, maybeProcession) {
+    return { operation: operation, asynchronous: asynchronous }
+}
+
+Shifter.prototype.pump = function (vargs) {
     var asynchronous = false
-    switch (typeof operation) {
-    case 'object':
-        if (typeof operation.enqueue == 'function') {
-            asynchronous = true
-            operation = { object: operation, method: 'enqueue' }
-        } else if (typeof operation.push == 'function')  {
-            operation = { object: operation, method: 'push' }
-        } else {
-            asynchronous = true
+    var vargs = Array.prototype.slice.call(arguments)
+    while (vargs.length != 0) {
+        var asynchronous = false, operation = null
+        var object = vargs.shift()
+        switch (typeof object) {
+        case 'object':
+            if (Array.isArray(object)) {
+                operation = { object: method[1], method: method[0] }
+            } else if (typeof object.enqueue == 'function') {
+                asynchronous = true
+                operation = { object: object, method: 'enqueue' }
+            } else if (typeof object.push == 'function')  {
+                operation = { object: object, method: 'push' }
+            } else if (('object' in object) && ('method' in object)) {
+                operation = object
+            } else {
+                var method = vargs.shift()
+                switch (typeof method) {
+                case 'function':
+                case 'string':
+                    operation = { object: object, method: method }
+                    break
+                default:
+                    throw new Error
+                }
+            }
+            break
+        case 'function':
+            operation = { object: null, method: object }
+            asynchronous = object.length == 2
+            break
+        default:
+            throw new Error
         }
-        break
-    case 'function':
-        asynchronous = operation.length == 2
-        break
-    }
-    operation = Operation(operation)
-    if (asynchronous) {
-        this._consumer = operation
-    } else {
-        this._consumer = function (value, callback) {
-            operation(value)
-            callback()
-        }
+        operation = Operation(operation)
+        var consumer = asynchronous
+                     ? operation
+                     : function (value, callback) {
+                           operation(value)
+                           callback()
+                       }
+        this._consumers.push(consumer)
     }
     this._pump(abend)
-    return operation
 }
 
 Shifter.prototype.shifter = function () {
