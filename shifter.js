@@ -1,5 +1,5 @@
 var abend = require('abend')
-var Operation = require('operation')
+var Operation = require('operation/redux')
 var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
@@ -45,7 +45,7 @@ Shifter.prototype.destroy = function (value) {
     this._purge()
     // We do this so that we do not pump the end of stream, we assume that
     // destroy means to quit without continuning to take any actions.
-    this._consumer = function (vargs) { vargs[1]() }
+    this._consumer = function (value, callback) { callback() }
     this.endOfStream = true
     this.node = new Node(this._procession, null, null, null)
     if (this._wait != null) {
@@ -72,8 +72,8 @@ Shifter.prototype._pump = cadence(function (async, body) {
         this.dequeue(async())
     }, function (value) {
         async(function () {
-            if (this._wait) throw new Error
-            this._consumer.call(null, [ value, async() ])
+            assert(!this._wait)
+            this._consumer.call(null, value, async())
         }, function () {
             if (value == null) {
                 return [ loop.break ]
@@ -99,13 +99,13 @@ Shifter.prototype.pump = function (operation) {
         asynchronous = operation.length == 2
         break
     }
-    operation = new Operation(operation)
+    operation = Operation(operation)
     if (asynchronous) {
-        this._consumer = operation.apply.bind(operation)
+        this._consumer = operation
     } else {
-        this._consumer = function (vargs) {
-            operation.apply([ vargs[0] ])
-            vargs[1]()
+        this._consumer = function (value, callback) {
+            operation(value)
+            callback()
         }
     }
     this._pump(abend)
