@@ -204,8 +204,9 @@ Procession.prototype.join = cadence(function (async, condition) {
     })
 })
 
-Procession.prototype.pump = function (next) {
-    return this.shifter().pump(next)
+Procession.prototype.pump = function () {
+    var shifter = this.shifter()
+    return shifter.pump.apply(shifter, Array.prototype.slice.call(arguments))
 }
 
 module.exports = Procession
