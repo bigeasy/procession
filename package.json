@@ -25,7 +25,6 @@
                             "bintrees":                     "1.0.1",
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.1",
-                            "destructible":                 "0.1.x",
                             "interrupt":                    "5.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "1.2.x",
