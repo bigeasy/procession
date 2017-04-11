@@ -22,7 +22,7 @@ function Transformer () {
     this._write = vargs.shift()
 }
 
-Transformer.prototype.enqueue = cadence(function (async, value, callback) {
+Transformer.prototype.enqueue = cadence(function (async, value) {
     async(function () {
         if (value == null) {
             return [ value ]

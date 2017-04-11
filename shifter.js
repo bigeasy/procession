@@ -96,21 +96,12 @@ function operator (vargs, maybeProcession) {
 // Further use of Operation variadic.
 
 //
-Shifter.prototype.pump = function (vargs) {
+Shifter.prototype.pump = function () {
     var asynchronous = false
     var vargs = Array.prototype.slice.call(arguments)
     var options = {}
     while (vargs.length != 0) {
-        if (typeof vargs[0] == 'object' && !(Array.isArray(vargs[0]) && vargs[0].length == 2)) {
-            if (typeof vargs[0].enqueue == 'function') {
-                vargs[0] = [ vargs[0], 'enqueue' ]
-                options.arity = 2
-            } else if (typeof vargs[0].push == 'function') {
-                vargs[0] = [ vargs[0], 'push' ]
-                options.arity = 1
-            }
-        }
-        var operation = Operation(vargs, options)
+        var operation = Operation(vargs)
         var consumer = operation.length == 2
                      ? operation
                      : function (value, callback) {

@@ -11,7 +11,7 @@ function prove (async, assert) {
     second.name = 'second'
     var shifter = second.shifter()
     second.limit = 3
-    first.shifter().pump(second)
+    first.shifter().pump(second, 'enqueue')
     first.push(1)
     first.push(1)
     first.push(3)

@@ -39,7 +39,7 @@ function prove (async, assert) {
                 object.destroy()
                 waits.shift()()
             }
-        })
+        }, 'push')
         var f = queue.shifter()
         f.pump(function (value) {
             assert(value, 3, 'function pumped sync')
@@ -57,7 +57,7 @@ function prove (async, assert) {
                 waits.shift()()
                 callback()
             }
-        })
+        }, 'enqueue')
         var f = queue.shifter()
         f.pump(function (value, callback) {
             assert(value, 3, 'function pumped async')
