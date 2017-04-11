@@ -28,7 +28,7 @@
                             "interrupt":                    "5.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "1.2.x",
-                            "signal":                       "1.8.x"
+                            "signal":                       "1.10.x"
     },
     "devDependencies":
     {
