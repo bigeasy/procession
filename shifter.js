@@ -89,10 +89,6 @@ Shifter.prototype._pump = cadence(function (async, body) {
     })({})
 })
 
-function operator (vargs, maybeProcession) {
-    return { operation: operation, asynchronous: asynchronous }
-}
-
 // Further use of Operation variadic.
 
 //
