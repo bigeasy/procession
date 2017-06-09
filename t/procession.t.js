@@ -1,4 +1,4 @@
-require('proof')(12, require('cadence')(prove))
+require('proof')(13, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -78,21 +78,11 @@ function prove (async, assert) {
             duplicate: 4
         }, 'duplicate')
     }, function () {
-        return [ async.break ]
-        var original = queue.shifter()
-        var copies = {
-            shifter: original.shifter(),
-            memento: original.memento()
-        }
-        async(function () {
-            queue.push(4)
-            copies.shifter.shift(async())
-            assert(copies.memento.shift(), 4, 'sync sync copy shift')
-        }, function (value) {
-            assert(copies.memento.shift(), null, 'sync sync copy shift empty')
-            assert(value, 4, 'sync async copy shift')
-            copies.shifter.destroy()
-            copies.memento.destroy()
-        })
+        var shifter = queue.shifter()
+        queue.push(1)
+        queue.push(2)
+        queue.push(3)
+        shifter.destroy()
+        assert(shifter.shift(), null, 'done')
     })
 }
