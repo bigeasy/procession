@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -17,4 +17,6 @@ function prove (async, assert) {
     var shifter = third.shifter()
     first.push(1)
     assert(shifter.shift(), 3, 'transformed')
+    first.push(null)
+    assert(shifter.shift(), null, 'eos')
 }
