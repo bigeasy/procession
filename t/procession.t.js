@@ -1,4 +1,4 @@
-require('proof')(14, require('cadence')(prove))
+require('proof')(15, require('cadence')(prove))
 
 function prove (async, assert) {
     var Procession = require('..')
@@ -77,7 +77,6 @@ function prove (async, assert) {
             original: 4,
             duplicate: 4
         }, 'duplicate')
-    }, function () {
         var shifter = queue.shifter()
         queue.push(1)
         queue.push(2)
@@ -89,5 +88,11 @@ function prove (async, assert) {
             assert(envelope === null, 'unwait')
         })
         shifter.destroy()
+        var shifter = queue.shifter()
+        shifter.dequeue(function (error, envelope) {
+            assert(envelope === null, 'eos')
+        })
+        queue.push(null)
+        queue.push(null)
     })
 }
