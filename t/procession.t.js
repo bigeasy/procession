@@ -37,6 +37,7 @@ function prove (async, assert) {
             push: function (value) {
                 assert(value, 3, 'pump object pumped sync')
                 object.destroy()
+                object.destroy()
                 waits.shift()()
             }
         }, 'push')

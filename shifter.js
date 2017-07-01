@@ -43,10 +43,14 @@ Shifter.prototype.shift = function () {
 }
 
 Shifter.prototype.destroy = function (value) {
+    if (this.destroyed) {
+        return
+    }
     this._purge()
     // We do this so that we do not pump the end of stream, we assume that
     // destroy means to quit without continuning to take any actions.
     this._consumers = []
+    this.destroyed = true
     this.endOfStream = true
     this.node = new Node(this._procession, null, null, null)
     if (this._wait != null) {
