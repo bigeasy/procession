@@ -1,19 +1,24 @@
-var abend = require('abend')
-var Operation = require('operation/variadic')
+// Node.js API.
 var assert = require('assert')
+
+// Contextualized callbacks and event handlers.
+var Operation = require('operation/variadic')
+
+// Control-flow libraries.
 var cadence = require('cadence')
-var Node = require('./node')
+
+// Do nothing.
 var noop = require('nop')
 
 var interrupt = require('interrupt').createInterrupter('procession')
 
+var Pumper = require('./pumper')
+
 function Shifter (procession, head, vargs) {
     this.node = head
-    this._procession = procession
-    this._procession._shifters.push(this)
     this.endOfStream = false
-    this._consumers = []
     this._operation = vargs.length ? Operation(vargs) : noop
+    this.procession = procession
 }
 
 Shifter.prototype.dequeue = cadence(function (async) {
@@ -23,15 +28,9 @@ Shifter.prototype.dequeue = cadence(function (async) {
         if (value != null || this.endOfStream) {
             return [ loop.break, value ]
         }
-        this._wait = this._procession.pushed.wait(async())
+        this._wait = this.procession.pushed.wait(async())
     })()
 })
-
-Shifter.prototype._purge = function () {
-    while (this.node.next) {
-        this._procession._shifted(this.node = this.node.next)
-    }
-}
 
 Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
@@ -39,27 +38,20 @@ Shifter.prototype.shift = function () {
         this.endOfStream = this.node.body == null
         var body = this.node.body
         this._operation.call(null, this.node)
-        this._procession._shifted(this.node)
         return body
     }
     return null
 }
 
 Shifter.prototype.destroy = function (value) {
-    if (this.destroyed) {
-        return
+    if (!this.destroyed) {
+        this.destroyed = true
+        this.endOfStream = true
+        this.node = { body: null, next: null }
+        if (this._wait != null) {
+            this.procession.pushed.cancel(this._wait)()
+        }
     }
-    this._purge()
-    // We do this so that we do not pump the end of stream, we assume that
-    // destroy means to quit without continuning to take any actions.
-    this._consumers = []
-    this.destroyed = true
-    this.endOfStream = true
-    this.node = new Node(this._procession, null, null, null)
-    if (this._wait != null) {
-        this._procession.pushed.cancel(this._wait)()
-    }
-    this._procession._shifters.splice(this._procession._shifters.indexOf(this), 1)
 }
 
 Shifter.prototype.join = cadence(function (async, condition) {
@@ -74,50 +66,12 @@ Shifter.prototype.join = cadence(function (async, condition) {
     })()
 })
 
-// The destroy method will cause the pumping to stop. When dequeue is hit again
-// it will return `null` because it will be end of stream. `_consumers` will be
-// an empty array so that null will not be forwarded.
-
-//
-Shifter.prototype._pump = cadence(function (async, body) {
-    var loop = async(function (value) {
-        this.dequeue(async())
-    }, function (value) {
-        async(function () {
-            assert(!this._wait)
-            async.forEach(function (consumer) {
-                consumer(value, async())
-            })(this._consumers)
-        }, function () {
-            if (value == null) {
-                return [ loop.break ]
-            }
-        })
-    })({})
-})
-
-// Further use of Operation variadic.
-
-//
 Shifter.prototype.pump = function () {
-    var asynchronous = false
-    var vargs = Array.prototype.slice.call(arguments)
-    var options = {}
-    while (vargs.length != 0) {
-        var operation = Operation(vargs)
-        var consumer = operation.length == 2
-                     ? operation
-                     : function (value, callback) {
-                           operation(value)
-                           callback()
-                       }
-        this._consumers.push(consumer)
-    }
-    this._pump(abend)
+    return new Pumper(this, Array.prototype.slice.call(arguments))
 }
 
 Shifter.prototype.shifter = function () {
-    return new Shifter(this._procession, this.node, [])
+    return new Shifter(this.procession, this.node, Array.prototype.slice.call(arguments))
 }
 
 Shifter.prototype.peek = function () {

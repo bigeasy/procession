@@ -11,7 +11,7 @@ function Window () {
     this._header = this.procession.shifter()
     this._undecorated = []
     this._listeners = []
-    new Pumper(this._header, this, '_push').pump()
+    this._header.pump(this, '_push')
 }
 
 // Add a listener that can track values as they are enqueued and dequeued. The

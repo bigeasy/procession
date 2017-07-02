@@ -8,10 +8,10 @@ function prove (async, assert) {
     var third = new Procession
     first.name = 'first'
     second.name = 'second'
-    first.pump(new Transformer(function (value, callback) {
+    first.shifter().pump(new Transformer(function (value, callback) {
         callback(null, value + 1)
     }, second), 'enqueue')
-    second.pump(new Transformer(function (value) {
+    second.shifter().pump(new Transformer(function (value) {
         return value + 1
     }, third), 'enqueue')
     var shifter = third.shifter()

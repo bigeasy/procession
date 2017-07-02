@@ -1,37 +1,24 @@
-require('proof')(7, require('cadence')(prove))
+require('proof')(5, require('cadence')(prove))
 
 function prove (async, assert) {
-    var Heft = require('../heft')
-    var heft = new Heft(function (procession, node) { return node.body })
-    var Procession = require('..')
-    var first = new Procession
+    var Throttle = require('../throttle')
+    var Pumper = require('../pumper')
+    var Procession = require('../procession')
+
+    var throttle = new Throttle(3)
+
     var second = new Procession
-    second.addListener(heft)
-    first.name = 'first'
-    second.name = 'second'
-    var shifter = second.shifter()
-    second.limit = 3
-    first.shifter().pump(second, 'enqueue')
-    first.push(1)
-    first.push(1)
-    first.push(3)
-    second.enqueue(1) // create a backlog of 2
-    first.push(1)
-    first.push(1)
-    first.push(1)
-    assert([
-        first.size, second.backlog, second.size
-    ], [ 2, 2, 3 ], 'throttled')
-    assert(shifter.shift(), 1, 'shifted')
-    assert([
-        first.size, second.backlog, second.size
-    ], [ 2, 2, 2 ], 'too hefty')
-    assert(shifter.shift(), 1, 'shifted')
-    assert([
-        first.size, second.backlog, second.size
-    ], [ 2, 2, 1 ], 'still too hefty')
-    assert(shifter.shift(), 3, 'shifted')
-    assert([
-        first.size, second.backlog, second.size
-    ], [ 0, 1, 3 ], 'flood')
+
+    throttle.procession.push(1)
+    throttle.procession.push(1)
+    throttle.enqueue(1, function (error) {
+        assert(! error, 'directly')
+    })
+    assert(throttle.heft, 3, 'heft')
+    assert(throttle.backlog, 0, 'no backlog')
+    throttle.enqueue(1, function (error) {
+        assert(! error, 'done')
+    })
+    assert(throttle.backlog, 1, 'backlog')
+    throttle.trailer.shift()
 }

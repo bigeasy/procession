@@ -13,10 +13,10 @@ function operation (vargs) {
     }
 }
 
-function Pumper () {
-    var vargs = Array.prototype.slice.call(arguments)
-    this._shifter = vargs.shift()
+function Pumper (shifter, vargs) {
+    this._shifter = shifter
     this._operation = operation(vargs)
+    this._pump(abend)
 }
 
 Pumper.prototype.cancel = function () {
@@ -39,10 +39,5 @@ Pumper.prototype._pump = cadence(function (async) {
         }
     })
 })
-
-// We never need to worry about errors being thrown from `Shifter.dequeue`.
-Pumper.prototype.pump = function () {
-    this._pump(abend)
-}
 
 module.exports = Pumper

@@ -4,19 +4,12 @@ function Index (comparator) {
     this.tree = new RBTree(comparator)
 }
 
-Index.prototype.added = function () {
-}
-
-Index.prototype.pushed = function (procession, node) {
+Index.prototype.pushed = function (node) {
     this.tree.insert(node)
 }
 
-Index.prototype.shifted = function (procession, node) {
+Index.prototype.shifted = function (node) {
     this.tree.remove(node)
-}
-
-Index.prototype.removed = function () {
-    this.tree.clear()
 }
 
 module.exports = Index

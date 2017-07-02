@@ -1,99 +1,53 @@
-require('proof')(15, require('cadence')(prove))
+require('proof')(10, prove)
 
-function prove (async, assert) {
+function prove (assert) {
     var Procession = require('..')
 
     var queue = new Procession()
-    queue.push(1)
-    assert(queue.size, 0, 'zero size')
     var shifter = queue.shifter()
-    queue.push(1)
-    assert(queue.size, 1, 'size of 1')
-    assert(shifter.peek(), 1, 'peek')
-    shifter.shift()
-    assert(queue.size, 0, 'size of 0')
 
-    async(function () {
-        queue.join(function (value) { return value == 1 }, async())
-        queue.push(2)
-        queue.push(1)
-    }, function (value) {
-        assert(value, 1, 'join wait')
-        shifter.dequeue(async())
-    }, function (first) {
-        async(function () {
-            shifter.dequeue(async())
-        }, function (second) {
-            assert([ first, second ], [ 2, 1 ], 'shift available')
-        })
-    }, function () {
-        shifter.dequeue(async())
-        queue.push(2)
-    }, function (value) {
-        assert(value, 2, 'wait shift and tidy')
-        var waits = [ async(), async() ]
-        var object = queue.shifter()
-        object.pump({
-            push: function (value) {
-                assert(value, 3, 'pump object pumped sync')
-                object.destroy()
-                object.destroy()
-                waits.shift()()
-            }
-        }, 'push')
-        var f = queue.shifter()
-        f.pump(function (value) {
-            assert(value, 3, 'function pumped sync')
-            f.destroy()
-            waits.shift()()
-        })
-        queue.push(3)
-    }, function () {
-        var waits = [ async(), async() ]
-        var object = queue.shifter()
-        object.pump({
-            enqueue: function (value, callback) {
-                assert(value, 3, 'pump object pumped async')
-                object.destroy()
-                waits.shift()()
-                callback()
-            }
-        }, 'enqueue')
-        var f = queue.shifter()
-        f.pump(function (value, callback) {
-            assert(value, 3, 'function pumped async')
-            f.destroy()
-            waits.shift()()
-            callback()
-        })
-        queue.push(3)
-    }, function () {
-        var shifter = queue.shifter()
-        var duplicate = shifter.shifter()
-        queue.push(4)
-        assert({
-            original: shifter.shift(),
-            duplicate: duplicate.shift()
-        }, {
-            original: 4,
-            duplicate: 4
-        }, 'duplicate')
-        var shifter = queue.shifter()
-        queue.push(1)
-        queue.push(2)
-        queue.push(3)
-        shifter.destroy()
-        assert(shifter.shift(), null, 'done')
-        var shifter = queue.shifter()
-        shifter.dequeue(function (error, envelope) {
-            assert(envelope === null, 'unwait')
-        })
-        shifter.destroy()
-        var shifter = queue.shifter()
-        shifter.dequeue(function (error, envelope) {
-            assert(envelope === null, 'eos')
-        })
-        queue.push(null)
-        queue.push(null)
+    var destroy = shifter.shifter()
+
+    // TODO Can't I pass another value, like the suggested `destroyed` here?
+    destroy.dequeue(function (error, value, destroyed) {
+        assert(value, null, 'destroyed')
     })
+    destroy.destroy()
+    destroy.destroy()
+
+    shifter.shifter().join(function (value) {
+        return value == 2
+    }, function (error, value) {
+        assert(error, null, 'shift no error')
+        assert(value, 2, 'shift value')
+    })
+
+    shifter.shifter().join(function (value) {
+        return value == 0
+    }, function (error, value) {
+        assert(/^procession#endOfStream$/m.test(error.message), 'shift eos')
+    })
+
+    shifter.dequeue(function (error, value) {
+        assert(error, null, 'dequeue no error')
+        assert(value, 1, 'dequeue value')
+    })
+
+    queue.push(1)
+    queue.push(2)
+    assert(shifter.peek(), 2, 'peek')
+    queue.enqueue(null, function (error) {
+        assert(!error, 'enqueue no error')
+    })
+    queue.push(1)
+
+    shifter.shifter(function (node) {
+        assert(node.body, 2, 'listener')
+    }).shift()
+
+    var array = []
+    shifter.shifter().pump(function (value) { array.push(value) })
+    assert(array, [ 2, null ], 'pump')
+
+    shifter.destroy()
 }
