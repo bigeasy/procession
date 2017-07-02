@@ -112,7 +112,7 @@ Procession.prototype.removeListener = function (listener) {
 
 //
 Procession.prototype.shifter = function () {
-    return new Shifter(this, this.head)
+    return new Shifter(this, this.head, Array.prototype.slice.call(arguments))
 }
 
 // Push an entry or push an error or else push `null` to indicate end of stream.

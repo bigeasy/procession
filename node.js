@@ -46,7 +46,7 @@ Node.prototype.peek = function () {
 //
 Node.prototype.shifter = function () {
     assert(this.body != null, 'node expired')
-    return new this._procession._Shifter(this._procession, this)
+    return new this._procession._Shifter(this._procession, this, [])
 }
 
 // Export as constructor function.

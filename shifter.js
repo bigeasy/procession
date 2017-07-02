@@ -3,15 +3,17 @@ var Operation = require('operation/variadic')
 var assert = require('assert')
 var cadence = require('cadence')
 var Node = require('./node')
+var noop = require('nop')
 
 var interrupt = require('interrupt').createInterrupter('procession')
 
-function Shifter (procession, head) {
+function Shifter (procession, head, vargs) {
     this.node = head
     this._procession = procession
     this._procession._shifters.push(this)
     this.endOfStream = false
     this._consumers = []
+    this._operation = vargs.length ? Operation(vargs) : noop
 }
 
 Shifter.prototype.dequeue = cadence(function (async) {
@@ -36,6 +38,7 @@ Shifter.prototype.shift = function () {
         this.node = this.node.next
         this.endOfStream = this.node.body == null
         var body = this.node.body
+        this._operation.call(null, this.node)
         this._procession._shifted(this.node)
         return body
     }
@@ -114,7 +117,7 @@ Shifter.prototype.pump = function () {
 }
 
 Shifter.prototype.shifter = function () {
-    return new Shifter(this._procession, this.node)
+    return new Shifter(this._procession, this.node, [])
 }
 
 Shifter.prototype.peek = function () {
