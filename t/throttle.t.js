@@ -9,8 +9,8 @@ function prove (async, assert) {
 
     var second = new Procession
 
-    throttle.procession.push(1)
-    throttle.procession.push(1)
+    throttle.push(1)
+    throttle.push(1)
     throttle.enqueue(1, function (error) {
         assert(! error, 'directly')
     })

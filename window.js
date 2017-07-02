@@ -1,18 +1,20 @@
 // Node.js API.
 var assert = require('assert')
+var util = require('util')
 
 var Pumper = require('./pumper')
 var Procession = require('./procession')
 var Deferred = require('./deferred')
 
 function Window () {
-    this.procession = new Procession
-    this.trailer = this.procession.shifter(this, '_shift')
-    this._header = this.procession.shifter()
+    Procession.call(this)
+    this.trailer = this.shifter(this, '_shift')
+    this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
     this._header.pump(this, '_push')
 }
+util.inherits(Window, Procession)
 
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued
@@ -41,7 +43,7 @@ Window.prototype.removeListener = function (listener) {
 
 Window.prototype._push = function (value) {
     if (value != null) {
-        assert(this._header.node == this.procession.head)
+        assert(this._header.node == this.head)
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].pushed(this._header.node)
         }
@@ -54,14 +56,6 @@ Window.prototype._shift = function (node) {
             this._listeners[i].shifted(node)
         }
     }
-}
-
-Window.prototype.push = function (value) {
-    this.procession.push(value)
-}
-
-Window.prototype.shifter = function () {
-    return this.procession.shifter()
 }
 
 module.exports = Window
