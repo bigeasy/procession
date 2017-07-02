@@ -1,18 +1,21 @@
-function Deferred (procession, decorated) {
-    this._procession = procession
+function Deferred (listeners, decorated) {
+    this._listeners = listeners
+    this._sentry = null
     this._decorated = decorated
-    this._after = procession.head.id
 }
 
-Deferred.prototype.pushed = function (procession, node) {
-    this._decorated.pushed(procession, node)
+Deferred.prototype.pushed = function (node) {
+    if (this._sentry == null) {
+        this._sentry = node
+    }
+    this._decorated.pushed(node)
 }
 
-Deferred.prototype.shifted = function (procession, node) {
-    if (this._procession._identifier.compare(this._after, node.id) < 0) {
-        var index = this._procession._undecorated.indexOf(this._decorated)
-        this._procession._listeners[index] = this._decorated
-        this._decorated.shifted(procession, node)
+Deferred.prototype.shifted = function (node) {
+    if (this._sentry === node) {
+        var index = this._listeners.indexOf(this)
+        this._listeners[index] = this._decorated
+        this._decorated.shifted( node)
     }
 }
 

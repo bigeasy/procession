@@ -3,7 +3,7 @@ var assert = require('assert')
 
 var Pumper = require('./pumper')
 var Procession = require('./procession')
-var Deferred = require('./deferred.redux')
+var Deferred = require('./deferred')
 
 function Window () {
     this.procession = new Procession

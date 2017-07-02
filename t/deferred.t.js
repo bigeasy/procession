@@ -1,7 +1,7 @@
 require('proof')(3, prove)
 
 function prove (assert) {
-    var Deferred = require('../deferred.redux')
+    var Deferred = require('../deferred')
     var expect = [{
         node: { value: 1 },
         message: 'pushed set sentry'
