@@ -17,7 +17,7 @@ var Pumper = require('./pumper')
 function Shifter (procession, head, vargs) {
     this.node = head
     this.endOfStream = false
-    this._operation = vargs.length ? Operation(vargs) : noop
+    this._operation = vargs.length ? Operation(vargs, { vargs: true }) : noop
     this.procession = procession
 }
 
