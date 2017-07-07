@@ -6,7 +6,7 @@ var abend = require('abend')
 var Operation = require('operation/variadic')
 
 function operation (vargs) {
-    var operation = Operation(vargs, { vargs: true })
+    var operation = Operation(vargs)
     return operation.length == 2 ? operation : function (value, callback) {
        operation(value)
        callback()
