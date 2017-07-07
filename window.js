@@ -12,6 +12,8 @@ function Window () {
     this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
+    // We're not shifting, we're pushing so it has to wait, because it is
+    // synchronous and no one else will have an opportunity to push.
     this._header.pump(this, '_push')
 }
 util.inherits(Window, Procession)
