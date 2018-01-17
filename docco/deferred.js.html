@@ -20,23 +20,8 @@
             <div id="jump_page">
 
 
-                <a class="source" href="counter.js.html">
-                  counter.js
-                </a>
-
-
                 <a class="source" href="deferred.js.html">
                   deferred.js
-                </a>
-
-
-                <a class="source" href="heft.js.html">
-                  heft.js
-                </a>
-
-
-                <a class="source" href="identifier.js.html">
-                  identifier.js
                 </a>
 
 
@@ -45,13 +30,13 @@
                 </a>
 
 
-                <a class="source" href="node.js.html">
-                  node.js
+                <a class="source" href="procession.js.html">
+                  procession.js
                 </a>
 
 
-                <a class="source" href="procession.js.html">
-                  procession.js
+                <a class="source" href="pumper.js.html">
+                  pumper.js
                 </a>
 
 
@@ -60,8 +45,23 @@
                 </a>
 
 
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
                 <a class="source" href="throttle.js.html">
                   throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
                 </a>
 
             </div>
@@ -88,25 +88,30 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Deferred</span> (<span class="hljs-params">procession, decorated</span>) </span>{
-    <span class="hljs-keyword">this</span>._procession = procession
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Deferred</span> (<span class="hljs-params">listeners, decorated</span>) </span>{
+    <span class="hljs-keyword">this</span>._listeners = listeners
+    <span class="hljs-keyword">this</span>._sentry = <span class="hljs-literal">null</span>
     <span class="hljs-keyword">this</span>._decorated = decorated
-    <span class="hljs-keyword">this</span>._after = procession.head.id
 }
 
-Deferred.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
-    <span class="hljs-keyword">this</span>._decorated.pushed(procession, node)
+Deferred.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._sentry == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">this</span>._sentry = node
+    }
+    <span class="hljs-keyword">this</span>._decorated.pushed(node)
 }
 
-Deferred.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._procession._identifier.compare(<span class="hljs-keyword">this</span>._after, node.id) &lt; <span class="hljs-number">0</span>) {
-        <span class="hljs-keyword">var</span> index = <span class="hljs-keyword">this</span>._procession._undecorated.indexOf(<span class="hljs-keyword">this</span>._decorated)
-        <span class="hljs-keyword">this</span>._procession._listeners[index] = <span class="hljs-keyword">this</span>._decorated
-        <span class="hljs-keyword">this</span>._decorated.shifted(procession, node)
+Deferred.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._sentry === node) {
+        <span class="hljs-keyword">var</span> index = <span class="hljs-keyword">this</span>._listeners.indexOf(<span class="hljs-keyword">this</span>)
+        <span class="hljs-keyword">this</span>._listeners[index] = <span class="hljs-keyword">this</span>._decorated
+        <span class="hljs-keyword">this</span>._decorated.shifted( node)
     }
 }
 
-<span class="hljs-built_in">module</span>.exports = Deferred</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = Deferred
+
+</pre></div></div>
 
         </li>
 

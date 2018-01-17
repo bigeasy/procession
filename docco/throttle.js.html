@@ -20,23 +20,8 @@
             <div id="jump_page">
 
 
-                <a class="source" href="counter.js.html">
-                  counter.js
-                </a>
-
-
                 <a class="source" href="deferred.js.html">
                   deferred.js
-                </a>
-
-
-                <a class="source" href="heft.js.html">
-                  heft.js
-                </a>
-
-
-                <a class="source" href="identifier.js.html">
-                  identifier.js
                 </a>
 
 
@@ -45,13 +30,13 @@
                 </a>
 
 
-                <a class="source" href="node.js.html">
-                  node.js
+                <a class="source" href="procession.js.html">
+                  procession.js
                 </a>
 
 
-                <a class="source" href="procession.js.html">
-                  procession.js
+                <a class="source" href="pumper.js.html">
+                  pumper.js
                 </a>
 
 
@@ -60,8 +45,23 @@
                 </a>
 
 
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
                 <a class="source" href="throttle.js.html">
                   throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
                 </a>
 
             </div>
@@ -85,32 +85,83 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>Node.js API.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> util = <span class="hljs-built_in">require</span>(<span class="hljs-string">'util'</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Throttle</span> (<span class="hljs-params">procession, limit, property</span>) </span>{
-    <span class="hljs-keyword">this</span>._procession = procession
-    <span class="hljs-keyword">this</span>._limit = limit
-    <span class="hljs-keyword">this</span>._property = property || <span class="hljs-string">'size'</span>
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Return the first not null-like value.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> coalesce = <span class="hljs-built_in">require</span>(<span class="hljs-string">'extant'</span>)
+
+<span class="hljs-keyword">var</span> noop = <span class="hljs-built_in">require</span>(<span class="hljs-string">'nop'</span>)
+
+<span class="hljs-keyword">var</span> Window = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./window'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Listener</span> (<span class="hljs-params">throttle, scale</span>) </span>{
+    <span class="hljs-keyword">this</span>._throttle = throttle
+    <span class="hljs-keyword">this</span>._scale = coalesce(scale, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> })
 }
 
-Throttle.prototype.enqueue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, value</span>) </span>{
-    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._procession[<span class="hljs-keyword">this</span>._property] &gt;= <span class="hljs-keyword">this</span>._limit) {
-            <span class="hljs-keyword">this</span>._procession.shifted.wait(<span class="hljs-keyword">async</span>())
-        } <span class="hljs-keyword">else</span> {
-            <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-                <span class="hljs-keyword">this</span>._procession.enqueue(value, <span class="hljs-keyword">async</span>())
-            }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-                <span class="hljs-keyword">return</span> [ loop.break ]
-            })
-        }
-    })()
-})
+Listener.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
+    <span class="hljs-keyword">this</span>._throttle.heft += <span class="hljs-keyword">this</span>._scale.call(<span class="hljs-literal">null</span>, node)
+}
 
-<span class="hljs-built_in">module</span>.exports = Throttle</pre></div></div>
+Listener.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
+    <span class="hljs-keyword">this</span>._throttle.heft -= <span class="hljs-keyword">this</span>._scale.call(<span class="hljs-literal">null</span>, node)
+    <span class="hljs-keyword">this</span>._throttle._enqueue()
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Throttle</span> (<span class="hljs-params">limit, scale</span>) </span>{
+    Window.call(<span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.addListener(<span class="hljs-keyword">new</span> Listener(<span class="hljs-keyword">this</span>, scale))
+    <span class="hljs-keyword">this</span>.limit = limit
+    <span class="hljs-keyword">this</span>.heft = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">this</span>.backlog = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">this</span>._backlog = []
+}
+util.inherits(Throttle, Window)
+
+Throttle.prototype._enqueue = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.heft, <span class="hljs-keyword">this</span>.limit)
+    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">this</span>.backlog != <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-keyword">this</span>.heft &lt; <span class="hljs-keyword">this</span>.limit) {
+        <span class="hljs-keyword">this</span>.backlog--
+        <span class="hljs-keyword">var</span> backlog = <span class="hljs-keyword">this</span>._backlog.shift()
+        <span class="hljs-keyword">this</span>.push(backlog.value)
+        backlog.callback.call(<span class="hljs-literal">null</span>)
+    }
+}
+
+Throttle.prototype.enqueue = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, callback</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.heft &lt; <span class="hljs-keyword">this</span>.limit) {
+        <span class="hljs-keyword">this</span>.push(value)
+        callback()
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">this</span>.backlog++
+        <span class="hljs-keyword">this</span>._backlog.push({
+            <span class="hljs-attr">callback</span>: coalesce(callback, noop),
+            <span class="hljs-attr">value</span>: value
+        })
+    }
+}
+
+<span class="hljs-built_in">module</span>.exports = Throttle
+
+</pre></div></div>
 
         </li>
 

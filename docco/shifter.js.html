@@ -20,23 +20,8 @@
             <div id="jump_page">
 
 
-                <a class="source" href="counter.js.html">
-                  counter.js
-                </a>
-
-
                 <a class="source" href="deferred.js.html">
                   deferred.js
-                </a>
-
-
-                <a class="source" href="heft.js.html">
-                  heft.js
-                </a>
-
-
-                <a class="source" href="identifier.js.html">
-                  identifier.js
                 </a>
 
 
@@ -45,13 +30,13 @@
                 </a>
 
 
-                <a class="source" href="node.js.html">
-                  node.js
+                <a class="source" href="procession.js.html">
+                  procession.js
                 </a>
 
 
-                <a class="source" href="procession.js.html">
-                  procession.js
+                <a class="source" href="pumper.js.html">
+                  pumper.js
                 </a>
 
 
@@ -60,8 +45,23 @@
                 </a>
 
 
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
                 <a class="source" href="throttle.js.html">
                   throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
                 </a>
 
             </div>
@@ -85,54 +85,13 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>Node.js API.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
-<span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation'</span>)
-<span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
-<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
-<span class="hljs-keyword">var</span> Node = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./node'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
 
-<span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'conduit'</span>)
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Shifter</span> (<span class="hljs-params">procession, head</span>) </span>{
-    <span class="hljs-keyword">this</span>.node = head
-    <span class="hljs-keyword">this</span>._procession = procession
-    <span class="hljs-keyword">this</span>._procession._consumers.push(<span class="hljs-keyword">this</span>)
-    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">false</span>
-}
-
-Shifter.prototype.dequeue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
-    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-        <span class="hljs-keyword">this</span>._wait = <span class="hljs-literal">null</span>
-        <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.shift()
-        <span class="hljs-keyword">if</span> (value != <span class="hljs-literal">null</span> || <span class="hljs-keyword">this</span>.endOfStream) {
-            <span class="hljs-keyword">return</span> [ loop.break, value ]
-        }
-        <span class="hljs-keyword">this</span>._wait = <span class="hljs-keyword">this</span>._procession.pushed.wait(<span class="hljs-keyword">async</span>())
-    })()
-})
-
-Shifter.prototype._purge = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">this</span>.node.next) {
-        <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.next)
-    }
-}
-
-Shifter.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.endOfStream &amp;&amp; <span class="hljs-keyword">this</span>.node.next) {
-        <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.next
-        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-keyword">this</span>.node.body == <span class="hljs-literal">null</span>
-        <span class="hljs-keyword">var</span> body = <span class="hljs-keyword">this</span>.node.body
-        <span class="hljs-keyword">this</span>._procession._shifted(<span class="hljs-keyword">this</span>.node)
-        <span class="hljs-keyword">return</span> body
-    }
-    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
-}
-
-Shifter.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-    <span class="hljs-keyword">this</span>._purge()</pre></div></div>
+</pre></div></div>
 
         </li>
 
@@ -143,85 +102,117 @@ Shifter.prototype.destroy = <span class="hljs-function"><span class="hljs-keywor
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>We do this so that we do not pump the end of stream, we assume that
-destroy means to quit without continuning to take any actions.</p>
+              <p>Contextualized callbacks and event handlers.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>._consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">vargs</span>) </span>{ vargs[<span class="hljs-number">1</span>]() }
-    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
-    <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">new</span> Node(<span class="hljs-keyword">this</span>._procession, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._wait != <span class="hljs-literal">null</span>) {
-        <span class="hljs-keyword">this</span>._procession.pushed.cancel(<span class="hljs-keyword">this</span>._wait)()
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation/variadic'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Control-flow libraries.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Do nothing.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> noop = <span class="hljs-built_in">require</span>(<span class="hljs-string">'nop'</span>)
+
+<span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'procession'</span>)
+
+<span class="hljs-keyword">var</span> Pumper = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./pumper'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Shifter</span> (<span class="hljs-params">procession, head, vargs</span>) </span>{
+    <span class="hljs-keyword">this</span>.node = head
+    <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">this</span>._operation = vargs.length ? Operation(vargs) : noop
+    <span class="hljs-keyword">this</span>.procession = procession
+}
+
+Shifter.prototype.dequeue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-literal">null</span>
+        <span class="hljs-keyword">var</span> value = <span class="hljs-keyword">this</span>.shift()
+        <span class="hljs-keyword">if</span> (value != <span class="hljs-literal">null</span> || <span class="hljs-keyword">this</span>.endOfStream) {
+            <span class="hljs-keyword">return</span> [ loop.break, value ]
+        }
+        <span class="hljs-keyword">this</span>._wait = <span class="hljs-keyword">this</span>.procession.pushed.wait(<span class="hljs-keyword">async</span>())
+    })()
+})
+
+Shifter.prototype.shift = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.endOfStream &amp;&amp; <span class="hljs-keyword">this</span>.node.next) {
+        <span class="hljs-keyword">this</span>.node = <span class="hljs-keyword">this</span>.node.next
+        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-keyword">this</span>.node.body == <span class="hljs-literal">null</span>
+        <span class="hljs-keyword">var</span> body = <span class="hljs-keyword">this</span>.node.body
+        <span class="hljs-keyword">this</span>._operation.call(<span class="hljs-literal">null</span>, <span class="hljs-keyword">this</span>.node)
+        <span class="hljs-keyword">return</span> body
     }
-    <span class="hljs-keyword">this</span>._procession._consumers.splice(<span class="hljs-keyword">this</span>._procession._consumers.indexOf(<span class="hljs-keyword">this</span>), <span class="hljs-number">1</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+}
+
+Shifter.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.destroyed) {
+        <span class="hljs-keyword">this</span>.destroyed = <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">this</span>.endOfStream = <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">this</span>.node = { <span class="hljs-attr">body</span>: <span class="hljs-literal">null</span>, <span class="hljs-attr">next</span>: <span class="hljs-literal">null</span> }
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._wait != <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">this</span>.procession.pushed.cancel(<span class="hljs-keyword">this</span>._wait)()
+        }
+    }
 }
 
 Shifter.prototype.join = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, condition</span>) </span>{
     <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
         <span class="hljs-keyword">this</span>.dequeue(<span class="hljs-keyword">async</span>())
     }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'endOfStream'</span>)
-        }
         <span class="hljs-keyword">if</span> (condition(value)) {
             <span class="hljs-keyword">return</span> [ loop.break, value ]
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'endOfStream'</span>)
         }
     })()
 })
 
-Shifter.prototype._pump = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, body</span>) </span>{
-    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-        <span class="hljs-keyword">this</span>.dequeue(<span class="hljs-keyword">async</span>())
-    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-        <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._wait) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>
-            <span class="hljs-keyword">this</span>._consumer.call(<span class="hljs-literal">null</span>, [ value, <span class="hljs-keyword">async</span>() ])
-        }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
-                <span class="hljs-keyword">return</span> [ loop.break ]
-            }
-        })
-    })({})
-})
-
-Shifter.prototype.pump = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">operation</span>) </span>{
-    <span class="hljs-keyword">var</span> asynchronous = <span class="hljs-literal">false</span>
-    <span class="hljs-keyword">switch</span> (<span class="hljs-keyword">typeof</span> operation) {
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'object'</span>:
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> operation.enqueue == <span class="hljs-string">'function'</span>) {
-            asynchronous = <span class="hljs-literal">true</span>
-            operation = { <span class="hljs-attr">object</span>: operation, <span class="hljs-attr">method</span>: <span class="hljs-string">'enqueue'</span> }
-        } <span class="hljs-keyword">else</span> {
-            operation = { <span class="hljs-attr">object</span>: operation, <span class="hljs-attr">method</span>: <span class="hljs-string">'push'</span> }
-        }
-        <span class="hljs-keyword">break</span>
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'function'</span>:
-        asynchronous = operation.length == <span class="hljs-number">2</span>
-        <span class="hljs-keyword">break</span>
-    }
-    operation = <span class="hljs-keyword">new</span> Operation(operation)
-    <span class="hljs-keyword">if</span> (asynchronous) {
-        <span class="hljs-keyword">this</span>._consumer = operation.apply.bind(operation)
-    } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">this</span>._consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">vargs</span>) </span>{
-            operation.apply(vargs[<span class="hljs-number">0</span>])
-            vargs[<span class="hljs-number">1</span>]()
-        }
-    }
-    <span class="hljs-keyword">this</span>._pump(abend)
-    <span class="hljs-keyword">return</span> operation
+Shifter.prototype.pump = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Pumper(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>))
 }
 
-Shifter.prototype.consumer = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Shifter(<span class="hljs-keyword">this</span>._procession, <span class="hljs-keyword">this</span>.node)
+Shifter.prototype.shifter = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Shifter(<span class="hljs-keyword">this</span>.procession, <span class="hljs-keyword">this</span>.node, <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>))
 }
 
 Shifter.prototype.peek = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.node.next &amp;&amp; <span class="hljs-keyword">this</span>.node.next.body
 }
 
-<span class="hljs-built_in">module</span>.exports = Shifter</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = Shifter
+
+</pre></div></div>
 
         </li>
 

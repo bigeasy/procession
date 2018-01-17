@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>pumper.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="deferred.js.html">
+                  deferred.js
+                </a>
+
+
+                <a class="source" href="indexer.js.html">
+                  indexer.js
+                </a>
+
+
+                <a class="source" href="procession.js.html">
+                  procession.js
+                </a>
+
+
+                <a class="source" href="pumper.js.html">
+                  pumper.js
+                </a>
+
+
+                <a class="source" href="shifter.js.html">
+                  shifter.js
+                </a>
+
+
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
+                <a class="source" href="throttle.js.html">
+                  throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>pumper.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Control-flow libraries.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+<span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Contextualized callbacks and event handlers.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation/variadic'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">operation</span> (<span class="hljs-params">vargs</span>) </span>{
+    <span class="hljs-keyword">var</span> operation = Operation(vargs)
+    <span class="hljs-keyword">return</span> operation.length == <span class="hljs-number">2</span> ? operation : <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, callback</span>) </span>{
+       operation(value)
+       callback()
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Pumper</span> (<span class="hljs-params">shifter, vargs</span>) </span>{
+    <span class="hljs-keyword">this</span>._shifter = shifter
+    <span class="hljs-keyword">this</span>._operation = operation(vargs)
+    <span class="hljs-keyword">this</span>._pump(abend)
+}
+
+Pumper.prototype.cancel = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>._shifter.destroy()
+}
+
+Pumper.prototype._pump = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
+    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">this</span>._shifter.dequeue(<span class="hljs-keyword">async</span>())
+        }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+            <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+                <span class="hljs-keyword">return</span> [ loop.break ]
+            }
+            <span class="hljs-keyword">this</span>._operation.call(<span class="hljs-literal">null</span>, value, <span class="hljs-keyword">async</span>())
+        })()
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>._shifter.destroyed) {
+            <span class="hljs-keyword">this</span>._operation.call(<span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-keyword">async</span>())
+        }
+    })
+})
+
+<span class="hljs-built_in">module</span>.exports = Pumper
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>

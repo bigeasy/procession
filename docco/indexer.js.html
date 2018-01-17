@@ -20,23 +20,8 @@
             <div id="jump_page">
 
 
-                <a class="source" href="counter.js.html">
-                  counter.js
-                </a>
-
-
                 <a class="source" href="deferred.js.html">
                   deferred.js
-                </a>
-
-
-                <a class="source" href="heft.js.html">
-                  heft.js
-                </a>
-
-
-                <a class="source" href="identifier.js.html">
-                  identifier.js
                 </a>
 
 
@@ -45,13 +30,13 @@
                 </a>
 
 
-                <a class="source" href="node.js.html">
-                  node.js
+                <a class="source" href="procession.js.html">
+                  procession.js
                 </a>
 
 
-                <a class="source" href="procession.js.html">
-                  procession.js
+                <a class="source" href="pumper.js.html">
+                  pumper.js
                 </a>
 
 
@@ -60,8 +45,23 @@
                 </a>
 
 
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
                 <a class="source" href="throttle.js.html">
                   throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
                 </a>
 
             </div>
@@ -94,22 +94,17 @@
     <span class="hljs-keyword">this</span>.tree = <span class="hljs-keyword">new</span> RBTree(comparator)
 }
 
-Index.prototype.added = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-}
-
-Index.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
+Index.prototype.pushed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
     <span class="hljs-keyword">this</span>.tree.insert(node)
 }
 
-Index.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">procession, node</span>) </span>{
+Index.prototype.shifted = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">node</span>) </span>{
     <span class="hljs-keyword">this</span>.tree.remove(node)
 }
 
-Index.prototype.removed = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>.tree.clear()
-}
+<span class="hljs-built_in">module</span>.exports = Index
 
-<span class="hljs-built_in">module</span>.exports = Index</pre></div></div>
+</pre></div></div>
 
         </li>
 

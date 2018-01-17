@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>transformer.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="deferred.js.html">
+                  deferred.js
+                </a>
+
+
+                <a class="source" href="indexer.js.html">
+                  indexer.js
+                </a>
+
+
+                <a class="source" href="procession.js.html">
+                  procession.js
+                </a>
+
+
+                <a class="source" href="pumper.js.html">
+                  pumper.js
+                </a>
+
+
+                <a class="source" href="shifter.js.html">
+                  shifter.js
+                </a>
+
+
+                <a class="source" href="splitter.js.html">
+                  splitter.js
+                </a>
+
+
+                <a class="source" href="throttle.js.html">
+                  throttle.js
+                </a>
+
+
+                <a class="source" href="transformer.js.html">
+                  transformer.js
+                </a>
+
+
+                <a class="source" href="window.js.html">
+                  window.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>transformer.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Sketch of a tranform. No use for it yet.</p>
+<p>Maybe it is also a filter where if you return <code>null</code> from the transform
+operation the value is not enqueued.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>First use of Operation variadic helpers.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Operation = <span class="hljs-built_in">require</span>(<span class="hljs-string">'operation/variadic'</span>)
+<span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Transformer</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> vargs = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>)
+    <span class="hljs-keyword">var</span> operation = Operation(vargs)
+    <span class="hljs-keyword">if</span> (operation.length == <span class="hljs-number">2</span>) {
+        <span class="hljs-keyword">this</span>._operation = operation
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">this</span>._operation = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, callback</span>) </span>{
+            callback(<span class="hljs-literal">null</span>, operation(value))
+        }
+    }
+    <span class="hljs-keyword">this</span>._write = vargs.shift()
+}
+
+Transformer.prototype.enqueue = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, value</span>) </span>{
+    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">return</span> [ value ]
+        }
+        <span class="hljs-keyword">this</span>._operation(value, <span class="hljs-keyword">async</span>())
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+        <span class="hljs-keyword">this</span>._write.enqueue(value, <span class="hljs-keyword">async</span>())
+    })
+})
+
+<span class="hljs-built_in">module</span>.exports = Transformer
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
