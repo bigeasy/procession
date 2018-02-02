@@ -33,7 +33,6 @@ function Throttle (limit, scale) {
 util.inherits(Throttle, Window)
 
 Throttle.prototype._enqueue = function () {
-    console.log(this.heft, this.limit)
     while (this.backlog != 0 && this.heft < this.limit) {
         this.backlog--
         var backlog = this._backlog.shift()

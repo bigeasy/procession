@@ -1,6 +1,5 @@
 // Control-flow libraries.
 var cadence = require('cadence')
-var abend = require('abend')
 
 // Contextualized callbacks and event handlers.
 var Operation = require('operation/variadic')
@@ -13,20 +12,16 @@ function operation (vargs) {
     }
 }
 
-function Pumper (shifter, vargs) {
-    this._shifter = shifter
+function Pump (shifter, vargs) {
+    vargs = Array.prototype.slice.call(arguments)
+    this.shifter = vargs.shift()
     this._operation = operation(vargs)
-    this._pump(abend)
 }
 
-Pumper.prototype.cancel = function () {
-    this._shifter.destroy()
-}
-
-Pumper.prototype._pump = cadence(function (async) {
+Pump.prototype.pump = cadence(function (async) {
     async(function () {
         var loop = async(function () {
-            this._shifter.dequeue(async())
+            this.shifter.dequeue(async())
         }, function (value) {
             if (value == null) {
                 return [ loop.break ]
@@ -34,10 +29,10 @@ Pumper.prototype._pump = cadence(function (async) {
             this._operation.call(null, value, async())
         })()
     }, function () {
-        if (!this._shifter.destroyed) {
+        if (!this.shifter.destroyed) {
             this._operation.call(null, null, async())
         }
     })
 })
 
-module.exports = Pumper
+module.exports = Pump

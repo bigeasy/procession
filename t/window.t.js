@@ -3,6 +3,7 @@ require('proof')(2, require('cadence')(prove))
 function prove (async, assert) {
     var Window = require('../window')
     var window = new Window
+    var abend = require('abend')
 
     var listener = {
         pushed: function (node) {
@@ -12,6 +13,7 @@ function prove (async, assert) {
             assert(node.body, { value: 1 }, 'shifted')
         }
     }
+    window.listen(abend)
     window.addListener(listener)
 
     window.push({ value: 1 })

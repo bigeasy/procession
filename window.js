@@ -2,9 +2,9 @@
 var assert = require('assert')
 var util = require('util')
 
-var Pumper = require('./pumper')
 var Procession = require('./procession')
 var Deferred = require('./deferred')
+var Pump = require('./pump')
 
 function Window () {
     Procession.call(this)
@@ -12,11 +12,13 @@ function Window () {
     this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
-    // We're not shifting, we're pushing so it has to wait, because it is
-    // synchronous and no one else will have an opportunity to push.
-    this._header.pump(this, '_push')
+    this._pump = new Pump(this._header, this, '_push')
 }
 util.inherits(Window, Procession)
+
+Window.prototype.listen = function (callback) {
+    this._pump.pump(callback)
+}
 
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued

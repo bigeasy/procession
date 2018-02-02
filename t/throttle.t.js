@@ -2,10 +2,11 @@ require('proof')(5, require('cadence')(prove))
 
 function prove (async, assert) {
     var Throttle = require('../throttle')
-    var Pumper = require('../pumper')
     var Procession = require('../procession')
+    var abend = require('abend')
 
     var throttle = new Throttle(3)
+    throttle.listen(abend)
 
     var second = new Procession
 

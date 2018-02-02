@@ -10,7 +10,6 @@ var assert = require('assert')
 var nop = require('nop')
 
 // Control-flow utilities.
-var abend = require('abend')
 var cadence = require('cadence')
 var coalesce = require('extant')
 

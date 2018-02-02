@@ -21,7 +21,6 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.0.x",
                             "bintrees":                     "1.0.2",
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
@@ -32,6 +31,7 @@
     },
     "devDependencies":
     {
+                            "abend":                        "1.0.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "procession",

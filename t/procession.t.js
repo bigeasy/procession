@@ -1,4 +1,4 @@
-require('proof')(10, prove)
+require('proof')(9, prove)
 
 function prove (assert) {
     var Procession = require('..')
@@ -44,10 +44,6 @@ function prove (assert) {
     shifter.shifter(function (node) {
         assert(node.body, 2, 'listener')
     }).shift()
-
-    var array = []
-    shifter.shifter().pump(function (value) { array.push(value) })
-    assert(array, [ 2, null ], 'pump')
 
     shifter.destroy()
 }

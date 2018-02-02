@@ -12,8 +12,6 @@ var noop = require('nop')
 
 var interrupt = require('interrupt').createInterrupter('procession')
 
-var Pumper = require('./pumper')
-
 function Shifter (procession, head, vargs) {
     this.node = head
     this.endOfStream = false
@@ -65,10 +63,6 @@ Shifter.prototype.join = cadence(function (async, condition) {
         }
     })()
 })
-
-Shifter.prototype.pump = function () {
-    return new Pumper(this, Array.prototype.slice.call(arguments))
-}
 
 Shifter.prototype.shifter = function () {
     return new Shifter(this.procession, this.node, Array.prototype.slice.call(arguments))
