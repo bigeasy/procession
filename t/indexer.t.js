@@ -1,6 +1,6 @@
 require('proof')(2, prove)
 
-function prove (assert) {
+function prove (okay) {
     var Indexer = require('../indexer')
 
     var indexer = new Indexer(function (left, right) {
@@ -8,7 +8,7 @@ function prove (assert) {
     })
 
     indexer.pushed({ body: 1 })
-    assert(indexer.tree.size, 1, 'pushed')
+    okay(indexer.tree.size, 1, 'pushed')
     indexer.shifted({ body: 1 })
-    assert(indexer.tree.size, 0, 'shifted')
+    okay(indexer.tree.size, 0, 'shifted')
 }

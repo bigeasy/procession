@@ -1,6 +1,6 @@
 require('proof')(5, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var Throttle = require('../throttle')
     var Procession = require('../procession')
     var abend = require('abend')
@@ -13,13 +13,13 @@ function prove (async, assert) {
     throttle.push(1)
     throttle.push(1)
     throttle.enqueue(1, function (error) {
-        assert(! error, 'directly')
+        okay(! error, 'directly')
     })
-    assert(throttle.heft, 3, 'heft')
-    assert(throttle.backlog, 0, 'no backlog')
+    okay(throttle.heft, 3, 'heft')
+    okay(throttle.backlog, 0, 'no backlog')
     throttle.enqueue(1, function (error) {
-        assert(! error, 'done')
+        okay(! error, 'done')
     })
-    assert(throttle.backlog, 1, 'backlog')
+    okay(throttle.backlog, 1, 'backlog')
     throttle.trailer.shift()
 }

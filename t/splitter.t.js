@@ -1,6 +1,6 @@
 require('proof')(3, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var Splitter = require('../splitter')
     var Procession = require('..')
     var queue = new Procession
@@ -16,13 +16,13 @@ function prove (async, assert) {
         queue.push({ method: 'able', body: 3 })
         queue.push({ method: 'baker', body: 4 })
     }, function (envelope) {
-        assert(envelope, { method: 'baker', body: 4 }, 'pull')
+        okay(envelope, { method: 'baker', body: 4 }, 'pull')
         splitter.dequeue('able', async())
     }, function (envelope) {
-        assert(envelope, { method: 'able', body: 1 }, 'extant')
+        okay(envelope, { method: 'able', body: 1 }, 'extant')
         splitter.dequeue('baker', async())
         queue.push(null)
     }, function (envelope) {
-        assert(envelope, null, 'eos')
+        okay(envelope, null, 'eos')
     })
 }

@@ -1,6 +1,6 @@
 require('proof')(9, prove)
 
-function prove (assert) {
+function prove (okay) {
     var Procession = require('..')
 
     var queue = new Procession()
@@ -10,7 +10,7 @@ function prove (assert) {
 
     // TODO Can't I pass another value, like the suggested `destroyed` here?
     destroy.dequeue(function (error, value, destroyed) {
-        assert(value, null, 'destroyed')
+        okay(value, null, 'destroyed')
     })
     destroy.destroy()
     destroy.destroy()
@@ -18,31 +18,31 @@ function prove (assert) {
     shifter.shifter().join(function (value) {
         return value == 2
     }, function (error, value) {
-        assert(error, null, 'shift no error')
-        assert(value, 2, 'shift value')
+        okay(error, null, 'shift no error')
+        okay(value, 2, 'shift value')
     })
 
     shifter.shifter().join(function (value) {
         return value == 0
     }, function (error, value) {
-        assert(/^procession#endOfStream$/m.test(error.message), 'shift eos')
+        okay(/^procession#endOfStream$/m.test(error.message), 'shift eos')
     })
 
     shifter.dequeue(function (error, value) {
-        assert(error, null, 'dequeue no error')
-        assert(value, 1, 'dequeue value')
+        okay(error, null, 'dequeue no error')
+        okay(value, 1, 'dequeue value')
     })
 
     queue.push(1)
     queue.push(2)
-    assert(shifter.peek(), 2, 'peek')
+    okay(shifter.peek(), 2, 'peek')
     queue.enqueue(null, function (error) {
-        assert(!error, 'enqueue no error')
+        okay(!error, 'enqueue no error')
     })
     queue.push(1)
 
     shifter.shifter(function (node) {
-        assert(node.body, 2, 'listener')
+        okay(node.body, 2, 'listener')
     }).shift()
 
     shifter.destroy()

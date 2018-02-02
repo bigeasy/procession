@@ -1,6 +1,6 @@
 require('proof')(2, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var Procession = require('..')
     var Pump = require('../pump')
     var Transformer = require('../transformer')
@@ -22,7 +22,7 @@ function prove (async, assert) {
     pumps.second.pump(abend)
     var shifter = third.shifter()
     first.push(1)
-    assert(shifter.shift(), 3, 'transformed')
+    okay(shifter.shift(), 3, 'transformed')
     first.push(null)
-    assert(shifter.shift(), null, 'eos')
+    okay(shifter.shift(), null, 'eos')
 }

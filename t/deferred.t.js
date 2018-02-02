@@ -1,6 +1,6 @@
 require('proof')(3, prove)
 
-function prove (assert) {
+function prove (okay) {
     var Deferred = require('../deferred')
     var expect = [{
         node: { value: 1 },
@@ -13,10 +13,10 @@ function prove (assert) {
     var deferred = new Deferred(listeners, {
         pushed: function (node) {
             var expected = expect.shift()
-            assert(node, expected.node, expected.message)
+            okay(node, expected.node, expected.message)
         },
         shifted: function (node) {
-            assert(node, { value: 1 }, 'shifted')
+            okay(node, { value: 1 }, 'shifted')
         }
     })
     var node = { value: 1 }
