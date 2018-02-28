@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, okay) {
     var Procession = require('..')
@@ -6,6 +6,10 @@ function prove (async, okay) {
     var abend = require('abend')
 
     var queue = new Procession()
+
+    var next = new Procession()
+    var pumpify = queue.shifter().pumpify(next)
+    next = next.shifter()
 
     var pump = new Pump(queue.shifter(), [function (value) {
         okay(value, 1, 'pushed')
@@ -22,4 +26,6 @@ function prove (async, okay) {
     }])
     pump.pump(abend)
     queue.push(null)
+
+    okay(next.shift(), 1, 'pumpify')
 }
