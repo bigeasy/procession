@@ -60,7 +60,7 @@ Shifter.prototype.dequeue = cadence(function (async) {
 //
 Shifter.prototype.pumpify = function (queue) {
     var pump = new Pump(this, queue, 'enqueue')
-    pump.pump(abend)
+    pump.pumpify(abend)
     return pump
 }
 

@@ -14,7 +14,7 @@ function prove (async, okay) {
     var pump = new Pump(queue.shifter(), [function (value) {
         okay(value, 1, 'pushed')
     }])
-    pump.pump(abend)
+    pump.pumpify(abend)
 
     queue.push(1)
     pump.shifter.destroy()
@@ -24,7 +24,7 @@ function prove (async, okay) {
         okay(value, null, 'enqueued')
         callback()
     }])
-    pump.pump(abend)
+    pump.pumpify(abend)
     queue.push(null)
 
     okay(next.shift(), 1, 'pumpify')

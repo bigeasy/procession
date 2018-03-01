@@ -14,7 +14,7 @@ function Window () {
     this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
-    new Pump(this._header, this, '_push').pump(abend)
+    new Pump(this._header, this, '_push').pumpify(abend)
 }
 util.inherits(Window, Procession)
 
