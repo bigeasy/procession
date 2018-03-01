@@ -2,9 +2,11 @@ require('proof')(2, require('cadence')(prove))
 
 function prove (async, okay) {
     var Procession = require('..')
+    var Destructible = require('destructible')
     var Pump = require('../pump')
     var abend = require('abend')
 
+    var destructible = new Destructible('t/pump.t.js')
     var queue = new Procession()
 
     var next = new Procession()
@@ -24,8 +26,13 @@ function prove (async, okay) {
         okay(value, null, 'enqueued')
         callback()
     }])
-    pump.pumpify(abend)
-    queue.push(null)
+    async(function () {
+        destructible.monitor('pump', pump, 'monitor', async())
+    }, function () {
+        queue.push(null)
 
-    okay(next.shift(), 1, 'pumpify')
+        okay(next.shift(), 1, 'pumpify')
+
+        destructible.destroy()
+    })
 }
