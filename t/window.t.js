@@ -13,7 +13,6 @@ function prove (async, okay) {
             okay(node.body, { value: 1 }, 'shifted')
         }
     }
-    window.listen(abend)
     window.addListener(listener)
 
     window.push({ value: 1 })
