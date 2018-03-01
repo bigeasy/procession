@@ -18,7 +18,7 @@ function Pump (shifter, vargs) {
     this._operation = operation(vargs)
 }
 
-Pump.prototype.pump = cadence(function (async) {
+Pump.prototype.pumpify = cadence(function (async) {
     async(function () {
         var loop = async(function () {
             this.shifter.dequeue(async())
