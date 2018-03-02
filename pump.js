@@ -18,9 +18,14 @@ function Pump (shifter, vargs) {
     this._operation = operation(vargs)
 }
 
-Pump.prototype.monitor = cadence(function (async, destructible) {
+Pump.prototype.monitor = cadence(function (async, destructible, destroy) {
     this.pumpify(destructible.monitor('pump'))
-    destructible.destruct.wait(this.shifter, 'destroy')
+    if (arguments.length == 2) {
+        destroy = true
+    }
+    if (destroy) {
+        destructible.destruct.wait(this.shifter, 'destroy')
+    }
 })
 
 Pump.prototype.pumpify = cadence(function (async) {
