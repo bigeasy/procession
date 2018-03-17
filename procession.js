@@ -35,7 +35,7 @@ function Procession () {
 }
 
 // Create a new shifter to consume enqueued entries. Begins with entries added
-// after the creation of the cosumer.
+// after the creation of the consumer.
 // <hr>
 
 //

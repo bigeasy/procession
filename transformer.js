@@ -1,4 +1,4 @@
-// Sketch of a tranform. No use for it yet.
+// Sketch of a transform. No use for it yet.
 //
 // Maybe it is also a filter where if you return `null` from the transform
 // operation the value is not enqueued.
