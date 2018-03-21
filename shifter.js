@@ -86,6 +86,7 @@ Shifter.prototype.destroy = function (value) {
     }
 }
 
+// TODO Can't we just return null? Do we want to just return null?
 Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())

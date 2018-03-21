@@ -23,9 +23,6 @@ var Shifter = require('./shifter')
 // Orderly destruction of complicated objects.
 // var Destructor = require('destructible')
 
-// Exceptions with context.
-var interrupt = require('interrupt').createInterrupter('procession')
-
 // Construct a queue.
 
 //
