@@ -14,8 +14,6 @@ var abend = require('abend')
 // Do nothing.
 var noop = require('nop')
 
-var interrupt = require('interrupt').createInterrupter('procession')
-
 function Shifter (procession, head, vargs) {
     this.node = head
     this.endOfStream = false
@@ -86,15 +84,12 @@ Shifter.prototype.destroy = function (value) {
     }
 }
 
-// TODO Can't we just return null? Do we want to just return null?
 Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
-        if (condition(value)) {
+        if (value == null || condition(value)) {
             return [ loop.break, value ]
-        } else if (value == null) {
-            throw interrupt('endOfStream')
         }
     })()
 })
