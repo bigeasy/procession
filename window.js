@@ -6,19 +6,17 @@ var Procession = require('./procession')
 var Deferred = require('./deferred')
 var Pump = require('./pump')
 
+var abend = require('abend')
+
 function Window () {
     Procession.call(this)
     this.trailer = this.shifter(this, '_shift')
     this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
-    this._pump = new Pump(this._header, this, '_push')
+    new Pump(this._header, this, '_push').pumpify(abend)
 }
 util.inherits(Window, Procession)
-
-Window.prototype.listen = function (callback) {
-    this._pump.pump(callback)
-}
 
 // Add a listener that can track values as they are enqueued and dequeued. The
 // listener's push and shift methods  will only be invoked for values enqueued

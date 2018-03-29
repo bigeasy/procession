@@ -1,6 +1,6 @@
 {
     "name":                 "procession",
-    "version":              "0.10.0",
+    "version":              "0.16.0",
     "description":
 
       "Asynchronous message queue.",
@@ -24,14 +24,14 @@
                             "bintrees":                     "1.0.2",
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
-                            "interrupt":                    "5.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "1.6.x",
+                            "abend":                        "1.0.x",
                             "signal":                       "3.4.x"
     },
     "devDependencies":
     {
-                            "abend":                        "1.0.x",
+                            "destructible":                 "0.27.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "procession",

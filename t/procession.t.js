@@ -25,7 +25,7 @@ function prove (okay) {
     shifter.shifter().join(function (value) {
         return value == 0
     }, function (error, value) {
-        okay(/^procession#endOfStream$/m.test(error.message), 'shift eos')
+        okay(value, null, 'shift eos')
     })
 
     shifter.dequeue(function (error, value) {

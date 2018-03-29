@@ -3,10 +3,8 @@ require('proof')(5, require('cadence')(prove))
 function prove (async, okay) {
     var Throttle = require('../throttle')
     var Procession = require('../procession')
-    var abend = require('abend')
 
     var throttle = new Throttle(3)
-    throttle.listen(abend)
 
     var second = new Procession
 

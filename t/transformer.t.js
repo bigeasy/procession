@@ -18,8 +18,8 @@ function prove (async, okay) {
             return value + 1
         }, third), 'enqueue')
     }
-    pumps.first.pump(abend)
-    pumps.second.pump(abend)
+    pumps.first.pumpify(abend)
+    pumps.second.pumpify(abend)
     var shifter = third.shifter()
     first.push(1)
     okay(shifter.shift(), 3, 'transformed')

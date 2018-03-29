@@ -7,10 +7,12 @@ var Operation = require('operation/variadic')
 // Control-flow libraries.
 var cadence = require('cadence')
 
+var Pump = require('./pump')
+
+var abend = require('abend')
+
 // Do nothing.
 var noop = require('nop')
-
-var interrupt = require('interrupt').createInterrupter('procession')
 
 function Shifter (procession, head, vargs) {
     this.node = head
@@ -29,6 +31,36 @@ Shifter.prototype.dequeue = cadence(function (async) {
         this._wait = this.procession.pushed.wait(async())
     })()
 })
+
+// You where confused. You created a generic pumping function that would take
+// values from a shifter and submit them to any error-first callback function.
+// That error-first callback function could error, so you felt that you needed
+// to have controlled error handling. You could not just give it to `abend`.
+// This is true and useful for all the Conduit classes that read the shifter and
+// respond to events. It is not true for the common case of moving messages from
+// one procession another procession. We know that this is going to be an error
+// free and synchronous operation. We can use `abend`. Requiring that the user
+// handle an error here, when there will never be one, is silly, but it also
+// means that the user now has to listen and if they are waiting for the end,
+// they have to ensure that all shifters shutdown, so all shifters have to get
+// an end-of-stream or else they are to be explicitly destroyed. This is a fine
+// academic exercise at some point, but not now. Who cares that the link between
+// two processions terminates correctly with an end-of-stream. We can leave them
+// linked and waiting when we exit the program.
+//
+// Upshot is that a push of a message from one procession to another is not a
+// first-class error-first callback stack. We're only using Cadence here because
+// the pump is already implemented for use elsewhere as a first-class
+// error-first-callback stack. We could just have a listener function that takes
+// the new message as a push or else checks the `shift` function. Nothing
+// error-first about it.
+
+//
+Shifter.prototype.pumpify = function (queue) {
+    var pump = new Pump(this, queue, 'enqueue')
+    pump.pumpify(abend)
+    return pump
+}
 
 Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {
@@ -56,10 +88,8 @@ Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
     }, function (value) {
-        if (condition(value)) {
+        if (value == null || condition(value)) {
             return [ loop.break, value ]
-        } else if (value == null) {
-            throw interrupt('endOfStream')
         }
     })()
 })
