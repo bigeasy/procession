@@ -2,7 +2,6 @@ require('proof')(2, require('cadence')(prove))
 
 function prove (async, okay) {
     var Procession = require('..')
-    var Pump = require('../pump')
     var Transformer = require('../transformer')
     var abend = require('abend')
     var first = new Procession
@@ -10,16 +9,15 @@ function prove (async, okay) {
     var third = new Procession
     first.name = 'first'
     second.name = 'second'
+    // TODO Really want to rethink how errors get propigated.
     var pumps = {
-        first: new Pump(first.shifter(), new Transformer(function (value, callback) {
+        first: first.shifter().pump(new Transformer(function (value, callback) {
             callback(null, value + 1)
-        }, second), 'enqueue'),
-        second: new Pump(second.shifter(), new Transformer(function (value) {
+        }, second)),
+        second: second.shifter().pump(new Transformer(function (value) {
             return value + 1
-        }, third), 'enqueue')
+        }, third))
     }
-    pumps.first.pumpify(abend)
-    pumps.second.pumpify(abend)
     var shifter = third.shifter()
     first.push(1)
     okay(shifter.shift(), 3, 'transformed')

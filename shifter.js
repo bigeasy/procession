@@ -7,8 +7,6 @@ var Operation = require('operation/variadic')
 // Control-flow libraries.
 var cadence = require('cadence')
 
-var Pump = require('./pump')
-
 var abend = require('abend')
 
 // Do nothing.
@@ -56,11 +54,40 @@ Shifter.prototype.dequeue = cadence(function (async) {
 // error-first about it.
 
 //
-Shifter.prototype.pumpify = function (queue) {
-    var pump = new Pump(this, queue, 'enqueue')
-    pump.pumpify(abend)
-    return pump
+Shifter.prototype.pump = function () {
+    var vargs = Array.prototype.slice.call(arguments)
+    if (vargs.length == 1 && typeof vargs[0] == 'object' && typeof vargs[0].enqueue == 'function') {
+        this.pump(vargs[0], 'enqueue', abend)
+    } else {
+        // TODO If it is just a function, can `Operation` return as is?
+        var operation = Operation(vargs)
+        if (operation.length == 2) {
+            this._pump(operation, vargs.shift())
+        } else {
+            this.pump(function (value, callback) {
+                operation.call(null, value)
+                callback()
+            }, abend)
+        }
+    }
 }
+
+Shifter.prototype._pump = cadence(function (async, operation) {
+    async(function () {
+        var loop = async(function () {
+            this.dequeue(async())
+        }, function (value) {
+            if (value == null) {
+                return [ loop.break ]
+            }
+            operation.call(null, value, async())
+        })()
+    }, function () {
+        if (!this.destroyed) {
+            operation.call(null, null, async())
+        }
+    })
+})
 
 Shifter.prototype.shift = function () {
     if (!this.endOfStream && this.node.next) {

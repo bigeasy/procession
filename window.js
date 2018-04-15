@@ -4,7 +4,6 @@ var util = require('util')
 
 var Procession = require('./procession')
 var Deferred = require('./deferred')
-var Pump = require('./pump')
 
 var abend = require('abend')
 
@@ -14,7 +13,7 @@ function Window () {
     this._header = this.shifter()
     this._undecorated = []
     this._listeners = []
-    new Pump(this._header, this, '_push').pumpify(abend)
+    this._header.pump(this, '_push')
 }
 util.inherits(Window, Procession)
 
