@@ -13,10 +13,10 @@ function prove (async, okay) {
     var pumps = {
         first: first.shifter().pump(new Transformer(function (value, callback) {
             callback(null, value + 1)
-        }, second)),
+        }, second), 'enqueue', abend),
         second: second.shifter().pump(new Transformer(function (value) {
             return value + 1
-        }, third))
+        }, third), 'enqueue', abend)
     }
     var shifter = third.shifter()
     first.push(1)
