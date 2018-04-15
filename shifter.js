@@ -55,16 +55,26 @@ Shifter.prototype.dequeue = cadence(function (async) {
 
 //
 Shifter.prototype.pump = function () {
-    var vargs = Array.prototype.slice.call(arguments)
-    if (vargs.length == 1 && typeof vargs[0] == 'object' && typeof vargs[0].enqueue == 'function') {
+    var vargs = Array.prototype.slice.call(arguments), terminate
+    if (
+        vargs.length == 1 &&
+        typeof vargs[0] == 'object' &&
+        vargs[0].constructor.name == 'Procession' &&
+        typeof vargs[0].enqueue == 'function'
+    ) {
         this.pump(vargs[0], 'enqueue', abend)
     } else {
+        if (typeof vargs[0] == 'boolean') {
+            terminate = vargs.shift()
+        } else {
+            terminate = true
+        }
         // TODO If it is just a function, can `Operation` return as is?
         var operation = Operation(vargs)
         if (operation.length == 2) {
-            this._pump(operation, vargs.shift())
+            this._pump(terminate, operation, vargs.shift())
         } else {
-            this.pump(function (value, callback) {
+            this.pump(terminate, function (value, callback) {
                 operation.call(null, value)
                 callback()
             }, abend)
@@ -72,7 +82,7 @@ Shifter.prototype.pump = function () {
     }
 }
 
-Shifter.prototype._pump = cadence(function (async, operation) {
+Shifter.prototype._pump = cadence(function (async, terminate, operation) {
     async(function () {
         var loop = async(function () {
             this.dequeue(async())
@@ -83,7 +93,7 @@ Shifter.prototype._pump = cadence(function (async, operation) {
             operation.call(null, value, async())
         })()
     }, function () {
-        if (!this.destroyed) {
+        if (terminate && !this.destroyed) {
             operation.call(null, null, async())
         }
     })
