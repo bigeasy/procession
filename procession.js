@@ -44,13 +44,8 @@ Procession.prototype.shifter = function () {
 
 //
 Procession.prototype.push = function (value) {
-    // You can only push an end of stream `null` after end of stream.
-    if (this.endOfStream) {
-        return
-    }
     if (value == null) {
         this.head = this.head.next = { body: null, next: null }
-        this.endOfStream = true
     } else {
         // Otherwise, add the entry and notify listeners.
         this.head = this.head.next = { body: value, next: null }

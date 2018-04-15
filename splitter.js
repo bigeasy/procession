@@ -26,7 +26,7 @@ function Splitter (queue, splits) {
 Splitter.prototype.dequeue = cadence(function (async, name) {
     var split = this._map[name]
     var loop = async(function () {
-        if (split.shifter.peek() != null || split.queue.endOfStream) {
+        if (split.shifter.peek() != null || this._shifter.endOfStream) {
             return [ loop.break, split.shifter.shift() ]
         }
         this._shifter.dequeue(async())
