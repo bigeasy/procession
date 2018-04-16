@@ -77,7 +77,7 @@ Shifter.prototype.pump = function () {
             this.pump(terminate, function (value, callback) {
                 operation.call(null, value)
                 callback()
-            }, abend)
+            }, vargs.shift())
         }
     }
 }
