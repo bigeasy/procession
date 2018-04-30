@@ -40,6 +40,12 @@ Procession.prototype.shifter = function () {
     return new Shifter(this, this.head, Array.prototype.slice.call(arguments))
 }
 
+Procession.prototype.pump = function () {
+    var shifter = this.shifter()
+    shifter._pump(Array.prototype.slice.call(arguments))
+    return shifter
+}
+
 // Push an entry or push an error or else push `null` to indicate end of stream.
 
 //

@@ -30,6 +30,12 @@ Shifter.prototype.dequeue = cadence(function (async) {
     })()
 })
 
+Shifter.prototype.pumpify = function () {
+    var shifter = this.shifter()
+    shifter._pump(Array.prototype.slice.call(arguments))
+    return shifter
+}
+
 // You where confused. You created a generic pumping function that would take
 // values from a shifter and submit them to any error-first callback function.
 // That error-first callback function could error, so you felt that you needed
@@ -54,15 +60,15 @@ Shifter.prototype.dequeue = cadence(function (async) {
 // error-first about it.
 
 //
-Shifter.prototype.pump = function () {
-    var vargs = Array.prototype.slice.call(arguments), terminate
+Shifter.prototype._pump = function (vargs) {
+    var terminate
     if (
         vargs.length == 1 &&
         typeof vargs[0] == 'object' &&
         vargs[0].constructor.name == 'Procession' &&
         typeof vargs[0].enqueue == 'function'
     ) {
-        this.pump(vargs[0], 'enqueue', abend)
+        this._pump([ vargs[0], 'enqueue', abend ])
     } else {
         if (typeof vargs[0] == 'boolean') {
             terminate = vargs.shift()
@@ -72,17 +78,17 @@ Shifter.prototype.pump = function () {
         // TODO If it is just a function, can `Operation` return as is?
         var operation = Operation(vargs)
         if (operation.length == 2) {
-            this._pump(terminate, operation, vargs.shift())
+            this.__pump(terminate, operation, vargs.shift())
         } else {
-            this.pump(terminate, function (value, callback) {
+            this._pump([ terminate, function (value, callback) {
                 operation.call(null, value)
                 callback()
-            }, vargs.shift())
+            }, vargs.shift() ])
         }
     }
 }
 
-Shifter.prototype._pump = cadence(function (async, terminate, operation) {
+Shifter.prototype.__pump = cadence(function (async, terminate, operation) {
     async(function () {
         var loop = async(function () {
             this.dequeue(async())

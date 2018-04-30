@@ -10,10 +10,9 @@ var abend = require('abend')
 function Window () {
     Procession.call(this)
     this.trailer = this.shifter(this, '_shift')
-    this._header = this.shifter()
+    this._header = this.pump(this, '_push', abend)
     this._undecorated = []
     this._listeners = []
-    this._header.pump(this, '_push', abend)
 }
 util.inherits(Window, Procession)
 
