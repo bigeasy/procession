@@ -2,7 +2,7 @@
 var assert = require('assert')
 
 // Contextualized callbacks and event handlers.
-var Operation = require('operation/variadic')
+var Operation = require('operation')
 
 // Control-flow libraries.
 var cadence = require('cadence')

@@ -6,7 +6,7 @@
 // First use of Operation variadic helpers.
 
 //
-var Operation = require('operation/variadic')
+var Operation = require('operation')
 var cadence = require('cadence')
 
 function Transformer () {
