@@ -31,7 +31,6 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "0.30.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "procession",

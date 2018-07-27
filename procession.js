@@ -19,10 +19,6 @@ var Signal = require('signal')
 // Iterator used to consume values in the evented queue.
 var Shifter = require('./shifter')
 
-// TODO Now there is a circular dependency!
-// Orderly destruction of complicated objects.
-// var Destructor = require('destructible')
-
 // Construct a queue.
 
 //
