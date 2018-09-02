@@ -6,7 +6,7 @@ function prove (okay) {
     var queue = new Procession
 
     var sink = new Procession
-    var shifter = queue.shifter().pumpify(sink)
+    var shifter = queue.shifter().pump(sink)
 
     var source = sink.shifter()
     queue.push(1)

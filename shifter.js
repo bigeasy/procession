@@ -30,7 +30,7 @@ Shifter.prototype.dequeue = cadence(function (async) {
     })()
 })
 
-Shifter.prototype.pumpify = function () {
+Shifter.prototype.pump = function () {
     var shifter = this.shifter()
     shifter._pump(Array.prototype.slice.call(arguments))
     return shifter
