@@ -18,7 +18,7 @@ function prove (async, okay) {
     window.push({ value: 1 })
     window.shifter().destroy()
     window.trailer.shift()
-    window.push(null)
+    window.end()
     window.trailer.shift()
 
     window.removeListener(listener)

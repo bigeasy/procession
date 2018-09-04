@@ -56,6 +56,10 @@ Procession.prototype.push = function (value) {
     this.pushed.notify()
 }
 
+Procession.prototype.end = function () {
+    this.push(null)
+}
+
 Procession.prototype.enqueue = function (value, callback) {
     this.push(value)
     callback()
