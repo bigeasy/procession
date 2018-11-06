@@ -26,11 +26,13 @@
                             "extant":                       "1.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "2.0.x",
+                            "nascent.jacket":               "0.0.7",
                             "abend":                        "1.0.x",
                             "signal":                       "4.0.x"
     },
     "devDependencies":
     {
+                            "destructible":                 "0.35.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "procession",
