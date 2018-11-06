@@ -46,7 +46,6 @@ Window.prototype.removeListener = function (listener) {
 
 Window.prototype._push = function (value) {
     if (value != null) {
-        console.log(this._header.node, this.head)
         assert(this._header.node == this.head)
         for (var i = 0, I = this._listeners.length; i < I; i++) {
             this._listeners[i].pushed(this._header.node)
