@@ -79,10 +79,11 @@ Deserializer.prototype._json = function (buffer, start, end) {
         var envelope = this._record.object
         switch (envelope.method) {
         case 'envelope':
-            this._queue.push(envelope.body)
-            break
-        case 'chunk':
-            this._chunk = this._record.object
+            if ('length' in envelope) {
+                this._chunk = this._record.object
+            } else {
+                this._queue.push(envelope.body)
+            }
             break
         }
         this._record = new Jacket

@@ -45,7 +45,7 @@ Serializer.prototype.enqueue = cadence(function (async, envelope) {
             e.body = null
             var packet = JSON.stringify({
                 module: 'conduit',
-                method: 'chunk',
+                method: 'envelope',
                 length: body.length,
                 body: envelope
             }) + '\n'
