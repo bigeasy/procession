@@ -10,14 +10,12 @@ function prove (async, okay) {
     first.name = 'first'
     second.name = 'second'
     // TODO Really want to rethink how errors get propigated.
-    var pumps = {
-        first: first.pump(new Transformer(function (value, callback) {
-            callback(null, value + 1)
-        }, second), 'enqueue', abend),
-        second: second.pump(new Transformer(function (value) {
-            return value + 1
-        }, third), 'enqueue', abend)
-    }
+    first.pump(new Transformer(function (value, callback) {
+        callback(null, value + 1)
+    }, second), 'enqueue').run(abend)
+    second.pump(new Transformer(function (value) {
+        return value + 1
+    }, third), 'enqueue').run(abend)
     var shifter = third.shifter()
     first.push(1)
     okay(shifter.shift(), 3, 'transformed')

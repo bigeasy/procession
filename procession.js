@@ -18,6 +18,7 @@ var Signal = require('signal')
 
 // Iterator used to consume values in the evented queue.
 var Shifter = require('./shifter')
+var Pump = require('./pump')
 
 // Construct a queue.
 
@@ -37,9 +38,7 @@ Procession.prototype.shifter = function () {
 }
 
 Procession.prototype.pump = function () {
-    var shifter = this.shifter()
-    shifter._pump(Array.prototype.slice.call(arguments))
-    return shifter
+    return new Pump(this.shifter(), Array.prototype.slice.call(arguments))
 }
 
 // Push an entry or push an error or else push `null` to indicate end of stream.

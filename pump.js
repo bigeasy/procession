@@ -3,7 +3,9 @@ var Operation = require('operation')
 
 function Pump (dequeueable) {
     var vargs = Array.prototype.slice.call(arguments, 1)
-    var operation = new Operation(vargs)
+    var operation = Array.isArray(vargs[0])
+                  ? new Operation(vargs[0])
+                  : new Operation(vargs)
     this._enqueue = operation.length == 2 ? operation : function (value, callback) {
         operation(value)
         callback()
@@ -31,7 +33,12 @@ destructible.destroyable('outbox', this, function (callback) {
 shifter.link(outbox)
 */
 
-Pump.prototype.run = cadence(function (async) {
+Pump.prototype.run = function (callback) {
+    this._run(callback)
+    return this
+}
+
+Pump.prototype._run = cadence(function (async) {
     async(function () {
         var loop = async(function () {
             this._dequeueable.dequeue(async())

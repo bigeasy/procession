@@ -19,7 +19,7 @@ function prove (async, okay) {
     var outbox = new Procession
     var inbox = new Procession
 
-    outbox.pump(serializer, 'enqueue', function (error) {
+    outbox.pump(serializer, 'enqueue').run(function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
