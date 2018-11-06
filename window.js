@@ -7,10 +7,13 @@ var Deferred = require('./deferred')
 
 var abend = require('abend')
 
+var Pump = require('./pump')
+
 function Window () {
     Procession.call(this)
     this.trailer = this.shifter(this, '_shift')
-    this._header = this.pump(this, '_push', abend)
+    this._header = this.shifter()
+    new Pump(this._header, this, '_push').run(abend)
     this._undecorated = []
     this._listeners = []
 }
