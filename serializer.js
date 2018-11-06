@@ -50,8 +50,11 @@ Serializer.prototype.enqueue = cadence(function (async, envelope) {
                 body: envelope
             }) + '\n'
             e.body = body
-            this._output.write(packet, async())
-            this._output.write(e.body, async())
+            async(function () {
+                this._output.write(packet, async())
+            }, function () {
+                this._output.write(e.body, async())
+            })
         } else {
             this._output.write(JSON.stringify({
                 module: 'conduit',
