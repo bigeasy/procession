@@ -17,6 +17,7 @@ function prove (okay, callback) {
             var inbox = new Procession
             var outbox = new Procession
             var shifter = outbox.shifter()
+            new Pump(inbox.shifter(), outbox, 'enqueue').destroy()
             shifter.dequeue(async())
             destructible.monitor('enqueue', new Pump(inbox.shifter(), outbox, 'enqueue'), 'destructible', null)
             inbox.push(1)

@@ -33,6 +33,10 @@ destructible.destroyable('outbox', this, function (callback) {
 shifter.link(outbox)
 */
 
+Pump.prototype.destroy = function () {
+    this._dequeueable.destroy()
+}
+
 Pump.prototype.run = function (callback) {
     this._run(callback)
     return this
