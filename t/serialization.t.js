@@ -1,4 +1,4 @@
-require('proof')(7, require('cadence')(prove))
+require('proof')(8, require('cadence')(prove))
 
 function prove (async, okay) {
     var Procession = require('..')
@@ -27,11 +27,13 @@ function prove (async, okay) {
         }
     })
 
+    var done
     deserialize(input, inbox, function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
-            throw error
+            okay(error.message, 'truncated', 'truncated')
+            done()
         }
     })
 
@@ -67,8 +69,19 @@ function prove (async, okay) {
     }, function (value) {
         okay(value.body.body.toString(), 'abcd', 'body at once')
         outbox.push(null)
-        shifter.dequeue(async())
         okay(output.read(), null, 'eos')
+        input.write('{')
+        done = async()
+        async([function () {
+            input.end()
+        }, function (error) {
+            okay(error.message, 'truncated', 'truncated')
+        }])
+    }, function (value) {
+        var inbox = new Procession
+        var input = new stream.PassThrough
+        inbox.shifter().dequeue(async())
+        deserialize(input, inbox, Buffer.alloc(0), async())
         input.end()
     }, function (value) {
         okay(value, null, 'eop')

@@ -12,17 +12,6 @@ var coalesce = require('extant')
 // imagining of external management of the stream, so that this interpretation
 // of its contents was a "separate concern."
 
-//
-function Serializer (output) {
-    this.destroyed = false
-    this._output = new Staccato.Writable(output)
-}
-
-Serializer.prototype.destroy = function () {
-    this.destroyed = true
-    this._output.destroy()
-}
-
 // Nothing more to do about ends and errors here. If things are operating
 // normally, with one half of the duplex closing before the other, then we do
 // want to drain the lagging half normally, waiting for its end-of-stream `null`

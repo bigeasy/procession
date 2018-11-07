@@ -16,24 +16,13 @@ var coalesce = require('extant')
 // of its contents was a "separate concern."
 
 //
-function Deserializer (input, buffer) {
-    this.destroyed = false
-    this._input = new Staccato.Readable(input)
-
-    this._queue = []
-
+function Deserializer () {
     this._slices = []
     this._record = new Jacket
-
-    this._parse(coalesce(buffer, Buffer.alloc(0)))
+    this.atBoundry = true
 }
 
-Deserializer.prototype.destroy = function () {
-    this.destroyed = true
-    this._input.destroy()
-}
-
-Deserializer.prototype._buffer = function (buffer, start, end) {
+Deserializer.prototype._buffer = function (envelopes, buffer, start, end) {
     var length = Math.min(buffer.length - start, this._chunk.length)
     var slice = buffer.slice(start, start + length)
     start += length
@@ -66,15 +55,17 @@ Deserializer.prototype._buffer = function (buffer, start, end) {
         this._record = new Jacket
 
         // Enqueue the parsed envelope.
-        this._queue.push(envelope)
+        envelopes.push(envelope)
+        this.atBoundry = true
     } else {
         this._slices.push(Buffer.from(slice))
+        this.atBoundry = false
     }
     return start
 }
 
-Deserializer.prototype._json = function (buffer, start, end) {
-    start = this._record.parse(buffer, start, end)
+Deserializer.prototype._json = function (envelopes, buffer, start, end) {
+    var advance = this._record.parse(buffer, start, end)
     if (this._record.object != null) {
         var envelope = this._record.object
         switch (envelope.method) {
@@ -82,43 +73,27 @@ Deserializer.prototype._json = function (buffer, start, end) {
             if ('length' in envelope) {
                 this._chunk = this._record.object
             } else {
-                this._queue.push(envelope.body)
+                envelopes.push(envelope.body)
             }
             break
         }
+        this.atBoundry = true
         this._record = new Jacket
+    } else {
+        this.atBoundry = this.atBoundry && start == advance
     }
-    return start
+    return advance
 }
 
-Deserializer.prototype._parse = function (buffer) {
+Deserializer.prototype.parse = function (buffer, envelopes) {
     var start = 0
     while (start != buffer.length) {
         if (this._chunk != null) {
-            start = this._buffer(buffer, start, buffer.length)
+            start = this._buffer(envelopes, buffer, start, buffer.length)
         } else {
-            start = this._json(buffer, start, buffer.length)
+            start = this._json(envelopes, buffer, start, buffer.length)
         }
     }
 }
-
-Deserializer.prototype.dequeue = cadence(function (async) {
-    if (this._queue.length != 0) {
-        return this._queue.shift()
-    }
-    var read = async(function () {
-        async(function () {
-            this._input.read(async())
-        }, function (buffer) {
-            if (buffer == null) {
-                return [ read.break, null ]
-            }
-            this._parse(buffer)
-            if (this._queue.length != 0) {
-                return [ read.break, this._queue.shift() ]
-            }
-        })
-    })()
-})
 
 module.exports = Deserializer
