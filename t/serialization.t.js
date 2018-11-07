@@ -13,24 +13,25 @@ function prove (async, okay) {
     var input = new stream.PassThrough
     var output = new stream.PassThrough
 
-    var serializer = new Serializer(output)
-    var deserializer = new Deserializer(input)
+    var serialize = require('../serialize')
+    var deserialize = require('../deserialize')
 
     var outbox = new Procession
     var inbox = new Procession
 
-    outbox.pump(serializer, 'enqueue').run(function (error) {
+    serialize(outbox.shifter(), output, function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
+            throw error
         }
     })
 
-    var pump = new Pump(deserializer, inbox, 'enqueue')
-    pump.run(function (error) {
+    deserialize(input, inbox, function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
+            throw error
         }
     })
 
@@ -71,7 +72,5 @@ function prove (async, okay) {
         input.end()
     }, function (value) {
         okay(value, null, 'eop')
-        serializer.destroy()
-        deserializer.destroy()
     })
 }
