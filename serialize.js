@@ -1,23 +1,35 @@
 var Serializer = require('./serializer')
 var Pump = require('./pump')
 var cadence = require('cadence')
+var Staccato = require('staccato')
 
 module.exports = cadence(function (async, shifter, output) {
-    var serializer = new Serializer(output)
+    var writer = new Staccato.Writable(output)
     async([function () {
-        serializer.destroy()
+        writer.destroy()
     }], function () {
+        var buffers = []
         var loop = async(function () {
+            buffers.length = 0
             async(function () {
                 shifter.dequeue(async())
             }, function (envelope) {
                 if (envelope == null) {
                     return [ loop.break ]
                 }
-                serializer.enqueue(envelope, async())
+                Serializer(envelope, buffers)
+                if (buffers.length == 2) {
+                    async(function () {
+                        writer.write(buffers[0], async())
+                    }, function () {
+                        writer.write(buffers[1], async())
+                    })
+                } else {
+                    writer.write(buffers[0], async())
+                }
             })
         })()
     }, function () {
-        serializer.enqueue(null, async())
+        writer.end(async())
     })
 })

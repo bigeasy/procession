@@ -32,37 +32,28 @@ Serializer.prototype.destroy = function () {
 // exception.
 
 //
-Serializer.prototype.enqueue = cadence(function (async, envelope) {
-    if (envelope == null) {
-        this._output.end(async())
-    } else {
-        var e = envelope
-        while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
-            e = e.body
-        }
-        if (Buffer.isBuffer(e.body)) {
-            var body = e.body
-            e.body = null
-            var packet = JSON.stringify({
-                module: 'conduit',
-                method: 'envelope',
-                length: body.length,
-                body: envelope
-            }) + '\n'
-            e.body = body
-            async(function () {
-                this._output.write(packet, async())
-            }, function () {
-                this._output.write(e.body, async())
-            })
-        } else {
-            this._output.write(JSON.stringify({
-                module: 'conduit',
-                method: 'envelope',
-                body: envelope
-            }) + '\n', async())
-        }
+module.exports = function (envelope, buffers) {
+    var e = envelope
+    while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
+        e = e.body
     }
-})
-
-module.exports = Serializer
+    if (Buffer.isBuffer(e.body)) {
+        var body = e.body
+        e.body = null
+        var packet = JSON.stringify({
+            module: 'conduit',
+            method: 'envelope',
+            length: body.length,
+            body: envelope
+        }) + '\n'
+        e.body = body
+        buffers.push(packet)
+        buffers.push(e.body)
+    } else {
+        buffers.push(JSON.stringify({
+            module: 'conduit',
+            method: 'envelope',
+            body: envelope
+        }) + '\n')
+    }
+}
