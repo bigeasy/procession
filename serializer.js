@@ -2,11 +2,6 @@
 var cadence = require('cadence')
 
 // Evented stream reading and writing.
-var Staccato = require('staccato')
-
-// Return the first not null-like value.
-var coalesce = require('extant')
-
 // Once we get our hands on the `input` and `output` we own them, we're going to
 // use `end` to indicate an end of stream. At the outset I'd hand a muddled
 // imagining of external management of the stream, so that this interpretation
@@ -21,7 +16,7 @@ var coalesce = require('extant')
 // exception.
 
 //
-module.exports = function (envelope, buffers) {
+exports.lengthEncoded = function (envelope, buffers) {
     var e = envelope
     while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
         e = e.body
@@ -44,5 +39,29 @@ module.exports = function (envelope, buffers) {
             method: 'envelope',
             body: envelope
         }) + '\n')
+    }
+}
+
+exports.encoded = function (encoding, envelope, buffers) {
+    var e = envelope
+    while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
+        e = e.body
+    }
+    if (Buffer.isBuffer(e.body)) {
+        var body = e.body
+        e.body = e.body.toString(encoding)
+        buffers.push(Buffer.from(JSON.stringify({
+            module: 'conduit',
+            method: 'envelope',
+            encoding: encoding,
+            body: envelope
+        }) + '\n'))
+        e.body = body
+    } else {
+        buffers.push(Buffer.from(JSON.stringify({
+            module: 'conduit',
+            method: 'envelope',
+            body: envelope
+        }) + '\n'))
     }
 }
