@@ -73,13 +73,6 @@ Deserializer.prototype._json = function (envelopes, buffer, start, end) {
             if ('length' in envelope) {
                 this._chunk = this._record.object
             } else {
-                if ('encoding' in envelope) {
-                    var e = envelope
-                    while (typeof e.body != 'string') {
-                        e = e.body
-                    }
-                    e.body = Buffer.from(e.body, envelope.encoding)
-                }
                 envelopes.push(envelope.body)
             }
             break

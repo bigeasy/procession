@@ -1,4 +1,4 @@
-require('proof')(10, require('cadence')(prove))
+require('proof')(8, require('cadence')(prove))
 
 function prove (async, okay) {
     var Procession = require('..')
@@ -20,14 +20,6 @@ function prove (async, okay) {
     var inbox = new Procession
 
     var buffers = [], envelopes = []
-
-    Serializer.encoded('base64', { body: Buffer.from('abc') }, buffers)
-    Serializer.encoded('base64', { body: 'abc' }, buffers)
-    var deserializer = new Deserializer
-    deserializer.parse(buffers.shift(), envelopes)
-    okay(envelopes.shift().body.toString(), 'abc', 'base64 buffer')
-    deserializer.parse(buffers.shift(), envelopes)
-    okay(envelopes.shift(), { body: 'abc' }, 'base64 no buffer')
 
     serialize(outbox.shifter(), output, function (error) {
         if (error) {

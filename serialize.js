@@ -17,7 +17,7 @@ module.exports = cadence(function (async, shifter, output) {
                 if (envelope == null) {
                     return [ loop.break ]
                 }
-                Serializer.lengthEncoded(envelope, buffers)
+                Serializer(envelope, buffers)
                 if (buffers.length == 2) {
                     async(function () {
                         writer.write(buffers[0], async())

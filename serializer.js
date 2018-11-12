@@ -16,7 +16,7 @@ var cadence = require('cadence')
 // exception.
 
 //
-exports.lengthEncoded = function (envelope, buffers) {
+module.exports = function (envelope, buffers) {
     var e = envelope
     while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
         e = e.body
@@ -39,29 +39,5 @@ exports.lengthEncoded = function (envelope, buffers) {
             method: 'envelope',
             body: envelope
         }) + '\n')
-    }
-}
-
-exports.encoded = function (encoding, envelope, buffers) {
-    var e = envelope
-    while (e.body != null && typeof e.body == 'object' && !Buffer.isBuffer(e.body)) {
-        e = e.body
-    }
-    if (Buffer.isBuffer(e.body)) {
-        var body = e.body
-        e.body = e.body.toString(encoding)
-        buffers.push(Buffer.from(JSON.stringify({
-            module: 'conduit',
-            method: 'envelope',
-            encoding: encoding,
-            body: envelope
-        }) + '\n'))
-        e.body = body
-    } else {
-        buffers.push(Buffer.from(JSON.stringify({
-            module: 'conduit',
-            method: 'envelope',
-            body: envelope
-        }) + '\n'))
     }
 }
