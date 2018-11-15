@@ -4,7 +4,7 @@ module.exports = cadence(function (async, options) {
     async([function () {
         options.f.call(null, async())
     }, function (error) {
-        var entry = {}
+        var entry = options.entry
         Object.getOwnPropertyNames(error).forEach(function (name) {
             if (name != 'stack') {
                 entry[name] = error[name]

@@ -3,10 +3,12 @@ require('proof')(3, require('cadence')(prove))
 function prove (async, okay) {
     var expected = [function (entry) {
         okay(entry, {
+            olio: { name: 'run', index: 0 },
             message: 'message',
         }, 'no end')
     }, function (entry) {
         okay(entry, {
+            olio: { name: 'run', index: 0 },
             message: 'message',
         }, 'no end')
     }]
