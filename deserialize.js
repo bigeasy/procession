@@ -2,8 +2,7 @@ var Deserializer = require('./deserializer')
 var cadence = require('cadence')
 var Staccato = require('staccato')
 
-module.exports = cadence(function (async, input, inbox, sip) {
-    var reader = new Staccato.Readable(input)
+module.exports = cadence(function (async, reader, inbox, sip) {
     var deserializer = new Deserializer
     async([function () {
         reader.destroy()

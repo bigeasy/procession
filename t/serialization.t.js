@@ -19,9 +19,14 @@ function prove (async, okay) {
     var outbox = new Procession
     var inbox = new Procession
 
+    var Staccato = require('staccato')
+
+    var readable = new Staccato.Readable(input)
+    var writable = new Staccato.Writable(output)
+
     var buffers = [], envelopes = []
 
-    serialize(outbox.shifter(), output, function (error) {
+    serialize(outbox.shifter(), writable, function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
@@ -30,7 +35,7 @@ function prove (async, okay) {
     })
 
     var done
-    deserialize(input, inbox, function (error) {
+    deserialize(readable, inbox, function (error) {
         if (error) {
             // Here is where you would catch an I/O error, isolating I/O errors
             // from unrelated errors and possibly reconnecting.
@@ -83,7 +88,7 @@ function prove (async, okay) {
         var inbox = new Procession
         var input = new stream.PassThrough
         inbox.shifter().dequeue(async())
-        deserialize(input, inbox, Buffer.alloc(0), async())
+        deserialize(new Staccato.Readable(input), inbox, Buffer.alloc(0), async())
         input.end()
     }, function (value) {
         okay(value, null, 'eop')

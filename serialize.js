@@ -3,8 +3,7 @@ var Pump = require('./pump')
 var cadence = require('cadence')
 var Staccato = require('staccato')
 
-module.exports = cadence(function (async, shifter, output) {
-    var writer = new Staccato.Writable(output)
+module.exports = cadence(function (async, shifter, writer) {
     async([function () {
         writer.destroy()
     }], function () {
