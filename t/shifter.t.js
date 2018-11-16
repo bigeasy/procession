@@ -1,4 +1,4 @@
-require('proof')(1, prove)
+require('proof')(2, prove)
 
 function prove (okay) {
     var Procession = require('..')
@@ -13,6 +13,10 @@ function prove (okay) {
     var source = sink.shifter()
     queue.push(1)
     okay(source.shift(), 1, 'pumped')
+    queue.push(1)
+    source.drain(function (envelope) {
+        okay(envelope, 1, 'drain')
+    })
 
     shifter.destroy()
 }

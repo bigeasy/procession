@@ -58,6 +58,16 @@ Shifter.prototype.destroy = function (value) {
     }
 }
 
+Shifter.prototype.drain = function () {
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
+    var f = new Operation(vargs)
+    var entry
+    while ((entry = this.shift()) != null) {
+        f(entry)
+    }
+}
+
 Shifter.prototype.join = cadence(function (async, condition) {
     var loop = async(function () {
         this.dequeue(async())
