@@ -2,7 +2,7 @@
 var assert = require('assert')
 
 // Contextualized callbacks and event handlers.
-var Operation = require('operation')
+var operation = require('operation')
 
 var Pump = require('./pump')
 
@@ -17,7 +17,7 @@ var noop = require('nop')
 function Shifter (procession, head, vargs) {
     this.node = head
     this.endOfStream = false
-    this._operation = vargs.length ? Operation(vargs) : noop
+    this._operation = vargs.length ? operation.shift(vargs) : noop
     this.procession = procession
 }
 
@@ -33,7 +33,9 @@ Shifter.prototype.dequeue = cadence(function (async) {
 })
 
 Shifter.prototype.pump = function () {
-    return new Pump(this.shifter(), Array.prototype.slice.call(arguments))
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
+    return new Pump([ this.shifter(), vargs ])
 }
 
 Shifter.prototype.shift = function () {
@@ -61,7 +63,7 @@ Shifter.prototype.destroy = function (value) {
 Shifter.prototype.drain = function () {
     var vargs = []
     vargs.push.apply(vargs, arguments)
-    var f = new Operation(vargs)
+    var f = operation.shift(vargs)
     var entry
     while ((entry = this.shift()) != null) {
         f(entry)

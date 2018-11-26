@@ -6,17 +6,17 @@
 // First use of Operation variadic helpers.
 
 //
-var Operation = require('operation')
+var operation = require('operation')
 var cadence = require('cadence')
 
 function Transformer () {
-    var vargs = Array.prototype.slice.call(arguments)
-    var operation = Operation(vargs)
-    if (operation.length == 2) {
-        this._operation = operation
+    var vargs = operation.vargs.apply(operation, arguments)
+    var f = vargs.shift()
+    if (f.length == 2) {
+        this._operation = f
     } else {
         this._operation = function (value, callback) {
-            callback(null, operation(value))
+            callback(null, f(value))
         }
     }
     this._write = vargs.shift()

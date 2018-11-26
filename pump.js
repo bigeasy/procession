@@ -1,13 +1,19 @@
 var cadence = require('cadence')
-var Operation = require('operation')
+var operation = require('operation')
 
-function Pump (dequeueable) {
-    var vargs = Array.prototype.slice.call(arguments, 1)
-    var operation = Array.isArray(vargs[0])
-                  ? new Operation(vargs[0])
-                  : new Operation(vargs)
-    this._enqueue = operation.length == 2 ? operation : function (value, callback) {
-        operation(value)
+function Pump () {
+    var dequeueable, vargs
+    if (Array.isArray(arguments[0])) {
+        dequeueable = arguments[0][0]
+        vargs = arguments[0][1]
+    } else {
+        vargs = []
+        vargs.push.apply(vargs, arguments)
+        dequeueable = vargs.shift()
+    }
+    var f = operation.shift(vargs)
+    this._enqueue = f.length == 2 ? f : function (value, callback) {
+        f(value)
         callback()
     }
     this._dequeueable = dequeueable
