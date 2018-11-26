@@ -26,7 +26,7 @@
                             "extant":                       "1.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "4.0.x",
-                            "nascent.jacket":               "0.0.7",
+                            "nascent.jacket":               "0.0.8",
                             "abend":                        "1.0.x",
                             "signal":                       "6.0.x"
     },
