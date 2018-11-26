@@ -14,17 +14,17 @@ util.inherits(Readable, stream.Readable)
 
 Readable.prototype._pump = cadence(function (async, shifter) {
     async([function () {
-        var loop = async(function () {
+        async.loop([], function () {
             shifter.dequeue(async())
         }, function (envelope) {
             if (envelope == null) {
                 this.push(null)
-                return [ loop.break ]
+                return [ async.break ]
             }
             if (!this.push(envelope.body)) {
                 this._resume.wait(async())
             }
-        })()
+        })
     }, function (error) {
         this.emit('error', error)
     }])

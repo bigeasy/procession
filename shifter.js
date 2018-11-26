@@ -22,14 +22,14 @@ function Shifter (procession, head, vargs) {
 }
 
 Shifter.prototype.dequeue = cadence(function (async) {
-    var loop = async(function () {
+    async.loop([], function () {
         this._wait = null
         var value = this.shift()
         if (value != null || this.endOfStream) {
-            return [ loop.break, value ]
+            return [ async.break, value ]
         }
         this._wait = this.procession.pushed.wait(async())
-    })()
+    })
 })
 
 Shifter.prototype.pump = function () {
@@ -69,13 +69,13 @@ Shifter.prototype.drain = function () {
 }
 
 Shifter.prototype.join = cadence(function (async, condition) {
-    var loop = async(function () {
+    async.loop([], function () {
         this.dequeue(async())
     }, function (value) {
         if (value == null || condition(value)) {
-            return [ loop.break, value ]
+            return [ async.break, value ]
         }
-    })()
+    })
 })
 
 Shifter.prototype.shifter = function () {

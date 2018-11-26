@@ -44,14 +44,14 @@ Pump.prototype.run = function (callback) {
 
 Pump.prototype._run = cadence(function (async) {
     async(function () {
-        var loop = async(function () {
+        async.loop([], function () {
             this._dequeueable.dequeue(async())
         }, function (value) {
             if (value == null) {
-                return [ loop.break ]
+                return [ async.break ]
             }
             this._enqueue.call(null, value, async())
-        })()
+        })
     }, function () {
         this._enqueue.call(null, null, async())
     })

@@ -11,23 +11,23 @@ module.exports = cadence(function (async, reader, inbox, sip) {
         if (sip != null) {
             deserializer.parse(sip, envelopes)
         }
-        var loop = async(function () {
+        async.loop([], function () {
             async(function () {
-                async.forEach(function (envelope) {
+                async.forEach([ envelopes ], function (envelope) {
                     inbox.enqueue(envelope, async())
-                })(envelopes)
+                })
             }, function () {
                 envelopes.length = 0
                 async(function () {
                     reader.read(async())
                 }, function (buffer) {
                     if (buffer == null) {
-                        return [ loop.break ]
+                        return [ async.break ]
                     }
                     deserializer.parse(buffer, envelopes)
                 })
             })
-        })()
+        })
     }, function () {
         if (!deserializer.atBoundry) {
             throw new Error('truncated')
