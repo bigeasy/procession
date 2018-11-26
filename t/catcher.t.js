@@ -34,7 +34,7 @@ function prove (async, okay) {
             },
             error: errored,
             queue: {
-                end: function () { okay(true, 'ended') }
+                end: function () { okay('ended') }
             }
         }, async())
     })
