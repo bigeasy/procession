@@ -23,7 +23,7 @@ function prove (okay, callback) {
         var readable = new Staccato.Readable(input), writable = new Staccato.Writable(output)
         destructible.destruct.wait(readable, 'destroy')
         async(function () {
-            destructible.monitor('socket', Socket, {}, readable, writable, Buffer.alloc(0), async())
+            destructible.durable('socket', Socket, {}, readable, writable, Buffer.alloc(0), async())
         }, function (inbox, outbox) {
             async(function () {
                 outbox.push({})
@@ -34,5 +34,5 @@ function prove (okay, callback) {
                 okay(inbox.shift(), {}, 'ready')
             })
         })
-    })(destructible.monitor('test'))
+    })(destructible.durable('test'))
 }

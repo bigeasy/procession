@@ -65,7 +65,7 @@ Pump.prototype._run = cadence(function (async) {
 
 Pump.prototype.destructible = cadence(function (async, destructible) {
     destructible.destruct.wait(this._dequeueable, 'destroy')
-    this.run(destructible.monitor('pump'))
+    this.run(destructible.durable('pump'))
 })
 
 module.exports = Pump

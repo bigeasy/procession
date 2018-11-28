@@ -16,14 +16,14 @@ module.exports = function (errored) {
             entry: entry,
             error: errored,
             f: function (callback) { deserialize(readable, inbox, sip, callback) }
-        }, destructible.monitor('deserialize'))
+        }, destructible.durable('deserialize'))
         catcher({
             label: 'serialize',
             queue: null,
             entry: entry,
             error: errored,
             f: function (callback) { serialize(outbox.shifter(), writable, callback) }
-        }, destructible.monitor('serialize'))
+        }, destructible.durable('serialize'))
         destructible.destruct.wait(outbox, 'end')
         destructible.destruct.wait(inbox, 'end')
         return [ shifter, outbox ]

@@ -19,7 +19,7 @@ function prove (okay, callback) {
             var shifter = outbox.shifter()
             new Pump(inbox.shifter(), outbox, 'enqueue').destroy()
             shifter.dequeue(async())
-            destructible.monitor('enqueue', new Pump(inbox.shifter(), outbox, 'enqueue'), 'destructible', null)
+            destructible.durable('enqueue', new Pump(inbox.shifter(), outbox, 'enqueue'), 'destructible', null)
             inbox.push(1)
         }, function (value) {
             okay(value, 1, 'enqueued')
@@ -27,10 +27,10 @@ function prove (okay, callback) {
             var outbox = new Procession
             var shifter = outbox.shifter()
             shifter.dequeue(async())
-            destructible.monitor('push', new Pump(inbox.shifter(), outbox, 'push'), 'destructible', null)
+            destructible.durable('push', new Pump(inbox.shifter(), outbox, 'push'), 'destructible', null)
             inbox.push(1)
         }, function (value) {
             okay(value, 1, 'pushed')
         })
-    })(destructible.monitor('destructible'))
+    })(destructible.durable('destructible'))
 }
