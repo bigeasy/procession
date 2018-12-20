@@ -28,7 +28,7 @@
                             "operation":                    "4.0.x",
                             "nascent.jacket":               "0.0.8",
                             "abend":                        "1.0.x",
-                            "signal":                       "6.0.x",
+                            "signal":                       "7.0.x",
                             "staccato":                     "6.6.x"
     },
     "devDependencies":
