@@ -22,7 +22,7 @@
     "dependencies":
     {
                             "bintrees":                     "1.0.2",
-                            "cadence":                      "2.0.x",
+                            "cadence":                      "3.0.x",
                             "extant":                       "1.0.x",
                             "nop":                          "1.0.0",
                             "operation":                    "5.0.x",
