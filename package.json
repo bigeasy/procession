@@ -29,7 +29,7 @@
                             "nascent.jacket":               "0.0.8",
                             "abend":                        "1.0.x",
                             "signal":                       "7.0.x",
-                            "staccato":                     "6.6.x"
+                            "staccato":                     "7.0.x"
     },
     "devDependencies":
     {
