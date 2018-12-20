@@ -25,7 +25,7 @@
                             "cadence":                      "2.0.x",
                             "extant":                       "1.0.x",
                             "nop":                          "1.0.0",
-                            "operation":                    "4.0.x",
+                            "operation":                    "5.0.x",
                             "nascent.jacket":               "0.0.8",
                             "abend":                        "1.0.x",
                             "signal":                       "7.0.x",
