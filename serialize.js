@@ -17,7 +17,7 @@ module.exports = cadence(function (async, shifter, writer) {
                     return [ async.break ]
                 }
                 Serializer(envelope, buffers)
-                writer.write(buffers.join(''), async())
+                writer.write(buffers.join(''), true, async())
             })
         })
     }, function () {

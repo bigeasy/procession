@@ -25,6 +25,7 @@ module.exports = function (errored) {
             error: errored,
             f: function (callback) { serialize(oshifter, writable, callback) }
         }, destructible.durable('serialize'))
+        destructible.destruct.wait(writable, 'destroy')
         destructible.destruct.wait(oshifter, 'destroy')
         destructible.destruct.wait(inbox, 'end')
         return [ shifter, outbox ]
