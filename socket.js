@@ -10,6 +10,7 @@ var catcher = require('./catcher')
 module.exports = function (errored) {
     return cadence(function (async, destructible, entry, readable, writable, sip) {
         var inbox = new Procession, outbox = new Procession, shifter = inbox.shifter()
+        var oshifter = outbox.shifter()
         catcher({
             label: 'deserialize',
             queue: inbox,
@@ -22,9 +23,9 @@ module.exports = function (errored) {
             queue: null,
             entry: entry,
             error: errored,
-            f: function (callback) { serialize(outbox.shifter(), writable, callback) }
+            f: function (callback) { serialize(oshifter, writable, callback) }
         }, destructible.durable('serialize'))
-        destructible.destruct.wait(outbox, 'end')
+        destructible.destruct.wait(oshifter, 'destroy')
         destructible.destruct.wait(inbox, 'end')
         return [ shifter, outbox ]
     })
