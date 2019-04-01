@@ -1,16 +1,22 @@
 require('proof')(3, require('cadence')(prove))
 
 function prove (async, okay) {
-    var expected = [function (entry) {
-        okay(entry, {
-            olio: { name: 'run', index: 0 },
+    var expected = [function (error, context) {
+        okay({
+            message: error.message,
+            context: context
+        }, {
             message: 'message',
-        }, 'no end')
-    }, function (entry) {
-        okay(entry, {
-            olio: { name: 'run', index: 0 },
+            context: { olio: { name: 'run', index: 0 } }
+        }, 'catch one')
+    }, function (error, context) {
+        okay({
+            message: error.message,
+            context: context
+        }, {
             message: 'message',
-        }, 'no end')
+            context: { olio: { name: 'run', index: 0 } }
+        }, 'catch two')
     }]
     function errored () {
         expected.shift().apply(null, Array.prototype.slice.call(arguments))
@@ -19,7 +25,7 @@ function prove (async, okay) {
     async(function () {
         catcher({
             label: 'catcher',
-            entry: { olio: { name: 'run', index: 0 } },
+            context: { olio: { name: 'run', index: 0 } },
             error: errored,
             f: function (callback) {
                 callback(new Error('message'))
@@ -28,7 +34,7 @@ function prove (async, okay) {
     }, function () {
         catcher({
             label: 'catcher',
-            entry: { olio: { name: 'run', index: 0 } },
+            context: { olio: { name: 'run', index: 0 } },
             f: function (callback) {
                 callback(new Error('message'))
             },

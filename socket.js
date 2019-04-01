@@ -8,20 +8,20 @@ var deserialize = require('./deserialize')
 var catcher = require('./catcher')
 
 module.exports = function (errored) {
-    return cadence(function (async, destructible, entry, readable, writable, sip) {
+    return cadence(function (async, destructible, context, readable, writable, sip) {
         var inbox = new Procession, outbox = new Procession, shifter = inbox.shifter()
         var oshifter = outbox.shifter()
         catcher({
             label: 'deserialize',
             queue: inbox,
-            entry: entry,
+            context: context,
             error: errored,
             f: function (callback) { deserialize(readable, inbox, sip, callback) }
         }, destructible.durable('deserialize'))
         catcher({
             label: 'serialize',
             queue: null,
-            entry: entry,
+            context: context,
             error: errored,
             f: function (callback) { serialize(oshifter, writable, callback) }
         }, destructible.durable('serialize'))
