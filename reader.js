@@ -6,7 +6,7 @@ var coalesce = require('extant')
 function Reader (inbox, stream, sip) {
     this.truncated = false
     this.error = null
-    this._readable = new Staccato.Readable(stream)
+    this.readable = new Staccato.Readable(stream)
     this._sip = coalesce(sip, Buffer.alloc(0))
     this.inbox = inbox.shifter()
     this._inbox = inbox
@@ -14,7 +14,7 @@ function Reader (inbox, stream, sip) {
 }
 
 Reader.prototype.destroy = function () {
-    this._readable.destroy()
+    this.readable.destroy()
     this.destroyed = true
 }
 
@@ -33,10 +33,10 @@ Reader.prototype.read = cadence(function (async) {
                 envelopes.length = 0
                 async(function () {
                     this.state = 'reading'
-                    this._readable.read(async())
+                    this.readable.read(async())
                 }, function (buffer) {
                     if (buffer == null) {
-                        this.error = this._readable.error
+                        this.error = this.readable.error
                         return [ async.break ]
                     }
                     deserializer.parse(buffer, envelopes)
@@ -53,7 +53,7 @@ Reader.prototype.read = cadence(function (async) {
 })
 
 Reader.prototype.raise = function () {
-    this._readable.raise()
+    this.readable.raise()
 }
 
 module.exports = Reader

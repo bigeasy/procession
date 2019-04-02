@@ -3,7 +3,7 @@ var cadence = require('cadence')
 var Staccato = require('staccato')
 
 function Writer (outbox, stream) {
-    this._writable = new Staccato.Writable(stream)
+    this.writable = new Staccato.Writable(stream)
     this.outbox = outbox
     this._shifter = this.outbox.shifter()
     this.state = 'created'
@@ -11,7 +11,7 @@ function Writer (outbox, stream) {
 
 Writer.prototype.destroy = function () {
     this.destroyed = true
-    this._writable.destroy()
+    this.writable.destroy()
     this._shifter.destroy()
 }
 
@@ -37,13 +37,13 @@ Writer.prototype.write = cadence(function (async) {
                 }
                  */
                 this.state = 'writing'
-                this._writable.write(Buffer.concat(buffers), async())
+                this.writable.write(Buffer.concat(buffers), async())
             })
         })
     }, function () {
         this.state = 'ending'
-        this._writable.end(async())
-        this.error = this._writable.error
+        this.writable.end(async())
+        this.error = this.writable.error
         this.destroy()
     }, function () {
         this.state = 'completed'
@@ -52,7 +52,7 @@ Writer.prototype.write = cadence(function (async) {
 })
 
 Writer.prototype.raise = function () {
-    this._writable.raise()
+    this.writable.raise()
 }
 
 module.exports = Writer
