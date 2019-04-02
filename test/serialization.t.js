@@ -1,96 +1,48 @@
-require('proof')(8, require('cadence')(prove))
+require('proof')(7, require('cadence')(prove))
 
 function prove (async, okay) {
-    var Procession = require('..')
-    var Pump = require('../pump')
-
     var Serializer = require('../serializer')
     var Deserializer = require('../deserializer')
 
-    var stream = require('stream')
-    var abend = require('abend')
+    var buffers = []
+    Serializer({ key: 1 }, buffers)
+    var envelope = Buffer.concat(buffers)
+    okay(JSON.parse(envelope.toString()), {
+        module: 'conduit',
+        method: 'envelope',
+        body: { key: 1 }
+    }, 'no buffer envelope')
+    buffers.length = 0
+    Serializer({ body: { body: Buffer.from('abcdefghi\n') } }, buffers)
+    var buffered = Buffer.concat(buffers)
+    var lines = buffered.toString().split('\n')
+    okay(JSON.parse(lines[0]), {
+        module: 'conduit',
+        method: 'envelope',
+        length: 10,
+        body: { body: { body: null } }
+    }, 'buffer envelope')
+    okay(lines[1], 'abcdefghi', 'buffer body')
 
-    var input = new stream.PassThrough
-    var output = new stream.PassThrough
 
-    var serialize = require('../serialize')
-    var deserialize = require('../deserialize')
+    var deserializer = new Deserializer
+    var envelopes = []
 
-    var outbox = new Procession
-    var inbox = new Procession
+    buffers.length = 0
 
-    var Staccato = require('staccato')
+    deserializer.parse(buffered.slice(0, 5), envelopes)
+    deserializer.parse(buffered.slice(5, 87), envelopes)
+    deserializer.parse(buffered.slice(87), envelopes)
 
-    var readable = new Staccato.Readable(input)
-    var writable = new Staccato.Writable(output)
+    okay(envelopes[0].body.body.toString(), 'abcdefghi\n', 'buffer from bits')
+    envelopes[0].body.body = null
+    okay(envelopes, [{ body: { body: null } }], 'deserialized from bits')
 
-    var buffers = [], envelopes = []
+    envelopes.length = 0
 
-    serialize(outbox.shifter(), writable, function (error) {
-        if (error) {
-            // Here is where you would catch an I/O error, isolating I/O errors
-            // from unrelated errors and possibly reconnecting.
-            throw error
-        }
-    })
+    deserializer.parse(buffered, envelopes)
 
-    var done
-    deserialize(readable, inbox, function (error) {
-        if (error) {
-            // Here is where you would catch an I/O error, isolating I/O errors
-            // from unrelated errors and possibly reconnecting.
-            okay(error.message, 'truncated', 'truncated')
-            done()
-        }
-    })
-
-    var shifter = inbox.shifter()
-    async(function () {
-        shifter.dequeue(async())
-        outbox.push(1)
-        outbox.push(2)
-        input.write(output.read())
-    }, function (value) {
-        okay(value, 1, 'serialized')
-        shifter.dequeue(async())
-    }, function (value) {
-        okay(value, 2, 'off queue')
-        shifter.dequeue(async())
-        outbox.push({ value: 1, body: { body: Buffer.from('abcd') } })
-        var buffer = output.read()
-        async(function () {
-            input.write(buffer.slice(0, 2))
-            setImmediate(async())
-        }, function () {
-            input.write(buffer.slice(2, buffer.length - 2))
-            setImmediate(async())
-        }, function () {
-            input.write(buffer.slice(buffer.length - 2))
-        })
-    }, function (value) {
-        okay(value.value, 1, 'header')
-        okay(value.body.body.toString(), 'abcd', 'body')
-        shifter.dequeue(async())
-        outbox.push({ body: { body: Buffer.from('abcd') } })
-        input.write(output.read())
-    }, function (value) {
-        okay(value.body.body.toString(), 'abcd', 'body at once')
-        outbox.push(null)
-        okay(output.read(), null, 'eos')
-        input.write('{')
-        done = async()
-        async([function () {
-            input.end()
-        }, function (error) {
-            okay(error.message, 'truncated', 'truncated')
-        }])
-    }, function (value) {
-        var inbox = new Procession
-        var input = new stream.PassThrough
-        inbox.shifter().dequeue(async())
-        deserialize(new Staccato.Readable(input), inbox, Buffer.alloc(0), async())
-        input.end()
-    }, function (value) {
-        okay(value, null, 'eop')
-    })
+    okay(envelopes[0].body.body.toString(), 'abcdefghi\n', 'buffer entire')
+    envelopes[0].body.body = null
+    okay(envelopes, [{ body: { body: null } }], 'deserialized entire')
 }

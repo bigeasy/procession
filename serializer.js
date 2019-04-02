@@ -31,13 +31,13 @@ module.exports = function (envelope, buffers) {
             body: envelope
         }) + '\n'
         e.body = body
-        buffers.push(packet)
+        buffers.push(Buffer.from(packet))
         buffers.push(e.body)
     } else {
-        buffers.push(JSON.stringify({
+        buffers.push(Buffer.from(JSON.stringify({
             module: 'conduit',
             method: 'envelope',
             body: envelope
-        }) + '\n')
+        }) + '\n'))
     }
 }
