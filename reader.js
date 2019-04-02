@@ -10,6 +10,7 @@ function Reader (inbox, stream, sip) {
     this._sip = coalesce(sip, Buffer.alloc(0))
     this.inbox = inbox.shifter()
     this._inbox = inbox
+    this.state = 'created'
 }
 
 Reader.prototype.destroy = function () {
@@ -25,11 +26,13 @@ Reader.prototype.read = cadence(function (async) {
         async.loop([], function () {
             async(function () {
                 async.forEach([ envelopes ], function (envelope) {
+                    this.state = 'enqueuing'
                     this._inbox.enqueue(envelope, async())
                 })
             }, function () {
                 envelopes.length = 0
                 async(function () {
+                    this.state = 'reading'
                     this._readable.read(async())
                 }, function (buffer) {
                     if (buffer == null) {
@@ -44,6 +47,7 @@ Reader.prototype.read = cadence(function (async) {
         this.truncated = !deserializer.atBoundry
         this._inbox.push(null)
         this.destroy()
+        this.state = 'compeleted'
         return []
     })
 })
