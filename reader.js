@@ -2,14 +2,13 @@ var Deserializer = require('./deserializer')
 var cadence = require('cadence')
 var Staccato = require('staccato')
 var coalesce = require('extant')
-var Procession = require('.')
 
-function Reader (stream, sip) {
+function Reader (inbox, stream, sip) {
     this.truncated = false
     this.error = null
     this._readable = new Staccato.Readable(stream)
     this._sip = coalesce(sip, Buffer.alloc(0))
-    this.inbox = new Procession
+    this.inbox = inbox
 }
 
 Reader.prototype.destroy = function () {

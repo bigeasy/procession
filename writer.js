@@ -1,11 +1,10 @@
 var Serializer = require('./serializer')
 var cadence = require('cadence')
 var Staccato = require('staccato')
-var Procession = require('.')
 
-function Writer (stream) {
+function Writer (outbox, stream) {
     this._writable = new Staccato.Writable(stream)
-    this.outbox = new Procession
+    this.outbox = outbox
     this._shifter = this.outbox.shifter()
 }
 
