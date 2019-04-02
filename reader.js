@@ -8,7 +8,8 @@ function Reader (inbox, stream, sip) {
     this.error = null
     this._readable = new Staccato.Readable(stream)
     this._sip = coalesce(sip, Buffer.alloc(0))
-    this.inbox = inbox
+    this.inbox = inbox.shifter()
+    this._inbox = inbox
 }
 
 Reader.prototype.destroy = function () {
@@ -24,7 +25,7 @@ Reader.prototype.read = cadence(function (async) {
         async.loop([], function () {
             async(function () {
                 async.forEach([ envelopes ], function (envelope) {
-                    this.inbox.enqueue(envelope, async())
+                    this._inbox.enqueue(envelope, async())
                 })
             }, function () {
                 envelopes.length = 0
@@ -41,7 +42,7 @@ Reader.prototype.read = cadence(function (async) {
         })
     }, function () {
         this.truncated = !deserializer.atBoundry
-        this.inbox.push(null)
+        this._inbox.push(null)
         this.destroy()
         return []
     })
