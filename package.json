@@ -1,6 +1,6 @@
 {
     "name":                 "procession",
-    "version":              "4.0.6",
+    "version":              "4.0.7",
     "description":
 
       "Asynchronous message queue.",
