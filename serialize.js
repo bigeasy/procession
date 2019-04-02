@@ -3,9 +3,9 @@ var Pump = require('./pump')
 var cadence = require('cadence')
 var Staccato = require('staccato')
 
-module.exports = cadence(function (async, shifter, writer) {
+module.exports = cadence(function (async, shifter, writable) {
     async([function () {
-        writer.destroy()
+        writable.destroy()
     }], function () {
         var buffers = []
         async.loop([], function () {
@@ -17,10 +17,10 @@ module.exports = cadence(function (async, shifter, writer) {
                     return [ async.break ]
                 }
                 Serializer(envelope, buffers)
-                writer.write(buffers.join(''), true, async())
+                writable.write(buffers.join(''), async())
             })
         })
     }, function () {
-        writer.end(async())
+        writable.end(async())
     })
 })
